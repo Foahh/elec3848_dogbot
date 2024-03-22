@@ -1,0 +1,19 @@
+services:
+  dev:
+    container_name: noetic
+    build:
+      context: docker
+    network_mode: "host"
+    stdin_open: true
+    tty: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - XAUTHORITY=/tmp/.docker.xauth
+      - LIDAR_TYPE=x2
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+      - ./workspace:/home/ros/workspace
+    devices:
+      - /dev/ydlidar:/dev/ydlidar # run /scripts/initenv.sh in host first
