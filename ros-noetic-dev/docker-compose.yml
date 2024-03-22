@@ -3,6 +3,7 @@ services:
     container_name: noetic
     build:
       context: docker
+    image: ros-dev:noetic
     network_mode: "host"
     stdin_open: true
     tty: true
@@ -14,6 +15,6 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
-      - ./workspace:/home/ros/workspace
+      - ./catkin_ws:/home/ros/catkin_ws
     devices:
       - /dev/ydlidar:/dev/ydlidar # run /scripts/initenv.sh in host first

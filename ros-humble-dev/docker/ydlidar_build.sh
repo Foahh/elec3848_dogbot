@@ -1,6 +1,6 @@
 cd /home/$USERNAME
 git clone https://github.com/YDLIDAR/YDLidar-SDK.git
-cd YDLidar-SDK
+cd /home/$USERNAME/YDLidar-SDK
 mkdir build
 cd build
 cmake ..
