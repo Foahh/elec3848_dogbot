@@ -17,4 +17,6 @@ services:
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
       - ./colcon_ws:/home/ros/colcon_ws
     devices:
-      - /dev/ydlidar:/dev/ydlidar # run /scripts/initenv.sh in host first
+      # run /scripts/udev.sh in host first
+      - /dev/ydlidar:/dev/ydlidar
+      - /dev/arduino:/dev/arduino
