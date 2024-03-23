@@ -1,0 +1,22 @@
+services:
+  dev:
+    container_name: humble
+    build:
+      context: docker
+    image: ros-dev:humble
+    network_mode: "host"
+    stdin_open: true
+    tty: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - XAUTHORITY=/tmp/.docker.xauth
+      - LIDAR_TYPE=x2
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+      - ../colcon_ws:/home/ros/colcon_ws
+    devices:
+      # run /scripts/udev.sh in host first
+      - /dev/ydlidar:/dev/ydlidar
+      - /dev/arduino:/dev/arduino

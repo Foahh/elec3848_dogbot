@@ -15,7 +15,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
-      - ./colcon_ws:/home/ros/colcon_ws
+      - ../colcon_ws:/home/ros/colcon_ws
     devices:
       # run /scripts/udev.sh in host first
       - /dev/ydlidar:/dev/ydlidar
