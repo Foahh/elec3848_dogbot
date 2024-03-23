@@ -2,7 +2,8 @@ services:
   dev:
     container_name: humble
     build:
-      context: docker
+      context: ../
+      dockerfile: ./amd64/Dockerfile
     image: ros-dev:humble
     network_mode: "host"
     stdin_open: true
@@ -19,4 +20,5 @@ services:
     devices:
       # run /scripts/udev.sh in host first
       - /dev/ydlidar:/dev/ydlidar
-      - /dev/arduino:/dev/arduino
+      - /dev/ydlidar:/dev/ttyUSB0
+      # - /dev/arduino:/dev/arduino

@@ -1,4 +1,4 @@
-FROM osrf/ros:humble-desktop-full
+FROM foahh/ros-desktop-arm64v8:humble
 
 RUN apt-get update && apt-get install -y \
     libserial-dev \
@@ -41,11 +41,10 @@ RUN sudo apt-get update && \
     sudo apt-get upgrade -y && \
     sudo rm -rf /var/lib/apt/lists/*
 
-COPY --chown=${USER_ID}:${GROUP_ID} --chmod=760 build.sh /opt/src/scripts/build.sh
+COPY --chown=${USER_ID}:${GROUP_ID} --chmod=760 ./scripts/build.sh /opt/src/scripts/build.sh
 
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     /opt/src/scripts/build.sh
 
 RUN mkdir -p /home/$USERNAME/colcon_ws
 WORKDIR /home/$USERNAME/colcon_ws
-RUN rosdep install --from-paths src --ignore-src -r -y

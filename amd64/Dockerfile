@@ -1,4 +1,4 @@
-FROM foahh/ros-desktop-arm64v8:humble
+FROM osrf/ros:humble-desktop-full
 
 RUN apt-get update && apt-get install -y \
     libserial-dev \
@@ -20,6 +20,8 @@ RUN apt-get update && apt-get install -y \
 
 ENV DEBIAN_FRONTEND noninteractive
 SHELL ["/bin/bash", "-c"]
+ENV TERM=xterm-256color
+RUN echo "PS1='\e[92m\u\e[0m@\e[94m\h\e[0m:\e[35m\w\e[0m# '" >> /root/.bashrc
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -41,11 +43,10 @@ RUN sudo apt-get update && \
     sudo apt-get upgrade -y && \
     sudo rm -rf /var/lib/apt/lists/*
 
-COPY --chown=${USER_ID}:${GROUP_ID} --chmod=760 build.sh /opt/src/scripts/build.sh
+COPY --chown=${USER_ID}:${GROUP_ID} --chmod=760 ./scripts/build.sh /opt/src/scripts/build.sh
 
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
     /opt/src/scripts/build.sh
 
 RUN mkdir -p /home/$USERNAME/colcon_ws
 WORKDIR /home/$USERNAME/colcon_ws
-RUN rosdep install --from-paths src --ignore-src -r -y
