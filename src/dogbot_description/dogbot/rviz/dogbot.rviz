@@ -66,16 +66,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        caster_frontal_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        caster_rear_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         lf_wheel:
           Alpha: 1
           Show Axes: false
@@ -104,7 +94,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_link
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:

@@ -1,9 +1,0 @@
-<library path="dogbot_drive_arduino">
-  <class name="dogbot_drive_arduino/DogBotDriveArduinoHardware"
-         type="dogbot_drive_arduino::DogBotDriveArduinoHardware"
-         base_class_type="hardware_interface::SystemInterface">
-    <description>
-      The ros2_control using a system hardware interface-type. It uses velocity command and position state interface.
-    </description>
-  </class>
-</library>

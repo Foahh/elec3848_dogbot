@@ -1,10 +1,21 @@
 {
     "python.autoComplete.extraPaths": [
+        "/home/humble/colcon_ws/build/dogbot_voice",
+        "/home/humble/colcon_ws/install/dogbot_voice/lib/python3.10/site-packages",
+        "/home/humble/colcon_ws/build/dogbot_arm",
+        "/home/humble/colcon_ws/install/dogbot_arm/lib/python3.10/site-packages",
         "/opt/ros/humble/lib/python3.10/site-packages",
         "/opt/ros/humble/local/lib/python3.10/dist-packages"
     ],
     "python.analysis.extraPaths": [
+        "/home/humble/colcon_ws/build/dogbot_voice",
+        "/home/humble/colcon_ws/install/dogbot_voice/lib/python3.10/site-packages",
+        "/home/humble/colcon_ws/build/dogbot_arm",
+        "/home/humble/colcon_ws/install/dogbot_arm/lib/python3.10/site-packages",
         "/opt/ros/humble/lib/python3.10/site-packages",
         "/opt/ros/humble/local/lib/python3.10/dist-packages"
-    ]
+    ],
+    "files.associations": {
+        "chrono": "cpp"
+    }
 }
