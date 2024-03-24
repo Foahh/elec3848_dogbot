@@ -2,17 +2,26 @@
 flag=0
 
 if [ ! -f /etc/udev/rules.d/ydlidar.rules ]; then
-    sudo echo 'KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="0666", GROUP:="dialout", SYMLINK+="ydlidar"' > /etc/udev/rules.d/ydlidar.rules
+    echo 'KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE:="0666", GROUP:="dialout", SYMLINK+="ydlidar"' | sudo tee /etc/udev/rules.d/ydlidar.rules > /dev/null
+    echo '"/etc/udev/rules.d/ydlidar.rules" Created' 
     flag=1
 fi
 
 if [ ! -f /etc/udev/rules.d/ydlidar-V2.rules ]; then
-    sudo echo 'KERNEL=="ttyACM*", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", MODE:="0666", GROUP:="dialout", SYMLINK+="ydlidar"' > /etc/udev/rules.d/ydlidar-V2.rules
+    echo 'KERNEL=="ttyACM*", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="5740", MODE:="0666", GROUP:="dialout", SYMLINK+="ydlidar"' | sudo tee /etc/udev/rules.d/ydlidar-V2.rules > /dev/null
+    echo '"/etc/udev/rules.d/ydlidar-V2.rules" Created'
     flag=1
 fi
 
 if [ ! -f /etc/udev/rules.d/ydlidar-2303.rules ]; then
-    sudo echo 'KERNEL=="ttyUSB*", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", MODE:="0666", GROUP:="dialout", SYMLINK+="ydlidar"' > /etc/udev/rules.d/ydlidar-2303.rules
+    sudo echo 'KERNEL=="ttyUSB*", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", MODE:="0666", GROUP:="dialout", SYMLINK+="ydlidar"' | sudo tee /etc/udev/rules.d/ydlidar-2303.rules > /dev/null
+    echo '"/etc/udev/rules.d/ydlidar-2303.rules" Created'
+    flag=1
+fi
+
+if [ ! -f /etc/udev/rules.d/arduino.rules ]; then
+    echo 'KERNEL=="ttyUSB*", ATTRS{idVendor}=="2341", MODE:="0666", GROUP:="dialout", SYMLINK+="arduino"' | sudo tee /etc/udev/rules.d/arduino.rules > /dev/null
+    echo '"/etc/udev/rules.d/arduino.rules" Created'
     flag=1
 fi
 

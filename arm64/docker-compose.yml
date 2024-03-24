@@ -1,7 +1,3 @@
-networks:
-  ros:
-    driver: bridge
-
 services:
   dev:
     container_name: humble
@@ -17,14 +13,11 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
-      - ~/colcon_ws:/home/"$USERNAME"/colcon_ws
+      - ../colcon_ws:/home/"$USERNAME"/colcon_ws
     devices:
       - /dev/ydlidar:/dev/ydlidar # run /scripts/udev.sh in host first
       - /dev/ydlidar:/dev/ttyUSB0
       # - /dev/arduino:/dev/arduino
-    networks:
-      - ros
-    ports:
-      - "11311:11311"
+    network_mode: host
     stdin_open: true
     tty: true

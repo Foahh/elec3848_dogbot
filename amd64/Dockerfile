@@ -6,10 +6,21 @@ RUN echo "PS1='\e[92m\u\e[0m@\e[94m\h\e[0m:\e[35m\w\e[0m# '" >> /root/.bashrc
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-COPY --chown=${USER_ID}:${GROUP_ID} --chmod=760 ./scripts/ /opt/src/scripts/
-RUN /opt/src/scripts/install_library.sh && rm /opt/src/scripts/install_library.sh
-RUN /opt/src/scripts/install_tool.sh && rm /opt/src/scripts/install_tool.sh
-RUN /opt/src/scripts/install_platformio.sh && rm /opt/src/scripts/install_platformio.sh
+COPY --chmod=700 ./scripts/install_library.sh /tmp/install_library.sh
+RUN /tmp/install_library.sh && \
+    rm /tmp/install_library.sh
+
+COPY --chmod=700 ./scripts/install_tool.sh /tmp/install_tool.sh
+RUN bash /tmp/install_tool.sh && \
+    rm /tmp/install_tool.sh
+
+COPY --chmod=700 ./scripts/install_platformio.sh /tmp/install_platformio.sh
+RUN bash /tmp/install_platformio.sh && \
+    rm /tmp/install_platformio.sh
+
+COPY --chmod=700 ./scripts/install_gazebo.sh /tmp/install_gazebo.sh
+RUN bash /tmp/install_gazebo.sh && \
+    rm /tmp/install_gazebo.sh
 
 ENV USERNAME humble
 RUN adduser --disabled-password --gecos '' $USERNAME && \
@@ -27,9 +38,10 @@ RUN sudo apt-get update && \
     sudo apt-get upgrade -y && \
     sudo rm -rf /var/lib/apt/lists/*
 
+COPY --chown=${USER_ID}:${GROUP_ID} --chmod=700 ./scripts/build_package.sh /tmp/build_package.sh
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    /opt/src/scripts/build_package.sh && \
-    sudo rm -rf /opt/src/scripts
-    
+    /tmp/build_package.sh && \
+    sudo rm /tmp/build_package.sh
+
 RUN mkdir -p /home/$USERNAME/colcon_ws
 WORKDIR /home/$USERNAME/colcon_ws
