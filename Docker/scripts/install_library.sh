@@ -1,18 +1,17 @@
 #!/bin/bash
-apt-get update 
 
 # Build dependencies
+apt-get update && \
 apt-get install -y \
     libserial-dev
 
-# ROS2 misc libraries
+# ros packages
 apt-get install -y \
     ros-dev-tools \
-    ros-humble-gazebo-ros-pkgs \
-    ros-humble-ros-ign-bridge \
-    ros-humble-joint-state-publisher-gui
+    ros-humble-joint-state-publisher-gui \
+    ros-humble-gazebo-ros-pkgs
 
-# ROS2 control
+# ros control
 apt-get install -y \
     ros-humble-ros2-control \
     ros-humble-ros2-controllers \

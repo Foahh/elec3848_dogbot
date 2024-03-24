@@ -33,11 +33,13 @@ fi
 
 if [ "$(arch)" == "x86_64" ];
 then
-    cd amd64/ || exit
+    export ROS_ARCH=amd64
 elif [ "$(arch)" == "aarch64" ]
 then
-    cd arm64v8/ || exit
+    export ROS_ARCH=arm64
 fi
+
+docker build -t foahh/ros-humble-desktop:$ROS_ARCH --build-arg ROS_ARCH=$ROS_ARCH -f ./Docker/desktop.dockerfile .
 
 docker compose build || exit
 docker compose up -d

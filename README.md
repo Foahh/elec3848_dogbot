@@ -7,11 +7,11 @@ vim
 wget
 python3-pip
 python3-venv
-ros-humble-desktop-full 
+ros-humble-desktop
+ros-humble-perception
 ros-dev-tools
 ros-humble-joint-state-publisher-gui
-ignition-fortress
-ros-humble-ros-ign-bridge
+ros-humble-gazebo-ros-pkgs
 ros-humble-ros-gz
 ros-humble-ros2-control
 ros-humble-ros2-controllers
@@ -19,7 +19,8 @@ ros-humble-control-toolbox
 ros-humble-realtime-tools
 ros-humble-control-msgs
 ros-humble-ros2-controllers-test-nodes
-YDLidar-SDK ydlidar_ros2_driver
+YDLidar-SDK
+ydlidar_ros2_driver
 libserial-dev
 platformio
 ```
