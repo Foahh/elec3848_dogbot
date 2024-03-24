@@ -18,14 +18,6 @@ COPY --chmod=700 ./scripts/install_tool.sh /tmp/install_tool.sh
 RUN bash /tmp/install_tool.sh && \
     rm /tmp/install_tool.sh
 
-COPY --chmod=700 ./scripts/install_platformio.sh /tmp/install_platformio.sh
-RUN bash /tmp/install_platformio.sh && \
-    rm /tmp/install_platformio.sh
-
-COPY --chmod=700 ./scripts/install_gazebo.sh /tmp/install_gazebo.sh
-RUN bash /tmp/install_gazebo.sh && \
-    rm /tmp/install_gazebo.sh
-
 ENV USERNAME humble
 RUN adduser --disabled-password --gecos '' $USERNAME && \
     usermod  --uid ${USER_ID} $USERNAME && \
