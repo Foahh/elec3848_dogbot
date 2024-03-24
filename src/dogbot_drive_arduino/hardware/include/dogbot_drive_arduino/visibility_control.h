@@ -19,38 +19,38 @@
  * library cannot have, but the consuming code must have inorder to link.
  */
 
-#ifndef DOGDRIVE_ARDUINO_VISIBILITY_CONTROL_H_
-#define DOGDRIVE_ARDUINO_VISIBILITY_CONTROL_H_
+#ifndef DOGBOT_DRIVE_ARDUINO_VISIBILITY_CONTROL_H_
+#define DOGBOT_DRIVE_ARDUINO_VISIBILITY_CONTROL_H_
 
 // This logic was borrowed (then namespaced) from the examples on the gcc wiki:
 //     https://gcc.gnu.org/wiki/Visibility
 
 #if defined _WIN32 || defined __CYGWIN__
 #ifdef __GNUC__
-#define DOGDRIVE_ARDUINO_EXPORT __attribute__((dllexport))
-#define DOGDRIVE_ARDUINO_IMPORT __attribute__((dllimport))
+#define DOGBOT_DRIVE_ARDUINO_EXPORT __attribute__((dllexport))
+#define DOGBOT_DRIVE_ARDUINO_IMPORT __attribute__((dllimport))
 #else
-#define DOGDRIVE_ARDUINO_EXPORT __declspec(dllexport)
-#define DOGDRIVE_ARDUINO_IMPORT __declspec(dllimport)
+#define DOGBOT_DRIVE_ARDUINO_EXPORT __declspec(dllexport)
+#define DOGBOT_DRIVE_ARDUINO_IMPORT __declspec(dllimport)
 #endif
-#ifdef DOGDRIVE_ARDUINO_BUILDING_DLL
-#define DOGDRIVE_ARDUINO_PUBLIC DOGDRIVE_ARDUINO_EXPORT
+#ifdef DOGBOT_DRIVE_ARDUINO_BUILDING_DLL
+#define DOGBOT_DRIVE_ARDUINO_PUBLIC DOGBOT_DRIVE_ARDUINO_EXPORT
 #else
-#define DOGDRIVE_ARDUINO_PUBLIC DOGDRIVE_ARDUINO_IMPORT
+#define DOGBOT_DRIVE_ARDUINO_PUBLIC DOGBOT_DRIVE_ARDUINO_IMPORT
 #endif
-#define DOGDRIVE_ARDUINO_PUBLIC_TYPE DOGDRIVE_ARDUINO_PUBLIC
-#define DOGDRIVE_ARDUINO_LOCAL
+#define DOGBOT_DRIVE_ARDUINO_PUBLIC_TYPE DOGBOT_DRIVE_ARDUINO_PUBLIC
+#define DOGBOT_DRIVE_ARDUINO_LOCAL
 #else
-#define DOGDRIVE_ARDUINO_EXPORT __attribute__((visibility("default")))
-#define DOGDRIVE_ARDUINO_IMPORT
+#define DOGBOT_DRIVE_ARDUINO_EXPORT __attribute__((visibility("default")))
+#define DOGBOT_DRIVE_ARDUINO_IMPORT
 #if __GNUC__ >= 4
-#define DOGDRIVE_ARDUINO_PUBLIC __attribute__((visibility("default")))
-#define DOGDRIVE_ARDUINO_LOCAL __attribute__((visibility("hidden")))
+#define DOGBOT_DRIVE_ARDUINO_PUBLIC __attribute__((visibility("default")))
+#define DOGBOT_DRIVE_ARDUINO_LOCAL __attribute__((visibility("hidden")))
 #else
-#define DOGDRIVE_ARDUINO_PUBLIC
-#define DOGDRIVE_ARDUINO_LOCAL
+#define DOGBOT_DRIVE_ARDUINO_PUBLIC
+#define DOGBOT_DRIVE_ARDUINO_LOCAL
 #endif
-#define DOGDRIVE_ARDUINO_PUBLIC_TYPE
+#define DOGBOT_DRIVE_ARDUINO_PUBLIC_TYPE
 #endif
 
-#endif // DOGDRIVE_ARDUINO_VISIBILITY_CONTROL_H_
+#endif // DOGBOT_DRIVE_ARDUINO_VISIBILITY_CONTROL_H_

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef DOGDRIVE_ARDUINO_DOGBOT_SYSTEM_HPP_
-#define DOGDRIVE_ARDUINO_DOGBOT_SYSTEM_HPP_
+#ifndef DOGBOT_DRIVE_ARDUINO_DOGBOT_SYSTEM_HPP_
+#define DOGBOT_DRIVE_ARDUINO_DOGBOT_SYSTEM_HPP_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "dogdrive_arduino/visibility_control.h"
+#include "dogbot_drive_arduino/visibility_control.h"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
@@ -31,12 +31,12 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include "dogdrive_arduino/arduino_comms.hpp"
-#include "dogdrive_arduino/wheel.hpp"
+#include "dogbot_drive_arduino/arduino_comms.hpp"
+#include "dogbot_drive_arduino/wheel.hpp"
 
-namespace dogdrive_arduino
+namespace dogbot_drive_arduino
 {
-  class DogdriveArduinoHardware : public hardware_interface::SystemInterface
+  class DogBotDriveArduinoHardware : public hardware_interface::SystemInterface
   {
 
     struct Config
@@ -57,39 +57,39 @@ namespace dogdrive_arduino
     };
 
   public:
-    RCLCPP_SHARED_PTR_DEFINITIONS(DogdriveArduinoHardware);
+    RCLCPP_SHARED_PTR_DEFINITIONS(DogBotDriveArduinoHardware);
 
-    DOGDRIVE_ARDUINO_PUBLIC
+    DOGBOT_DRIVE_ARDUINO_PUBLIC
     hardware_interface::CallbackReturn on_init(
         const hardware_interface::HardwareInfo &info) override;
 
-    DOGDRIVE_ARDUINO_PUBLIC
+    DOGBOT_DRIVE_ARDUINO_PUBLIC
     std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 
-    DOGDRIVE_ARDUINO_PUBLIC
+    DOGBOT_DRIVE_ARDUINO_PUBLIC
     std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
-    DOGDRIVE_ARDUINO_PUBLIC
+    DOGBOT_DRIVE_ARDUINO_PUBLIC
     hardware_interface::CallbackReturn on_configure(
         const rclcpp_lifecycle::State &previous_state) override;
 
-    DOGDRIVE_ARDUINO_PUBLIC
+    DOGBOT_DRIVE_ARDUINO_PUBLIC
     hardware_interface::CallbackReturn on_cleanup(
         const rclcpp_lifecycle::State &previous_state) override;
 
-    DOGDRIVE_ARDUINO_PUBLIC
+    DOGBOT_DRIVE_ARDUINO_PUBLIC
     hardware_interface::CallbackReturn on_activate(
         const rclcpp_lifecycle::State &previous_state) override;
 
-    DOGDRIVE_ARDUINO_PUBLIC
+    DOGBOT_DRIVE_ARDUINO_PUBLIC
     hardware_interface::CallbackReturn on_deactivate(
         const rclcpp_lifecycle::State &previous_state) override;
 
-    DOGDRIVE_ARDUINO_PUBLIC
+    DOGBOT_DRIVE_ARDUINO_PUBLIC
     hardware_interface::return_type read(
         const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
-    DOGDRIVE_ARDUINO_PUBLIC
+    DOGBOT_DRIVE_ARDUINO_PUBLIC
     hardware_interface::return_type write(
         const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
@@ -102,6 +102,6 @@ namespace dogdrive_arduino
     Wheel wheel_rb_;
   };
 
-} // namespace dogdrive_arduino
+} // namespace dogbot_drive_arduino
 
-#endif // DOGDRIVE_ARDUINO_DOGBOT_SYSTEM_HPP_
+#endif // DOGBOT_DRIVE_ARDUINO_DOGBOT_SYSTEM_HPP_

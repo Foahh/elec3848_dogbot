@@ -5,7 +5,7 @@
 
     <ros2_control name="${name}" type="system">
       <hardware>
-        <plugin>dogdrive_arduino/DogdriveArduinoHardware</plugin>
+        <plugin>dogbot_drive_controller/DogBotDriveArduinoHardware</plugin>
         <param name="lf_wheel_name">lf_wheel_joint</param>
         <param name="rf_wheel_name">rf_wheel_joint</param>
         <param name="lb_wheel_name">lb_wheel_joint</param>

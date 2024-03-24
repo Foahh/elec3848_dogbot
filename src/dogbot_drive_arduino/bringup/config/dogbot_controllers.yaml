@@ -6,7 +6,7 @@ controller_manager:
       type: joint_state_broadcaster/JointStateBroadcaster
 
     dogbot_base_controller:
-      type: dog_drive_controller/DogdriveController
+      type: dogbot_drive_controller/DogBotDriveController
 
 dogbot_base_controller:
   ros__parameters:

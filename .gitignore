@@ -1,3 +1,5 @@
-src/build/*
 .idea
 .vscode
+install/
+log/
+build/

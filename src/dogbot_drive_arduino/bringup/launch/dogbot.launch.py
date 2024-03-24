@@ -28,7 +28,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("dogdrive_arduino"), "urdf", "dogbot.urdf.xacro"]
+                [FindPackageShare("dogbot_drive_arduino"), "urdf", "dogbot.urdf.xacro"]
             ),
         ]
     )
@@ -36,13 +36,13 @@ def generate_launch_description():
 
     robot_controllers = PathJoinSubstitution(
         [
-            FindPackageShare("dogdrive_arduino"),
+            FindPackageShare("dogbot_drive_arduino"),
             "config",
             "dogbot_controllers.yaml",
         ]
     )
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("dogdrive_arduino"), "rviz", "dogbot.rviz"]
+        [FindPackageShare("dogbot_drive_arduino"), "rviz", "dogbot.rviz"]
     )
 
     control_node = Node(
@@ -57,7 +57,7 @@ def generate_launch_description():
         output="both",
         parameters=[robot_description],
         remappings=[
-            ("/dog_drive_controller/cmd_vel_unstamped", "/cmd_vel"),
+            ("/dogbot_drive_controller/cmd_vel_unstamped", "/cmd_vel"),
         ],
     )
     rviz_node = Node(

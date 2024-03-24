@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(dogdrive_arduino LANGUAGES CXX)
+project(dogbot_drive_arduino LANGUAGES CXX)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
   add_compile_options(-Wall -Wextra)
@@ -22,44 +22,44 @@ endforeach()
 
 ## COMPILE
 add_library(
-  dogdrive_arduino
+  dogbot_drive_arduino
   SHARED
   hardware/dogbot_system.cpp
 )
-target_compile_features(dogdrive_arduino PUBLIC cxx_std_17)
-target_include_directories(dogdrive_arduino PUBLIC
+target_compile_features(dogbot_drive_arduino PUBLIC cxx_std_17)
+target_include_directories(dogbot_drive_arduino PUBLIC
 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
-$<INSTALL_INTERFACE:include/dogdrive_arduino>
+$<INSTALL_INTERFACE:include/dogbot_drive_arduino>
 )
 ament_target_dependencies(
-  dogdrive_arduino PUBLIC
+  dogbot_drive_arduino PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
-target_link_libraries(dogdrive_arduino PUBLIC serial)
+target_link_libraries(dogbot_drive_arduino PUBLIC serial)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(${PROJECT_NAME} PRIVATE "DOGDRIVE_ARDUINO_BUILDING_DLL")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "dogbot_drive_ARDUINO_BUILDING_DLL")
 
 # Export hardware plugins
-pluginlib_export_plugin_description_file(hardware_interface dogdrive_arduino.xml)
+pluginlib_export_plugin_description_file(hardware_interface dogbot_drive_arduino.xml)
 
 # INSTALL
 install(
   DIRECTORY hardware/include/
-  DESTINATION include/dogdrive_arduino
+  DESTINATION include/dogbot_drive_arduino
 )
 install(
   DIRECTORY description/launch description/ros2_control description/urdf description/rviz
-  DESTINATION share/dogdrive_arduino
+  DESTINATION share/dogbot_drive_arduino
 )
 install(
   DIRECTORY bringup/launch bringup/config
-  DESTINATION share/dogdrive_arduino
+  DESTINATION share/dogbot_drive_arduino
 )
-install(TARGETS dogdrive_arduino
-  EXPORT export_dogdrive_arduino
+install(TARGETS dogbot_drive_arduino
+  EXPORT export_dogbot_drive_arduino
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -70,6 +70,6 @@ if(BUILD_TESTING)
 endif()
 
 ## EXPORTS
-ament_export_targets(export_dogdrive_arduino HAS_LIBRARY_TARGET)
+ament_export_targets(export_dogbot_drive_arduino HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

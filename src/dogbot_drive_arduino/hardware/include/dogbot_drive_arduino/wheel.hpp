@@ -1,5 +1,5 @@
-#ifndef DOGDRIVE_ARDUINO_WHEEL_HPP
-#define DOGDRIVE_ARDUINO_WHEEL_HPP
+#ifndef DOGBOT_DRIVE_ARDUINO_WHEEL_HPP
+#define DOGBOT_DRIVE_ARDUINO_WHEEL_HPP
 
 #include <cmath>
 #include <string>
@@ -33,4 +33,4 @@ public:
   }
 };
 
-#endif // DOGDRIVE_ARDUINO_WHEEL_HPP
+#endif // DOGBOT_DRIVE_ARDUINO_WHEEL_HPP

@@ -21,11 +21,11 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-#include "dogdrive_arduino/dogbot_system.hpp"
+#include "dogbot_drive_arduino/dogbot_system.hpp"
 
-namespace dogdrive_arduino
+namespace dogbot_drive_arduino
 {
-  hardware_interface::CallbackReturn DogdriveArduinoHardware::on_init(
+  hardware_interface::CallbackReturn DogBotDriveArduinoHardware::on_init(
       const hardware_interface::HardwareInfo &info)
   {
     if (
@@ -53,7 +53,7 @@ namespace dogdrive_arduino
     }
     else
     {
-      RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "PID values not supplied, using defaults.");
+      RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "PID values not supplied, using defaults.");
     }
 
     wheel_lf_.setup(cfg_.lf_wheel_name, cfg_.enc_counts_per_rev);
@@ -67,7 +67,7 @@ namespace dogdrive_arduino
       if (joint.command_interfaces.size() != 1)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("DogdriveArduinoHardware"),
+            rclcpp::get_logger("DogBotDriveArduinoHardware"),
             "Joint '%s' has %zu command interfaces found. 1 expected.", joint.name.c_str(),
             joint.command_interfaces.size());
         return hardware_interface::CallbackReturn::ERROR;
@@ -76,7 +76,7 @@ namespace dogdrive_arduino
       if (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("DogdriveArduinoHardware"),
+            rclcpp::get_logger("DogBotDriveArduinoHardware"),
             "Joint '%s' have %s command interfaces found. '%s' expected.", joint.name.c_str(),
             joint.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_VELOCITY);
         return hardware_interface::CallbackReturn::ERROR;
@@ -85,7 +85,7 @@ namespace dogdrive_arduino
       if (joint.state_interfaces.size() != 2)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("DogdriveArduinoHardware"),
+            rclcpp::get_logger("DogBotDriveArduinoHardware"),
             "Joint '%s' has %zu state interface. 2 expected.", joint.name.c_str(),
             joint.state_interfaces.size());
         return hardware_interface::CallbackReturn::ERROR;
@@ -94,7 +94,7 @@ namespace dogdrive_arduino
       if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("DogdriveArduinoHardware"),
+            rclcpp::get_logger("DogBotDriveArduinoHardware"),
             "Joint '%s' have '%s' as first state interface. '%s' expected.", joint.name.c_str(),
             joint.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
         return hardware_interface::CallbackReturn::ERROR;
@@ -103,7 +103,7 @@ namespace dogdrive_arduino
       if (joint.state_interfaces[1].name != hardware_interface::HW_IF_VELOCITY)
       {
         RCLCPP_FATAL(
-            rclcpp::get_logger("DogdriveArduinoHardware"),
+            rclcpp::get_logger("DogBotDriveArduinoHardware"),
             "Joint '%s' have '%s' as second state interface. '%s' expected.", joint.name.c_str(),
             joint.state_interfaces[1].name.c_str(), hardware_interface::HW_IF_VELOCITY);
         return hardware_interface::CallbackReturn::ERROR;
@@ -113,7 +113,7 @@ namespace dogdrive_arduino
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  std::vector<hardware_interface::StateInterface> DogdriveArduinoHardware::export_state_interfaces()
+  std::vector<hardware_interface::StateInterface> DogBotDriveArduinoHardware::export_state_interfaces()
   {
     std::vector<hardware_interface::StateInterface> state_interfaces;
 
@@ -140,7 +140,7 @@ namespace dogdrive_arduino
     return state_interfaces;
   }
 
-  std::vector<hardware_interface::CommandInterface> DogdriveArduinoHardware::export_command_interfaces()
+  std::vector<hardware_interface::CommandInterface> DogBotDriveArduinoHardware::export_command_interfaces()
   {
     std::vector<hardware_interface::CommandInterface> command_interfaces;
 
@@ -159,64 +159,64 @@ namespace dogdrive_arduino
     return command_interfaces;
   }
 
-  hardware_interface::CallbackReturn DogdriveArduinoHardware::on_configure(
+  hardware_interface::CallbackReturn DogBotDriveArduinoHardware::on_configure(
       const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "Configuring ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Configuring ...please wait...");
     if (comms_.connected() && comms_.disconnect())
     {
       comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms);
-      RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "Successfully configured!");
+      RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Successfully configured!");
       return hardware_interface::CallbackReturn::SUCCESS;
     }
-    RCLCPP_ERROR(rclcpp::get_logger("DogdriveArduinoHardware"), "Failed to configure!");
+    RCLCPP_ERROR(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Failed to configure!");
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  hardware_interface::CallbackReturn DogdriveArduinoHardware::on_cleanup(
+  hardware_interface::CallbackReturn DogBotDriveArduinoHardware::on_cleanup(
       const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Cleaning up ...please wait...");
     if (comms_.connected() && comms_.disconnect())
     {
-      RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "Successfully cleaned up!");
+      RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Successfully cleaned up!");
       return hardware_interface::CallbackReturn::SUCCESS;
     }
-    RCLCPP_ERROR(rclcpp::get_logger("DogdriveArduinoHardware"), "Failed to clean up!");
+    RCLCPP_ERROR(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Failed to clean up!");
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  hardware_interface::CallbackReturn DogdriveArduinoHardware::on_activate(
+  hardware_interface::CallbackReturn DogBotDriveArduinoHardware::on_activate(
       const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "Activating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Activating ...please wait...");
     if (!comms_.connected())
     {
-      RCLCPP_ERROR(rclcpp::get_logger("DogdriveArduinoHardware"), "Failed to activate!");
+      RCLCPP_ERROR(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Failed to activate!");
       return hardware_interface::CallbackReturn::ERROR;
     }
     if (cfg_.pid_p > 0)
     {
       comms_.set_pid_values(cfg_.pid_p, cfg_.pid_d, cfg_.pid_i, cfg_.pid_o);
     }
-    RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "Successfully activated!");
+    RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Successfully activated!");
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DogdriveArduinoHardware::on_deactivate(
+  hardware_interface::CallbackReturn DogBotDriveArduinoHardware::on_deactivate(
       const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "Deactivating ...please wait...");
-    RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "Successfully deactivated!");
+    RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Deactivating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Successfully deactivated!");
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::return_type DogdriveArduinoHardware::read(
+  hardware_interface::return_type DogBotDriveArduinoHardware::read(
       const rclcpp::Time & /*time*/, const rclcpp::Duration &period)
   {
     if (!comms_.connected())
     {
-      RCLCPP_INFO(rclcpp::get_logger("DogdriveArduinoHardware"), "Failed to read!");
+      RCLCPP_INFO(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Failed to read!");
       return hardware_interface::return_type::ERROR;
     }
 
@@ -226,7 +226,7 @@ namespace dogdrive_arduino
     }
     catch (const std::exception &e)
     {
-      RCLCPP_ERROR(rclcpp::get_logger("DogdriveArduinoHardware"), "Failed to read encoder values: %s", e.what());
+      RCLCPP_ERROR(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Failed to read encoder values: %s", e.what());
       return hardware_interface::return_type::ERROR;
     }
 
@@ -251,7 +251,7 @@ namespace dogdrive_arduino
     return hardware_interface::return_type::OK;
   }
 
-  hardware_interface::return_type dogdrive_arduino ::DogdriveArduinoHardware::write(
+  hardware_interface::return_type dogbot_drive_arduino ::DogBotDriveArduinoHardware::write(
       const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
     if (!comms_.connected())
@@ -270,15 +270,15 @@ namespace dogdrive_arduino
     }
     catch (const std::exception &e)
     {
-      RCLCPP_ERROR(rclcpp::get_logger("DogdriveArduinoHardware"), "Failed to read encoder values: %s", e.what());
+      RCLCPP_ERROR(rclcpp::get_logger("DogBotDriveArduinoHardware"), "Failed to read encoder values: %s", e.what());
       return hardware_interface::return_type::ERROR;
     }
 
     return hardware_interface::return_type::OK;
   }
 
-} // namespace dogdrive_arduino
+} // namespace dogbot_drive_arduino
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(
-    dogdrive_arduino::DogdriveArduinoHardware, hardware_interface::SystemInterface)
+    dogbot_drive_arduino::DogBotDriveArduinoHardware, hardware_interface::SystemInterface)
