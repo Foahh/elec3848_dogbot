@@ -31,15 +31,6 @@ if [ $flag -eq 1 ]; then
     service udev restart
 fi
 
-if [ "$(arch)" == "x86_64" ];
-then
-    export ROS_ARCH=amd64
-elif [ "$(arch)" == "aarch64" ]
-then
-    export ROS_ARCH=arm64
-fi
-
-docker build -t foahh/ros-humble-desktop:$ROS_ARCH --build-arg ROS_ARCH=$ROS_ARCH -f ./Docker/desktop.dockerfile .
-
+export ROS_ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 docker compose build || exit
 docker compose up -d

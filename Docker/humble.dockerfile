@@ -1,5 +1,4 @@
-ARG ROS_ARCH
-
+ARG ROS_ARCH=$TARGETARCH
 FROM foahh/ros-humble-desktop:${ROS_ARCH}
 SHELL ["/bin/bash", "-c"]
 

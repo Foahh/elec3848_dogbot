@@ -1,6 +1,4 @@
-ARG ROS_ARCH
-
-FROM ${ROS_ARCH}/ros:humble-ros-base
+FROM $TARGETARCH/ros:humble-ros-base
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && \

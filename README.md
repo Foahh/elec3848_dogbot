@@ -27,9 +27,11 @@ platformio
 
 ## Usage
 
-- Set up NVIDIA hardware support: `./setup_nvidia.sh`
+1. Set up NVIDIA hardware support: `./setup_nvidia.sh`
 
-- Automatically decide x86_64 or ARM64v8: `./compose.sh`
+2. Start docker container: `./compose.sh`
+
+3. `export ROS_ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)` before using Dev Container.
 
 ## Credits
 
