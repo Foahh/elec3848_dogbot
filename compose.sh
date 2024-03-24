@@ -36,7 +36,7 @@ then
     cd amd64/ || exit
 elif [ "$(arch)" == "aarch64" ]
 then
-    cd arm64/ || exit
+    cd arm64v8/ || exit
 fi
 
 docker compose build || exit

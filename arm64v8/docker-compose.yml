@@ -4,7 +4,7 @@ services:
     image: ros-dev:humble
     build:
       context: ../
-      dockerfile: ./arm64/Dockerfile
+      dockerfile: ./arm64v8/Dockerfile
     environment:
       - TERM=xterm-256color
       - QT_X11_NO_MITSHM=1
