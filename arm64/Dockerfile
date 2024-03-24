@@ -1,28 +1,16 @@
-FROM foahh/ros-desktop-arm64v8:humble
+FROM arm64v8/ros:${ROS_DISTRO}-ros-base
 
-RUN apt-get update && apt-get install -y \
-    libserial-dev \
-    ros-humble-ros2-control \
-    ros-humble-ros2-controllers \
-    ros-humble-control-toolbox \
-    ros-humble-realtime-tools \
-    ros-humble-control-msgs \
-    ros-humble-ros2-controllers-test-nodes \
-    ros-dev-tools && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y \
-    vim \
-    udev \
-    wget \
-    ros-dev-tools && \
-    rm -rf /var/lib/apt/lists/*
-
-ENV DEBIAN_FRONTEND noninteractive
 SHELL ["/bin/bash", "-c"]
+RUN echo "PS1='\e[92m\u\e[0m@\e[94m\h\e[0m:\e[35m\w\e[0m# '" >> /root/.bashrc
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
+
+COPY --chown=${USER_ID}:${GROUP_ID} --chmod=760 ./scripts/ /opt/src/scripts/
+RUN /opt/src/scripts/install_desktop.sh && rm /opt/src/scripts/install_desktop.sh
+RUN /opt/src/scripts/install_library.sh && rm /opt/src/scripts/install_library.sh
+RUN /opt/src/scripts/install_tool.sh && rm /opt/src/scripts/install_tool.sh
+RUN /opt/src/scripts/install_platformio.sh && rm /opt/src/scripts/install_platformio.sh
 
 ENV USERNAME ros
 RUN adduser --disabled-password --gecos '' $USERNAME && \
@@ -32,7 +20,6 @@ RUN adduser --disabled-password --gecos '' $USERNAME && \
     adduser $USERNAME sudo && \
     adduser $USERNAME dialout && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
 USER $USERNAME
 
 RUN sudo apt-get update && \
@@ -41,10 +28,9 @@ RUN sudo apt-get update && \
     sudo apt-get upgrade -y && \
     sudo rm -rf /var/lib/apt/lists/*
 
-COPY --chown=${USER_ID}:${GROUP_ID} --chmod=760 ./scripts/build.sh /opt/src/scripts/build.sh
-
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    /opt/src/scripts/build.sh
+    /opt/src/scripts/build.sh && \
+    sudo rm -rf /opt/src/scripts
 
 RUN mkdir -p /home/$USERNAME/colcon_ws
 WORKDIR /home/$USERNAME/colcon_ws

@@ -1,24 +1,58 @@
+networks:
+  ros:
+    driver: bridge
+
 services:
   dev:
     container_name: humble
+    image: ros-dev:humble
     build:
       context: ../
-      dockerfile: ./amd64/Dockerfile
-    image: ros-dev:humble
-    network_mode: "host"
-    stdin_open: true
-    tty: true
+      dockerfile: ./amd64/humble.Dockerfile
     environment:
-      - DISPLAY=${DISPLAY}
+      - TERM=xterm-256color
       - QT_X11_NO_MITSHM=1
-      - XAUTHORITY=/tmp/.docker.xauth
+      - DISPLAY=${DISPLAY}
       - LIDAR_TYPE=x2
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
-      - ../colcon_ws:/home/ros/colcon_ws
+      - ~/colcon_ws:/home/humble/colcon_ws
     devices:
-      # run /scripts/udev.sh in host first
-      - /dev/ydlidar:/dev/ydlidar
+      - /dev/ydlidar:/dev/ydlidar # run /scripts/udev.sh in host first
       - /dev/ydlidar:/dev/ttyUSB0
       # - /dev/arduino:/dev/arduino
+    networks:
+      - ros
+    ports:
+      - "11311:11311"
+    stdin_open: true
+    tty: true
+
+  gazebo:
+    container_name: gazebo
+    image: ros-dev:gazebo
+    build:
+      context: ../
+      dockerfile: ./amd64/gazebo.Dockerfile
+    depends_on:
+      - dev
+    environment:
+      - TERM=xterm-256color
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - QT_X11_NO_MITSHM=1
+      - DISPLAY=${DISPLAY}
+      - ROS_MASTER_URI=http://ros:11311
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+      - .gazebo:/home/gazebo/.gazebo
+    devices:
+      - dev/dri:/dev/dri
+    networks:
+      - ros
+    command: ["gazebo", "--verbose"]
+    stdin_open: true
+    tty: true
+    runtime: nvidia

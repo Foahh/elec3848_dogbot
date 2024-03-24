@@ -1,2 +1,3 @@
-colcon_ws/*
+colcon_ws
 .idea
+.gazebo
