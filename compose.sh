@@ -40,4 +40,4 @@ then
 fi
 
 docker compose build || exit
-docker compose up
+docker compose up -d

@@ -10,5 +10,6 @@ apt-get install -y \
     ros-humble-ros2-controllers-test-nodes \
     ros-humble-joint-state-publisher-gui \
     ros-humble-ros-ign-bridge \
+    ros-humble-gazebo-ros-pkgs \
     ros-dev-tools
 rm -rf /var/lib/apt/lists/*
