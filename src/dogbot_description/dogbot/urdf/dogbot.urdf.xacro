@@ -10,10 +10,11 @@
     <xacro:property name="wheel_mass" value="0.3" /> <!-- arbitrary value for wheel mass -->
     <xacro:property name="wheel_len" value="0.02" />
     <xacro:property name="wheel_radius" value="0.015" />
-    <xacro:property name="z_offset" value="-${base_height/2}" /> <!-- Space btw top of beam and the each joint -->
+    <xacro:property name="z_offset" value="-${base_height/2}" /> <!-- Space btw top of beam and the
+    each joint -->
 
     <!-- Base Link -->
-    <link name="${prefix}base_link">
+    <link name="base_link">
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
@@ -28,22 +29,12 @@
         </geometry>
         <material name="orange" />
       </visual>
-
-      <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-        <mass value="${base_mass}" />
-        <inertia
-          ixx="${base_mass / 12.0 * (base_length*base_length + base_height*base_height)}" ixy="0.0"
-          ixz="0.0"
-          iyy="${base_mass / 12.0 * (base_height*base_height + base_width*base_width)}" iyz="0.0"
-          izz="${base_mass / 12.0 * (base_width*base_width + base_length*base_length)}" />
-      </inertial>
     </link>
 
     <!-- left front wheel joint -->
-    <joint name="${prefix}lf_wheel_joint" type="continuous">
-      <parent link="${prefix}base_link" />
-      <child link="${prefix}lf_wheel" />
+    <joint name="lf_wheel_joint" type="continuous">
+      <parent link="base_link" />
+      <child link="lf_wheel" />
       <origin xyz="0.03 -${base_width/2} ${z_offset}" rpy="0 0 0" />
       <axis xyz="0 1 0" />
       <dynamics damping="0.2" />
@@ -51,7 +42,7 @@
     </joint>
 
     <!-- left front wheel Link -->
-    <link name="${prefix}lf_wheel">
+    <link name="lf_wheel">
       <collision>
         <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
         <geometry>
@@ -66,22 +57,12 @@
         </geometry>
         <material name="black" />
       </visual>
-
-      <inertial>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <mass value="${wheel_mass}" />
-        <inertia
-          ixx="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_len*wheel_len)}" ixy="0.0"
-          ixz="0.0"
-          iyy="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_len*wheel_len)}" iyz="0.0"
-          izz="${wheel_mass / 2.0 * wheel_radius*wheel_radius}" />
-      </inertial>
     </link>
 
     <!-- right front wheel joint -->
-    <joint name="${prefix}rf_wheel_joint" type="continuous">
-      <parent link="${prefix}base_link" />
-      <child link="${prefix}rf_wheel" />
+    <joint name="rf_wheel_joint" type="continuous">
+      <parent link="base_link" />
+      <child link="rf_wheel" />
       <origin xyz="0.03 ${base_width/2} ${z_offset}" rpy="0 0 0" />
       <axis xyz="0 1 0" />
       <dynamics damping="0.2" />
@@ -89,7 +70,7 @@
     </joint>
 
     <!-- right front wheel Link -->
-    <link name="${prefix}rf_wheel">
+    <link name="rf_wheel">
       <collision>
         <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
         <geometry>
@@ -104,22 +85,12 @@
         </geometry>
         <material name="black" />
       </visual>
-
-      <inertial>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <mass value="${wheel_mass}" />
-        <inertia
-          ixx="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_len*wheel_len)}" ixy="0.0"
-          ixz="0.0"
-          iyy="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_len*wheel_len)}" iyz="0.0"
-          izz="${wheel_mass / 2.0 * wheel_radius*wheel_radius}" />
-      </inertial>
     </link>
 
     <!-- left back wheel joint -->
-    <joint name="${prefix}lb_wheel_joint" type="continuous">
-      <parent link="${prefix}base_link" />
-      <child link="${prefix}lb_wheel" />
+    <joint name="lb_wheel_joint" type="continuous">
+      <parent link="base_link" />
+      <child link="lb_wheel" />
       <origin xyz="-0.03 -${base_width/2} ${z_offset}" rpy="0 0 0" />
       <axis xyz="0 1 0" />
       <dynamics damping="0.2" />
@@ -127,7 +98,7 @@
     </joint>
 
     <!-- left back wheel Link -->
-    <link name="${prefix}lb_wheel">
+    <link name="lb_wheel">
       <collision>
         <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
         <geometry>
@@ -142,22 +113,12 @@
         </geometry>
         <material name="black" />
       </visual>
-
-      <inertial>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <mass value="${wheel_mass}" />
-        <inertia
-          ixx="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_len*wheel_len)}" ixy="0.0"
-          ixz="0.0"
-          iyy="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_len*wheel_len)}" iyz="0.0"
-          izz="${wheel_mass / 2.0 * wheel_radius*wheel_radius}" />
-      </inertial>
     </link>
 
     <!-- right back wheel joint -->
-    <joint name="${prefix}rb_wheel_joint" type="continuous">
-      <parent link="${prefix}base_link" />
-      <child link="${prefix}rb_wheel" />
+    <joint name="rb_wheel_joint" type="continuous">
+      <parent link="base_link" />
+      <child link="rb_wheel" />
       <origin xyz="-0.03 ${base_width/2} ${z_offset}" rpy="0 0 0" />
       <axis xyz="0 1 0" />
       <dynamics damping="0.2" />
@@ -165,7 +126,7 @@
     </joint>
 
     <!-- right back wheel Link -->
-    <link name="${prefix}rb_wheel">
+    <link name="rb_wheel">
       <collision>
         <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
         <geometry>
@@ -180,16 +141,6 @@
         </geometry>
         <material name="black" />
       </visual>
-
-      <inertial>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <mass value="${wheel_mass}" />
-        <inertia
-          ixx="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_len*wheel_len)}" ixy="0.0"
-          ixz="0.0"
-          iyy="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_len*wheel_len)}" iyz="0.0"
-          izz="${wheel_mass / 2.0 * wheel_radius*wheel_radius}" />
-      </inertial>
     </link>
   </xacro:macro>
 </robot>

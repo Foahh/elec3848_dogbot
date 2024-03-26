@@ -66,22 +66,22 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        lf_wheel:
+        lf_wheel_joint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        rf_wheel:
+        rf_wheel_joint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        lb_wheel:
+        lb_wheel_joint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        rb_wheel:
+        rb_wheel_joint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
