@@ -1,22 +1,23 @@
 {
-    "configurations": [
-        {
-            "browse": {
-                "databaseFilename": "${default}",
-                "limitSymbolsToIncludedHeaders": false
-            },
-            "includePath": [
-                "/home/humble/colcon_ws/install/dogbot_drive/include/**",
-                "/opt/ros/humble/include/**",
-                "/usr/include/**",
-                "${workspaceFolder}/src/dogbot_drive/hardware/include"
-            ],
-            "name": "ROS",
-            "intelliSenseMode": "gcc-x64",
-            "compilerPath": "/usr/bin/gcc",
-            "cStandard": "gnu11",
-            "cppStandard": "c++14"
-        }
-    ],
-    "version": 4
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/ros/colcon_ws/install/dogbot_drive/include/**",
+        "/home/ros/colcon_ws/install/dogbot_drive_controller/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/ros/colcon_ws/src/dogbot_drive_controller/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
 }
