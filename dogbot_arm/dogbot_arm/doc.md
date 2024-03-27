@@ -3,4 +3,7 @@
 ## Functions needed
 
 1. Topics handler functions
-    - Topics guiding 
+    - Subscribing
+        1. ...
+    - Publishing
+        1. ...
