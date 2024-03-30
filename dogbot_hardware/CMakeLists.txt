@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(dogbot_drive LANGUAGES CXX)
+project(dogbot_hardware LANGUAGES CXX)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
   add_compile_options(-Wall -Wextra)
@@ -25,49 +25,49 @@ find_package(serial REQUIRED)
 
 ## COMPILE
 add_library(
-  dogbot_drive
+  dogbot_hardware
   SHARED
   hardware/dogbot_system.cpp
 )
-target_compile_features(dogbot_drive PUBLIC cxx_std_17)
-target_include_directories(dogbot_drive PUBLIC
+target_compile_features(dogbot_hardware PUBLIC cxx_std_17)
+target_include_directories(dogbot_hardware PUBLIC
 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
-$<INSTALL_INTERFACE:include/dogbot_drive>
+$<INSTALL_INTERFACE:include/dogbot_hardware>
 )
 ament_target_dependencies(
-  dogbot_drive PUBLIC
+  dogbot_hardware PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
   serial
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(${PROJECT_NAME} PRIVATE "DOGBOT_DRIVE_BUILDING_DLL")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "DOGBOT_HARDWARE_BUILDING_DLL")
 
 # Export hardware plugins
-pluginlib_export_plugin_description_file(hardware_interface dogbot_drive.xml)
+pluginlib_export_plugin_description_file(hardware_interface dogbot_hardware.xml)
 
 # INSTALL
 install(
   DIRECTORY hardware/include/
-  DESTINATION include/dogbot_drive
+  DESTINATION include/dogbot_hardware
 )
 install(
   DIRECTORY description/launch description/ros2_control description/urdf
-  DESTINATION share/dogbot_drive
+  DESTINATION share/dogbot_hardware
 )
 install(
   DIRECTORY bringup/launch bringup/config
-  DESTINATION share/dogbot_drive
+  DESTINATION share/dogbot_hardware
 )
-install(TARGETS dogbot_drive
-  EXPORT export_dogbot_drive
+install(TARGETS dogbot_hardware
+  EXPORT export_dogbot_hardware
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
 ## EXPORTS
-ament_export_targets(export_dogbot_drive HAS_LIBRARY_TARGET)
+ament_export_targets(export_dogbot_hardware HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

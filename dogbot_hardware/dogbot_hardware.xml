@@ -1,6 +1,6 @@
-<library path="dogbot_drive">
-  <class name="dogbot_drive/DogBotSystemHardware"
-         type="dogbot_drive::DogBotSystemHardware"
+<library path="dogbot_hardware">
+  <class name="dogbot_hardware/DogBotSystemHardware"
+         type="dogbot_hardware_::DogBotSystemHardware"
          base_class_type="hardware_interface::SystemInterface">
     <description>
       The ros2_control of DogBot using a system hardware interface-type. It uses velocity command and position state interface.

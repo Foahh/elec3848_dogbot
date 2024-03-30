@@ -60,7 +60,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("dogbot_drive"), "urdf", description_file]
+                [FindPackageShare("dogbot_hardware"), "urdf", description_file]
             )
         ]
     )

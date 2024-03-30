@@ -52,7 +52,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare("dogbot_drive"), "urdf", "dogbot.urdf.xacro"]
+                [FindPackageShare("dogbot_hardware"), "urdf", "dogbot.urdf.xacro"]
             ),
             " ",
             "use_mock_hardware:=",
@@ -63,7 +63,7 @@ def generate_launch_description():
 
     robot_controllers = PathJoinSubstitution(
         [
-            FindPackageShare("dogbot_drive"),
+            FindPackageShare("dogbot_hardware"),
             "config",
             "dogbot_controllers.yaml",
         ]

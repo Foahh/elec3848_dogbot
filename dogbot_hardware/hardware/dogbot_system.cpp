@@ -1,6 +1,4 @@
-// Copyright 2021 ros2_control Development Team
-//
-// Modified by Long Liangmao in 2024
+// Copyright 2024 Long Liangmao
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "dogbot_drive/dogbot_system.hpp"
+#include "dogbot_hardware/dogbot_system.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -23,11 +21,10 @@
 #include <memory>
 #include <vector>
 
-#include "hardware_interface/lexical_casts.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-namespace dogbot_drive
+namespace dogbot_hardware
 {
   hardware_interface::CallbackReturn DogBotSystemHardware::on_init(
       const hardware_interface::HardwareInfo &info)
@@ -226,7 +223,7 @@ namespace dogbot_drive
     return hardware_interface::return_type::OK;
   }
 
-  hardware_interface::return_type dogbot_drive ::DogBotSystemHardware::write(
+  hardware_interface::return_type dogbot_hardware ::DogBotSystemHardware::write(
       const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
     if (!comms_.connected())
@@ -251,8 +248,8 @@ namespace dogbot_drive
     return hardware_interface::return_type::OK;
   }
 
-} // namespace dogbot_drive
+} // namespace dogbot_hardware
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(
-    dogbot_drive::DogBotSystemHardware, hardware_interface::SystemInterface)
+    dogbot_hardware::DogBotSystemHardware, hardware_interface::SystemInterface)

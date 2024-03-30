@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>dogbot_drive</name>
+  <name>dogbot_hardware</name>
   <version>0.0.1</version>
-  <description>Package of `ros2_control` hardware support for Dogbot.</description>
+  <description>Package of `ros2_control` hardware interface for Dogbot.</description>
   <maintainer email="foah@connect.hku.hk">Long Liangmao</maintainer>
   <license>Apache-2.0</license>
 
