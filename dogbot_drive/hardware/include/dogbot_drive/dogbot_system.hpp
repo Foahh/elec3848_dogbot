@@ -34,7 +34,6 @@
 #include "rclcpp_lifecycle/state.hpp"
 
 #include "dogbot_drive/arduino_comms.hpp"
-#include "dogbot_drive/wheel.hpp"
 
 namespace dogbot_drive
 {
@@ -43,15 +42,17 @@ namespace dogbot_drive
 
     struct Config
     {
-      std::string lf_wheel_name = "";
-      std::string rf_wheel_name = "";
-      std::string lb_wheel_name = "";
-      std::string rb_wheel_name = "";
-      float loop_rate = 0.0;
       std::string device = "";
       int baud_rate = 0;
-      int timeout_ms = 0;
-      int enc_counts_per_rev = 0;
+      int timeout_ms = 1000;
+    };
+
+    struct Wheel
+    {
+      std::string name = "";
+      double cmd = 0;
+      double pos = 0;
+      double vel = 0;
     };
 
   public:
@@ -66,6 +67,14 @@ namespace dogbot_drive
 
     DOGBOT_DRIVE_PUBLIC
     std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
+
+    DOGBOT_DRIVE_PUBLIC
+    hardware_interface::CallbackReturn on_configure(
+        const rclcpp_lifecycle::State &previous_state) override;
+
+    DOGBOT_DRIVE_PUBLIC
+    hardware_interface::CallbackReturn on_cleanup(
+        const rclcpp_lifecycle::State &previous_state) override;
 
     DOGBOT_DRIVE_PUBLIC
     hardware_interface::CallbackReturn on_activate(

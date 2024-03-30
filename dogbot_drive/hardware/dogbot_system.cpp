@@ -41,21 +41,14 @@ namespace dogbot_drive
 
     RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Initializing... please wait...");
 
-    cfg_.lf_wheel_name = info_.hardware_parameters["lf_wheel_name"];
-    cfg_.rf_wheel_name = info_.hardware_parameters["rf_wheel_name"];
-    cfg_.lb_wheel_name = info_.hardware_parameters["lb_wheel_name"];
-    cfg_.rb_wheel_name = info_.hardware_parameters["rb_wheel_name"];
-
-    cfg_.loop_rate = std::stof(info_.hardware_parameters["loop_rate"]);
     cfg_.device = info_.hardware_parameters["device"];
     cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
     cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
-    cfg_.enc_counts_per_rev = std::stoi(info_.hardware_parameters["enc_counts_per_rev"]);
 
-    wheel_lf_.setup(cfg_.lf_wheel_name, cfg_.enc_counts_per_rev);
-    wheel_rf_.setup(cfg_.rf_wheel_name, cfg_.enc_counts_per_rev);
-    wheel_lb_.setup(cfg_.lb_wheel_name, cfg_.enc_counts_per_rev);
-    wheel_rb_.setup(cfg_.rb_wheel_name, cfg_.enc_counts_per_rev);
+    wheel_lf_.name = info_.hardware_parameters["lf_wheel_name"];
+    wheel_rf_.name = info_.hardware_parameters["rf_wheel_name"];
+    wheel_lb_.name = info_.hardware_parameters["lb_wheel_name"];
+    wheel_rb_.name = info_.hardware_parameters["rb_wheel_name"];
 
     for (const hardware_interface::ComponentInfo &joint : info_.joints)
     {
@@ -158,98 +151,103 @@ namespace dogbot_drive
     return command_interfaces;
   }
 
+  hardware_interface::CallbackReturn DogBotSystemHardware::on_configure(
+      const rclcpp_lifecycle::State & /*previous_state*/)
+  {
+    RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Configuring... please wait...");
+    if (comms_.connected())
+    {
+      RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Reconnecting...");
+      comms_.disconnect();
+    }
+    if (comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms))
+    {
+      RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Successfully configured!");
+      return hardware_interface::CallbackReturn::SUCCESS;
+    }
+    RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to Configure!");
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+
+  hardware_interface::CallbackReturn DogBotSystemHardware::on_cleanup(
+      const rclcpp_lifecycle::State & /*previous_state*/)
+  {
+    RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Cleaning... please wait...");
+    if (comms_.connected() && comms_.disconnect())
+    {
+      RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Successfully cleaned up!");
+      return hardware_interface::CallbackReturn::SUCCESS;
+    }
+    RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to clean up!");
+    return hardware_interface::CallbackReturn::ERROR;
+  }
 
   hardware_interface::CallbackReturn DogBotSystemHardware::on_activate(
       const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Activating... please wait...");
-    // if (comms_.connected() && comms_.disconnect())
-    // {
-    //   comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms);
-    //   RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Successfully configured!");
+    RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Activating ...please wait...");
+    if (!comms_.connected())
+    {
+      RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to activate!");
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+    RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Successfully activated!");
+
     return hardware_interface::CallbackReturn::SUCCESS;
-    // }
-    // RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to configure!");
-    // return hardware_interface::CallbackReturn::ERROR;
   }
 
   hardware_interface::CallbackReturn DogBotSystemHardware::on_deactivate(
       const rclcpp_lifecycle::State & /*previous_state*/)
   {
-    RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Deactivating... please wait...");
-    // if (comms_.connected() && comms_.disconnect())
-    // {
-    //   RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Successfully cleaned up!");
+    RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Deactivating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Successfully deactivated!");
+
     return hardware_interface::CallbackReturn::SUCCESS;
-    // }
-    // RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to clean up!");
-    // return hardware_interface::CallbackReturn::ERROR;
   }
 
   hardware_interface::return_type DogBotSystemHardware::read(
-      const rclcpp::Time & /*time*/, const rclcpp::Duration &period)
+      const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
-    // if (!comms_.connected())
-    // {
-    //   RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Failed to read!");
-    //   return hardware_interface::return_type::ERROR;
-    // }
-
-    // try
-    // {
-    //   comms_.read_encoder_values(wheel_lf_.enc, wheel_rf_.enc, wheel_lb_.enc, wheel_rb_.enc);
-    // }
-    // catch (const std::exception &e)
-    // {
-    //   RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to read encoder values: %s", e.what());
-    //   return hardware_interface::return_type::ERROR;
-    // }
-
-    // wheel_lf_.vel = 0 * period.seconds();
-
-    // double delta_seconds = period.seconds();
-
-    // double pos_prev = wheel_lf_.pos;
-    // wheel_lf_.pos = wheel_lf_.calc_enc_angle();
-    // wheel_lf_.vel = (wheel_lf_.pos - pos_prev) / delta_seconds;
-
-    // pos_prev = wheel_rf_.pos;
-    // wheel_rf_.pos = wheel_rf_.calc_enc_angle();
-    // wheel_rf_.vel = (wheel_rf_.pos - pos_prev) / delta_seconds;
-
-    // pos_prev = wheel_lb_.pos;
-    // wheel_lb_.pos = wheel_lb_.calc_enc_angle();
-    // wheel_lb_.vel = (wheel_lb_.pos - pos_prev) / delta_seconds;
-
-    // pos_prev = wheel_rb_.pos;
-    // wheel_rb_.pos = wheel_rb_.calc_enc_angle();
-    // wheel_rb_.vel = (wheel_rb_.pos - pos_prev) / delta_seconds;
-
+    if (!comms_.connected())
+    {
+      RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Failed to read!");
+      return hardware_interface::return_type::ERROR;
+    }
+    try
+    {
+      comms_.read_feedback("<V>", wheel_lf_.vel, wheel_rf_.vel, wheel_lb_.vel, wheel_rb_.vel);
+      comms_.read_feedback("<P>", wheel_lf_.pos, wheel_rf_.pos, wheel_lb_.pos, wheel_rb_.pos);
+    }
+    catch (const std::exception &e)
+    {
+      RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to read feedback data: %s", e.what());
+      return hardware_interface::return_type::ERROR;
+    }
     return hardware_interface::return_type::OK;
   }
 
   hardware_interface::return_type dogbot_drive ::DogBotSystemHardware::write(
       const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
   {
-    // if (!comms_.connected())
-    // {
-    //   return hardware_interface::return_type::ERROR;
-    // }
+    if (!comms_.connected())
+    {
+      return hardware_interface::return_type::ERROR;
+    }
 
-    // int motor_lf_counts_per_loop = wheel_lf_.cmd / wheel_lf_.rads_per_count / cfg_.loop_rate;
-    // int motor_rf_counts_per_loop = wheel_rf_.cmd / wheel_rf_.rads_per_count / cfg_.loop_rate;
-    // int motor_lb_counts_per_loop = wheel_lb_.cmd / wheel_lb_.rads_per_count / cfg_.loop_rate;
-    // int motor_rb_counts_per_loop = wheel_rb_.cmd / wheel_rb_.rads_per_count / cfg_.loop_rate;
+    double motor_lf_velocity = wheel_lf_.cmd;
+    double motor_rf_velocity = wheel_rf_.cmd;
+    double motor_lb_velocity = wheel_lb_.cmd;
+    double motor_rb_velocity = wheel_rb_.cmd;
 
-    // try
-    // {
-    //   comms_.set_motor_values(motor_lf_counts_per_loop, motor_rf_counts_per_loop, motor_lb_counts_per_loop, motor_rb_counts_per_loop);
-    // }
-    // catch (const std::exception &e)
-    // {
-    //   RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to read encoder values: %s", e.what());
-    //   return hardware_interface::return_type::ERROR;
-    // }
+    try
+    {
+      comms_.set_angular_velocity(motor_lf_velocity, motor_rf_velocity, motor_lb_velocity, motor_rb_velocity);
+    }
+    catch (const std::exception &e)
+    {
+      RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to set velocity values: %s", e.what());
+      return hardware_interface::return_type::ERROR;
+    }
     return hardware_interface::return_type::OK;
   }
 

@@ -151,7 +151,10 @@ namespace dogbot_drive_controller
 
     if (params_.position_feedback)
     {
-      odometry_.update(lf_feedback, rf_feedback, lb_feedback, rb_feedback, time);
+      odometry_.update(lf_feedback * lf_wheel_radius,
+                       rf_feedback * rf_wheel_radius,
+                       lb_feedback * lb_wheel_radius,
+                       rb_feedback * rb_wheel_radius, time);
     }
     else
     {
@@ -222,7 +225,7 @@ namespace dogbot_drive_controller
     previous_commands_.pop();
     previous_commands_.emplace(command);
 
-    //    Publish limited velocity
+    // Publish limited velocity
     if (publish_limited_velocity_ && realtime_limited_velocity_publisher_->trylock())
     {
       auto &limited_velocity_command = realtime_limited_velocity_publisher_->msg_;
@@ -231,19 +234,17 @@ namespace dogbot_drive_controller
       realtime_limited_velocity_publisher_->unlockAndPublish();
     }
 
-    // Compute wheels velocities:
-    const double velocity_lf = (linear_command_x - linear_command_y + angular_command * wheel_separation_k) / lf_wheel_radius;
-    const double velocity_rf = (linear_command_x + linear_command_y - angular_command * wheel_separation_k) / rf_wheel_radius;
-    const double velocity_lb = (linear_command_x + linear_command_y + angular_command * wheel_separation_k) / lb_wheel_radius;
-    const double velocity_rb = (linear_command_x - linear_command_y - angular_command * wheel_separation_k) / rb_wheel_radius;
+    // Compute wheels angular velocities (in rad/s):
+    const double angular_velocity_lf = (linear_command_x - linear_command_y + angular_command * wheel_separation_k) / lf_wheel_radius;
+    const double angular_velocity_rf = (linear_command_x + linear_command_y - angular_command * wheel_separation_k) / rf_wheel_radius;
+    const double angular_velocity_lb = (linear_command_x + linear_command_y + angular_command * wheel_separation_k) / lb_wheel_radius;
+    const double angular_velocity_rb = (linear_command_x - linear_command_y - angular_command * wheel_separation_k) / rb_wheel_radius;
 
-    RCLCPP_INFO(logger, "Wheel velocities: lf=%.3f, rf=%.3f, lb=%.3f, rb=%.3f", velocity_lf, velocity_rf, velocity_lb, velocity_rb);
-
-    // Set wheels velocities:
-    registered_handles_.at(params_.lf_wheel_name).velocity.get().set_value(velocity_lf);
-    registered_handles_.at(params_.rf_wheel_name).velocity.get().set_value(velocity_rf);
-    registered_handles_.at(params_.lb_wheel_name).velocity.get().set_value(velocity_lb);
-    registered_handles_.at(params_.rb_wheel_name).velocity.get().set_value(velocity_rb);
+    // Set wheels angular velocities:
+    registered_handles_.at(params_.lf_wheel_name).velocity.get().set_value(angular_velocity_lf);
+    registered_handles_.at(params_.rf_wheel_name).velocity.get().set_value(angular_velocity_rf);
+    registered_handles_.at(params_.lb_wheel_name).velocity.get().set_value(angular_velocity_lb);
+    registered_handles_.at(params_.rb_wheel_name).velocity.get().set_value(angular_velocity_rb);
 
     return controller_interface::return_type::OK;
   }
@@ -347,8 +348,6 @@ namespace dogbot_drive_controller
                       get_node()->get_logger(), "Can't accept new commands. subscriber is inactive");
                   return;
                 }
-
-                // Write fake header in the stored stamped command
                 std::shared_ptr<Twist> twist_stamped;
                 received_velocity_msg_ptr_.get(twist_stamped);
                 twist_stamped->twist = *msg;

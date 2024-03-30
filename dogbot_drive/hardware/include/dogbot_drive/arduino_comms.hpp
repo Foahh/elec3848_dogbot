@@ -1,6 +1,4 @@
-// Copyright 2022 joshnewans
-//
-// Modified by Long Liangmao in 2024
+// Copyright 2024 Long Liangmao
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,38 +19,8 @@
 #include <sstream>
 // #include <cstdlib>
 #include <iostream>
-#include <libserial/SerialPort.h>
-
-LibSerial::BaudRate convert_baud_rate(int baud_rate)
-{
-  // Just handle some common baud rates
-  switch (baud_rate)
-  {
-  case 1200:
-    return LibSerial::BaudRate::BAUD_1200;
-  case 1800:
-    return LibSerial::BaudRate::BAUD_1800;
-  case 2400:
-    return LibSerial::BaudRate::BAUD_2400;
-  case 4800:
-    return LibSerial::BaudRate::BAUD_4800;
-  case 9600:
-    return LibSerial::BaudRate::BAUD_9600;
-  case 19200:
-    return LibSerial::BaudRate::BAUD_19200;
-  case 38400:
-    return LibSerial::BaudRate::BAUD_38400;
-  case 57600:
-    return LibSerial::BaudRate::BAUD_57600;
-  case 115200:
-    return LibSerial::BaudRate::BAUD_115200;
-  case 230400:
-    return LibSerial::BaudRate::BAUD_230400;
-  default:
-    std::cout << "Error! Baud rate " << baud_rate << " not supported! Default to 57600" << std::endl;
-    return LibSerial::BaudRate::BAUD_57600;
-  }
-}
+#include <serial/serial.h>
+#include <unistd.h>
 
 class ArduinoComms
 {
@@ -62,26 +30,18 @@ public:
 
   bool connect(const std::string &serial_device, int32_t baud_rate, int32_t timeout_ms)
   {
-    timeout_ms_ = timeout_ms;
     try
     {
-      serial_conn_.Open(serial_device);
-      serial_conn_.SetBaudRate(convert_baud_rate(baud_rate));
+      serial_.setPort(serial_device);
+      serial_.setBaudrate(baud_rate);
+      serial_.setTimeout(serial::Timeout::max(), timeout_ms, 0, serial::Timeout::max(), 0);
+      serial_.open();
+      send("<S>");
       return true;
     }
-    catch (const LibSerial::AlreadyOpen &)
+    catch (std::exception &e)
     {
-      std::cerr << "The serial port is already open." << std::endl;
-      return false;
-    }
-    catch (const LibSerial::OpenFailed &)
-    {
-      std::cerr << "The serial port failed to open." << std::endl;
-      return false;
-    }
-    catch (const std::invalid_argument &)
-    {
-      std::cerr << "The serial port is invalid." << std::endl;
+      std::cerr << "Serial Open Exception: " << e.what() << std::endl;
       return false;
     }
   }
@@ -90,55 +50,47 @@ public:
   {
     try
     {
-      serial_conn_.Close();
+      serial_.close();
       return true;
     }
-    catch (const LibSerial::NotOpen &)
+    catch (std::exception &e)
     {
-      std::cerr << "The serial port is not open." << std::endl;
+      std::cerr << "Serial Close Exception: " << e.what() << std::endl;
       return false;
     }
   }
 
   bool connected() const
   {
-    return serial_conn_.IsOpen();
+    return serial_.isOpen();
   }
 
   std::string send(const std::string &msg_to_send, bool print_output = false)
   {
-    serial_conn_.FlushIOBuffers();
-    serial_conn_.Write(msg_to_send);
-
-    std::string response = "";
+    serial_.flush();
+    std::string response;
+    serial_.write(msg_to_send);
     try
     {
-      // Responses end with \r\n so we will read up to (and including) the \n.
-      serial_conn_.ReadLine(response, '\n', timeout_ms_);
+      response = serial_.readline();
     }
-    catch (const LibSerial::ReadTimeout &)
+    catch (std::exception &e)
     {
-      std::cerr << "The ReadByte() call has timed out." << std::endl;
+      std::cerr << "Serial Send Exception: " << e.what() << ". Tried: " << msg_to_send << std::endl;
     }
 
     if (print_output)
     {
       std::cout << "Sent: " << msg_to_send << " Recv: " << response << std::endl;
     }
-
     return response;
   }
 
-  void send_empty_msg()
+  void read_feedback(std::string command, double &val_1, double &val_2, double &val_3, double &val_4)
   {
-    std::string response = send("\r");
-  }
+    std::string response = send(command);
 
-  void read_encoder_values(long &val_1, long &val_2, long &val_3, long &val_4)
-  {
-    std::string response = send("e\r");
-
-    std::string delimiter = " ";
+    std::string delimiter = ",";
     size_t start = 0;
     size_t end = response.find(delimiter);
 
@@ -153,24 +105,24 @@ public:
     std::string token_3 = response.substr(start, end - start);
 
     start = end + delimiter.length();
-    std::string token_4 = response.substr(start);
+    end = response.find(delimiter, start);
+    std::string token_4 = response.substr(start, end - start);
 
-    val_1 = std::atol(token_1.c_str());
-    val_2 = std::atol(token_2.c_str());
-    val_3 = std::atol(token_3.c_str());
-    val_4 = std::atol(token_4.c_str());
+    val_1 = std::atof(token_1.c_str());
+    val_2 = std::atof(token_2.c_str());
+    val_3 = std::atof(token_3.c_str());
+    val_4 = std::atof(token_4.c_str());
   }
 
-  void set_motor_values(int val_1, int val_2, int val_3, int val_4)
+  void set_angular_velocity(double vel_lf, double vel_rf, double vel_lb, double vel_rb)
   {
     std::stringstream ss;
-    ss << "m " << val_1 << " " << val_2 << " " << val_3 << " " << val_4 << "\r";
+    ss << std::fixed << std::setprecision(6) << "<M," << vel_lf << "," << vel_rf << "," << vel_lb << "," << vel_rb << ">";
     send(ss.str());
   }
-  
+
 private:
-  LibSerial::SerialPort serial_conn_;
-  int timeout_ms_;
+  serial::Serial serial_;
 };
 
 #endif // DOGBOT_DRIVE_COMMS_HPP

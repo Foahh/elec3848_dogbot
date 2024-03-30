@@ -55,6 +55,7 @@ namespace dogbot_drive_controller
     timestamp_ = time;
   }
 
+  // unit: meter
   bool Odometry::update(double lf_pos, double rf_pos, double lb_pos, double rb_pos, const rclcpp::Time &time)
   {
     // We cannot estimate the speed with very small time intervals:
@@ -65,16 +66,16 @@ namespace dogbot_drive_controller
     }
 
     // Get current wheel joint positions:
-    const double lf_wheel_cur_pos = lf_pos * lf_wheel_radius_;
-    const double rf_wheel_cur_pos = rf_pos * rf_wheel_radius_;
-    const double lb_wheel_cur_pos = lb_pos * lb_wheel_radius_;
-    const double rb_wheel_cur_pos = rb_pos * rb_wheel_radius_;
+    const double lf_wheel_cur_pos = lf_pos;
+    const double rf_wheel_cur_pos = rf_pos;
+    const double lb_wheel_cur_pos = lb_pos;
+    const double rb_wheel_cur_pos = rb_pos;
 
     // Estimate velocity of wheels using old and current position:
-    const double lf_wheel_est_vel = lf_wheel_cur_pos - lf_wheel_old_pos_;
-    const double rf_wheel_est_vel = rf_wheel_cur_pos - rf_wheel_old_pos_;
-    const double lb_wheel_est_vel = lb_wheel_cur_pos - lb_wheel_old_pos_;
-    const double rb_wheel_est_vel = rb_wheel_cur_pos - rb_wheel_old_pos_;
+    const double lf_wheel_est_vel = (lf_wheel_cur_pos - lf_wheel_old_pos_) / dt;
+    const double rf_wheel_est_vel = (rf_wheel_cur_pos - rf_wheel_old_pos_) / dt;
+    const double lb_wheel_est_vel = (lb_wheel_cur_pos - lb_wheel_old_pos_) / dt;
+    const double rb_wheel_est_vel = (rb_wheel_cur_pos - rb_wheel_old_pos_) / dt;
 
     // Update old position with current:
     lf_wheel_old_pos_ = lf_wheel_cur_pos;
@@ -87,14 +88,15 @@ namespace dogbot_drive_controller
     return true;
   }
 
-  bool Odometry::updateFromVelocity(double lf_vel, double rf_vel, double lb_vel, double rb_vel, const rclcpp::Time &time)
+  // unit: m
+  bool Odometry::updateFromVelocity(double lf, double rf, double lb, double rb, const rclcpp::Time &time)
   {
     const double dt = time.seconds() - timestamp_.seconds();
 
     // Estimate linear and angular speed:
-    const double linear_x = (lf_vel + rf_vel + lb_vel + rb_vel) / 4.0;
-    const double linear_y = (-lf_vel + rf_vel + lb_vel - rb_vel) / 4.0;
-    const double angular = (lf_vel - rf_vel + lb_vel - rb_vel) / (4.0 * wheel_separation_k_);
+    const double linear_x = (lf + rf + lb + rb) / 4.0;
+    const double linear_y = (-lf + rf + lb - rb) / 4.0;
+    const double angular = (lf - rf + lb - rb) / (4.0 * wheel_separation_k_);
 
     // Integrate odometry:
     integrate(linear_x, linear_y, angular);

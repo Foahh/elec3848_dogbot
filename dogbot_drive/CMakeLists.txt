@@ -19,6 +19,9 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+#find dependency - serial
+set(CMAKE_INSTALL_RPATH /usr/local/lib)
+find_package(serial REQUIRED)
 
 ## COMPILE
 add_library(
@@ -34,9 +37,8 @@ $<INSTALL_INTERFACE:include/dogbot_drive>
 ament_target_dependencies(
   dogbot_drive PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
+  serial
 )
-
-target_link_libraries(dogbot_drive PUBLIC serial)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
@@ -64,10 +66,6 @@ install(TARGETS dogbot_drive
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
-
-if(BUILD_TESTING)
-  find_package(ament_cmake_gtest REQUIRED)
-endif()
 
 ## EXPORTS
 ament_export_targets(export_dogbot_drive HAS_LIBRARY_TARGET)

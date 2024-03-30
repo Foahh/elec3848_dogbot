@@ -23,7 +23,6 @@ dogbot_drive_controller:
       default_value: "rb_wheel_joint",
       description: "Name of the right-back wheel's joint",
     }
-
   wheel_separation_x:
     {
       type: double,
@@ -36,7 +35,6 @@ dogbot_drive_controller:
       default_value: 0.0,
       description: "Shortest distance between the front and back wheels. If this parameter is wrong, the robot will not behave correctly in curves.",
     }
-
   wheel_radius:
     {
       type: double,
@@ -96,19 +94,19 @@ dogbot_drive_controller:
     {
       type: double_array,
       default_value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-      description: "Odometry covariance for the encoder output of the robot for the pose. These values should be tuned to your robot's sample odometry data, but these values are a good place to start: ``[0.001, 0.001, 0.001, 0.001, 0.001, 0.01]``.",
+      description: "Odometry covariance for the feedback of the robot for the pose. These values should be tuned to your robot's sample odometry data, but these values are a good place to start: ``[0.001, 0.001, 0.001, 0.001, 0.001, 0.01]``.",
     }
   twist_covariance_diagonal:
     {
       type: double_array,
       default_value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-      description: "Odometry covariance for the encoder output of the robot for the speed. These values should be tuned to your robot's sample odometry data, but these values are a good place to start: ``[0.001, 0.001, 0.001, 0.001, 0.001, 0.01]``.",
+      description: "Odometry covariance for the feedback of the robot for the speed. These values should be tuned to your robot's sample odometry data, but these values are a good place to start: ``[0.001, 0.001, 0.001, 0.001, 0.001, 0.01]``.",
     }
   position_feedback:
     {
       type: bool,
-      default_value: true,
-      description: "Is there position feedback from hardware.",
+      default_value: false,
+      description: "Is there position feedback in radian from hardware.",
     }
   enable_odom_tf:
     {
