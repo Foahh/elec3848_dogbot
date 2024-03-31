@@ -31,7 +31,7 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include "dogbot_hardware/arduino_comms.hpp"
+#include "dogbot_hardware/serial_comms.hpp"
 
 namespace dogbot_hardware
 {

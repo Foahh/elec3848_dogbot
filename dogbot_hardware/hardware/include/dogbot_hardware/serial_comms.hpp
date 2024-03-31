@@ -24,12 +24,13 @@ namespace dogbot_hardware
         serial_.setBaudrate(baud_rate);
         serial_.setTimeout(serial::Timeout::max(), timeout_ms, 0, serial::Timeout::max(), 0);
         serial_.open();
+        serial_.flush();
         send("<S>");
         return true;
       }
       catch (std::exception &e)
       {
-        std::cerr << "Serial Open Exception: " << e.what() << std::endl;
+        std::cerr << "Serial Opening Exception: " << e.what() << std::endl;
         return false;
       }
     }
@@ -43,7 +44,7 @@ namespace dogbot_hardware
       }
       catch (std::exception &e)
       {
-        std::cerr << "Serial Close Exception: " << e.what() << std::endl;
+        std::cerr << "Serial Closing Exception: " << e.what() << std::endl;
         return false;
       }
     }
@@ -53,20 +54,19 @@ namespace dogbot_hardware
       return serial_.isOpen();
     }
 
-    std::string send(const std::string &msg_to_send, bool print_output = false)
+    std::string send(const std::string &msg_to_send, bool print_output = true)
     {
       serial_.flush();
       std::string response;
       serial_.write(msg_to_send);
       try
       {
-        response = serial_.readline();
+        response = serial_.readline(256UL, "\n");
       }
       catch (std::exception &e)
       {
-        std::cerr << "Serial Send Exception: " << e.what() << ". Tried: " << msg_to_send << std::endl;
+        std::cerr << "Serial Sending Exception: " << e.what() << "; Tried: " << msg_to_send << std::endl;
       }
-
       if (print_output)
       {
         std::cout << "Sent: " << msg_to_send << " Recv: " << response << std::endl;
