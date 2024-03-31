@@ -21,8 +21,8 @@
  * Author: Paul Mathieu
  */
 
-#ifndef DOGBOT_DRIVE_CONTROLLER__ODOMETRY_HPP_
-#define DOGBOT_DRIVE_CONTROLLER__ODOMETRY_HPP_
+#ifndef DOGBOT_DRIVE_CONTROLLER_ODOMETRY_HPP_
+#define DOGBOT_DRIVE_CONTROLLER_ODOMETRY_HPP_
 
 #include <cmath>
 
@@ -31,78 +31,88 @@
 #if RCPPUTILS_VERSION_MAJOR >= 2 && RCPPUTILS_VERSION_MINOR >= 6
 #include "rcpputils/rolling_mean_accumulator.hpp"
 #else
+
 #include "rcppmath/rolling_mean_accumulator.hpp"
+
 #endif
 
-namespace dogbot_drive_controller
-{
-class Odometry
-{
-public:
-  explicit Odometry(size_t velocity_rolling_window_size = 10);
+namespace dogbot_drive_controller {
+    class Odometry {
+    public:
+        explicit Odometry(size_t velocity_rolling_window_size = 10);
 
-  void init(const rclcpp::Time & time);
-  bool update(double lf_pos, double rf_pos, double lb_pos, double rb_pos, const rclcpp::Time & time);
-  bool updateFromVelocity(double lf_vel, double rf_vel, double lb_vel, double rb_vel, const rclcpp::Time & time);
-  void resetOdometry();
+        void init(const rclcpp::Time &time);
 
-  double getX() const { return x_; }
-  double getY() const { return y_; }
-  double getHeading() const { return heading_; }
-  
-  double getLinearX() const { return linear_x_; }
-  double getLinearY() const { return linear_y_; }
-  double getAngular() const { return angular_; }
+        bool update(double lf_pos, double rf_pos, double lb_pos, double rb_pos, const rclcpp::Time &time);
 
-  void setWheelParams(double wheel_separation_length, double wheel_separation_width, double lf_wheel_radius, double rf_wheel_radius, double lb_wheel_radius, double rb_wheel_radius);
-  void setVelocityRollingWindowSize(size_t velocity_rolling_window_size);
+        bool updateFromVelocity(double lf_vel, double rf_vel, double lb_vel, double rb_vel, const rclcpp::Time &time);
 
-private:
+        void resetOdometry();
+
+        double getX() const { return x_; }
+
+        double getY() const { return y_; }
+
+        double getHeading() const { return heading_; }
+
+        double getLinearX() const { return linear_x_; }
+
+        double getLinearY() const { return linear_y_; }
+
+        double getAngular() const { return angular_; }
+
+        void setWheelParams(double wheel_separation_length, double wheel_separation_width, double lf_wheel_radius,
+                            double rf_wheel_radius, double lb_wheel_radius, double rb_wheel_radius);
+
+        void setVelocityRollingWindowSize(size_t velocity_rolling_window_size);
+
+    private:
 // \note The versions conditioning is added here to support the source-compatibility with Humble
 #if RCPPUTILS_VERSION_MAJOR >= 2 && RCPPUTILS_VERSION_MINOR >= 6
-  using RollingMeanAccumulator = rcpputils::RollingMeanAccumulator<double>;
+        using RollingMeanAccumulator = rcpputils::RollingMeanAccumulator<double>;
 #else
-  using RollingMeanAccumulator = rcppmath::RollingMeanAccumulator<double>;
+        using RollingMeanAccumulator = rcppmath::RollingMeanAccumulator<double>;
 #endif
 
-  void integrate(double linear_x, double linear_y, double angular);
-  void resetAccumulators();
+        void integrate(double linear_x, double linear_y, double angular);
 
-  // Current timestamp:
-  rclcpp::Time timestamp_;
+        void resetAccumulators();
 
-  // Current pose:
-  double x_;        //   [m]
-  double y_;        //   [m]
-  double heading_;  // [rad]
+        // Current timestamp:
+        rclcpp::Time timestamp_;
 
-  // Current velocity:
-  double linear_x_;   //   [m/s]
-  double linear_y_;   //   [m/s]
-  double angular_;  // [rad/s]
+        // Current pose:
+        double x_;        //   [m]
+        double y_;        //   [m]
+        double heading_;  // [rad]
 
-  // Wheel kinematic parameters [m]:
-  double wheel_separation_x_;
-  double wheel_separation_y_;
-  double wheel_separation_k_;
-  double lf_wheel_radius_;
-  double rf_wheel_radius_;
-  double lb_wheel_radius_;
-  double rb_wheel_radius_;
+        // Current velocity:
+        double linear_x_;   //   [m/s]
+        double linear_y_;   //   [m/s]
+        double angular_;  // [rad/s]
 
-  // Previous wheel position/state [rad]:
-  double lf_wheel_old_pos_;
-  double rf_wheel_old_pos_;
-  double lb_wheel_old_pos_;
-  double rb_wheel_old_pos_;
+        // Wheel kinematic parameters [m]:
+        double wheel_separation_x_;
+        double wheel_separation_y_;
+        double wheel_separation_k_;
+        double lf_wheel_radius_;
+        double rf_wheel_radius_;
+        double lb_wheel_radius_;
+        double rb_wheel_radius_;
 
-  // Rolling mean accumulators for the linear and angular velocities:
-  size_t velocity_rolling_window_size_;
-  RollingMeanAccumulator linear_accumulator_x_;
-  RollingMeanAccumulator linear_accumulator_y_;
-  RollingMeanAccumulator angular_accumulator_;
-};
+        // Previous wheel position/state [rad]:
+        double lf_wheel_old_pos_;
+        double rf_wheel_old_pos_;
+        double lb_wheel_old_pos_;
+        double rb_wheel_old_pos_;
+
+        // Rolling mean accumulators for the linear and angular velocities:
+        size_t velocity_rolling_window_size_;
+        RollingMeanAccumulator linear_accumulator_x_;
+        RollingMeanAccumulator linear_accumulator_y_;
+        RollingMeanAccumulator angular_accumulator_;
+    };
 
 }  // namespace dogbot_drive_controller
 
-#endif  // DOGBOT_DRIVE_CONTROLLER__ODOMETRY_HPP_
+#endif  // DOGBOT_DRIVE_CONTROLLER_ODOMETRY_HPP_

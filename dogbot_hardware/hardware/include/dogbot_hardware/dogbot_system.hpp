@@ -33,71 +33,67 @@
 
 #include "dogbot_hardware/serial_comms.hpp"
 
-namespace dogbot_hardware
-{
-  class DogBotSystemHardware : public hardware_interface::SystemInterface
-  {
+namespace dogbot_hardware {
+    class DogBotSystemHardware : public hardware_interface::SystemInterface {
 
-    struct Config
-    {
-      std::string device = "";
-      int baud_rate = 0;
-      int timeout_ms = 1000;
+        struct Config {
+            std::string device;
+            int baud_rate = 0;
+            int timeout_ms = 1000;
+        };
+
+        struct Wheel {
+            std::string name;
+            double cmd = 0;
+            double pos = 0;
+            double vel = 0;
+        };
+
+    public:
+        RCLCPP_SHARED_PTR_DEFINITIONS(DogBotSystemHardware);
+
+        DOGBOT_HARDWARE_PUBLIC
+        hardware_interface::CallbackReturn on_init(
+                const hardware_interface::HardwareInfo &info) override;
+
+        DOGBOT_HARDWARE_PUBLIC
+        std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
+
+        DOGBOT_HARDWARE_PUBLIC
+        std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
+
+        DOGBOT_HARDWARE_PUBLIC
+        hardware_interface::CallbackReturn on_configure(
+                const rclcpp_lifecycle::State &previous_state) override;
+
+        DOGBOT_HARDWARE_PUBLIC
+        hardware_interface::CallbackReturn on_cleanup(
+                const rclcpp_lifecycle::State &previous_state) override;
+
+        DOGBOT_HARDWARE_PUBLIC
+        hardware_interface::CallbackReturn on_activate(
+                const rclcpp_lifecycle::State &previous_state) override;
+
+        DOGBOT_HARDWARE_PUBLIC
+        hardware_interface::CallbackReturn on_deactivate(
+                const rclcpp_lifecycle::State &previous_state) override;
+
+        DOGBOT_HARDWARE_PUBLIC
+        hardware_interface::return_type read(
+                const rclcpp::Time &time, const rclcpp::Duration &period) override;
+
+        DOGBOT_HARDWARE_PUBLIC
+        hardware_interface::return_type write(
+                const rclcpp::Time &time, const rclcpp::Duration &period) override;
+
+    private:
+        SerialComms comms_;
+        Config cfg_;
+        Wheel wheel_lf_;
+        Wheel wheel_rf_;
+        Wheel wheel_lb_;
+        Wheel wheel_rb_;
     };
-
-    struct Wheel
-    {
-      std::string name = "";
-      double cmd = 0;
-      double pos = 0;
-      double vel = 0;
-    };
-
-  public:
-    RCLCPP_SHARED_PTR_DEFINITIONS(DogBotSystemHardware);
-
-    DOGBOT_HARDWARE_PUBLIC
-    hardware_interface::CallbackReturn on_init(
-        const hardware_interface::HardwareInfo &info) override;
-
-    DOGBOT_HARDWARE_PUBLIC
-    std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
-
-    DOGBOT_HARDWARE_PUBLIC
-    std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
-
-    DOGBOT_HARDWARE_PUBLIC
-    hardware_interface::CallbackReturn on_configure(
-        const rclcpp_lifecycle::State &previous_state) override;
-
-    DOGBOT_HARDWARE_PUBLIC
-    hardware_interface::CallbackReturn on_cleanup(
-        const rclcpp_lifecycle::State &previous_state) override;
-
-    DOGBOT_HARDWARE_PUBLIC
-    hardware_interface::CallbackReturn on_activate(
-        const rclcpp_lifecycle::State &previous_state) override;
-
-    DOGBOT_HARDWARE_PUBLIC
-    hardware_interface::CallbackReturn on_deactivate(
-        const rclcpp_lifecycle::State &previous_state) override;
-
-    DOGBOT_HARDWARE_PUBLIC
-    hardware_interface::return_type read(
-        const rclcpp::Time &time, const rclcpp::Duration &period) override;
-
-    DOGBOT_HARDWARE_PUBLIC
-    hardware_interface::return_type write(
-        const rclcpp::Time &time, const rclcpp::Duration &period) override;
-
-  private:
-    SerialComms comms_;
-    Config cfg_;
-    Wheel wheel_lf_;
-    Wheel wheel_rf_;
-    Wheel wheel_lb_;
-    Wheel wheel_rb_;
-  };
 
 } // namespace dogbot_hardware
 
