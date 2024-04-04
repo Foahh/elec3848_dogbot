@@ -1,12 +1,16 @@
-# ROS-SLAM-Docker
+# ROS Humble Docker
+
+Docker for Jetson Nano & Raspberry Pi
 
 ## Usage
 
 1. **Set up udev and Nvidia first:** `./setup_nvidia.sh && ./setup_udev.sh`
 
-2. Start docker container: `./compose.sh`
+2. Start docker container: `docker compose up`
 
-3. Enter the container: `./attach.sh` or `Ctrl+Shift+P` `> Dev Cotainers` commands in vscode
+3. Enter the container: `./attach.sh`
+
+4. Support Dev Container in vscode
 
 ## Credits
 
