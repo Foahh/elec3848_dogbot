@@ -21,6 +21,4 @@ sudo apt-get install -y \
     ros-"$ROS_DISTRO"-realtime-tools \
     ros-"$ROS_DISTRO"-control-msgs \
     ros-"$ROS_DISTRO"-ros2-controllers-test-nodes \
-    ros-"$ROS_DISTRO"-joint-state-publisher-gui \
-    ros-"$ROS_DISTRO"-gazebo-ros-pkgs \
-    ros-"$ROS_DISTRO"-gazebo-ros2-control
+    ros-"$ROS_DISTRO"-joint-state-publisher-gui
