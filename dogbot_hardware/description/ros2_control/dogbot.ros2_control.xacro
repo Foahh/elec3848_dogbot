@@ -13,7 +13,7 @@
                 <param name="baud_rate">115200</param>
                 <param name="timeout_ms">1000</param>
                 <param name="enc_counts_per_rev">1320</param>
-            </hardware>s
+            </hardware>
 
             <joint name="${prefix}lf_wheel_joint">
                 <command_interface name="velocity"/>

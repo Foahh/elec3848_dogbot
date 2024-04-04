@@ -59,7 +59,7 @@ namespace dogbot_drive_controller {
         const double lb_wheel_cur_pos = lb_pos * wheel_radius_;
         const double rb_wheel_cur_pos = rb_pos * wheel_radius_;
 
-        // Estimate velocity of wheels using old and current position:
+        // Estimate displacement of wheels using old and current position:
         const double lf_est_vel = lf_wheel_cur_pos - lf_wheel_old_pos_;
         const double rf_est_vel = rf_wheel_cur_pos - rf_wheel_old_pos_;
         const double lb_est_vel = lb_wheel_cur_pos - lb_wheel_old_pos_;
@@ -71,6 +71,7 @@ namespace dogbot_drive_controller {
         lb_wheel_old_pos_ = lb_wheel_cur_pos;
         rb_wheel_old_pos_ = rb_wheel_cur_pos;
 
+        // Compute linear and angular displacement:
         const double linear_x = (lf_est_vel + rf_est_vel + lb_est_vel + rb_est_vel) / 4.0;
         const double linear_y = (-lf_est_vel + rf_est_vel + lb_est_vel - rb_est_vel) / 4.0;
         const double angular = (lf_est_vel - rf_est_vel + lb_est_vel - rb_est_vel) / (4.0 * wheel_separation_k_);
@@ -79,10 +80,10 @@ namespace dogbot_drive_controller {
 
         timestamp_ = time;
 
+        // get the rolling mean of the velocity
         linear_accumulator_x_.accumulate(linear_x / dt);
         linear_accumulator_y_.accumulate(linear_y / dt);
         angular_accumulator_.accumulate(angular / dt);
-
         linear_x_ = linear_accumulator_x_.getRollingMean();
         linear_y_ = linear_accumulator_y_.getRollingMean();
         angular_ = angular_accumulator_.getRollingMean();

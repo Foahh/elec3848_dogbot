@@ -105,10 +105,7 @@ namespace dogbot_drive_controller {
 
         previous_update_timestamp_ = time;
 
-        const double wheel_separation_x = params_.wheel_separation_x;
-        const double wheel_separation_y = params_.wheel_separation_y;
-        const double wheel_separation_k = (wheel_separation_x + wheel_separation_y) / 2.0;
-
+        const double wheel_separation_k = (params_.wheel_separation_x + params_.wheel_separation_y) / 2.0;
         const double wheel_radius = params_.wheel_radius;
 
         const double lf_feedback = registered_handles_.at(params_.lf_wheel_name).feedback.get().get_value();
@@ -121,7 +118,12 @@ namespace dogbot_drive_controller {
             return controller_interface::return_type::ERROR;
         }
 
-        odometry_.update(lf_feedback, rf_feedback, lb_feedback, rb_feedback, time);
+        if  (!odometry_.update(lf_feedback, rf_feedback, lb_feedback, rb_feedback, time)) {
+            RCLCPP_ERROR(logger, "Failed to update odometry");
+            return controller_interface::return_type::ERROR;
+        }
+        
+        RCLCPP_INFO(logger, "Odometry: x: %f, y: %f, heading: %f; Velocity: x: %f, y: %f, angular: %f", odometry_.getX(), odometry_.getY(), odometry_.getHeading(), odometry_.getLinearX(), odometry_.getLinearY(), odometry_.getAngular());
 
         tf2::Quaternion orientation;
         orientation.setRPY(0.0, 0.0, odometry_.getHeading());
@@ -169,6 +171,7 @@ namespace dogbot_drive_controller {
         }
 
         // compute wheels angular velocities (to rad/s):
+        // TODO: check if the y-calculations are correct
         const double angular_velocity_lf =
                 (linear_command_x + linear_command_y - angular_command * wheel_separation_k) / wheel_radius;
         const double angular_velocity_rf =
