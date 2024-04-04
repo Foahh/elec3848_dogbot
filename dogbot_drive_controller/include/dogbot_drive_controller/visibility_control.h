@@ -19,8 +19,8 @@
  * library cannot have, but the consuming code must have inorder to link.
  */
 
-#ifndef DOGBOT_DRIVE_CONTROLLER__VISIBILITY_CONTROL_H_
-#define DOGBOT_DRIVE_CONTROLLER__VISIBILITY_CONTROL_H_
+#ifndef DOGBOT_DRIVE_CONTROLLER_VISIBILITY_CONTROL_H_
+#define DOGBOT_DRIVE_CONTROLLER_VISIBILITY_CONTROL_H_
 
 // This logic was borrowed (then namespaced) from the examples on the gcc wiki:
 //     https://gcc.gnu.org/wiki/Visibility
@@ -53,4 +53,4 @@
 #define DOGBOT_DRIVE_CONTROLLER_PUBLIC_TYPE
 #endif
 
-#endif  // DOGBOT_DRIVE_CONTROLLER__VISIBILITY_CONTROL_H_
+#endif  // DOGBOT_DRIVE_CONTROLLER_VISIBILITY_CONTROL_H_

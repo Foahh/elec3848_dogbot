@@ -2,7 +2,6 @@
 <!-- Basic drive mobile base -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="dogbot_base">
   <xacro:arg name="prefix" default="" />
-  <xacro:arg name="use_mock_hardware" default="false" />
 
   <xacro:include filename="$(find dogbot_description)/dogbot/urdf/dogbot.urdf.xacro" />
 
@@ -15,6 +14,6 @@
   <xacro:dogbot prefix="$(arg prefix)" />
 
   <xacro:dogbot_ros2_control
-    name="DogBot" prefix="$(arg prefix)" use_mock_hardware="$(arg use_mock_hardware)"/>
+    name="DogBot" prefix="$(arg prefix)"/>
 
 </robot>

@@ -1,146 +1,140 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:macro name="dogbot" params="prefix">
-    <!-- Constants for robot dimensions -->
-    <xacro:property name="PI" value="3.1415926535897931" />
-    <xacro:property name="base_mass" value="0.3" /> <!-- arbitrary value for base mass -->
-    <xacro:property name="base_width" value="0.1" />
-    <xacro:property name="base_length" value="0.1" />
-    <xacro:property name="base_height" value="0.05" />
-    <xacro:property name="wheel_mass" value="0.3" /> <!-- arbitrary value for wheel mass -->
-    <xacro:property name="wheel_len" value="0.02" />
-    <xacro:property name="wheel_radius" value="0.015" />
-    <xacro:property name="z_offset" value="-${base_height/2}" /> <!-- Space btw top of beam and the
-    each joint -->
+    <xacro:macro name="dogbot" params="prefix">
+        <!-- Constants for robot dimensions -->
+        <xacro:property name="PI" value="3.1415926535897931"/>
+        <xacro:property name="base_mass" value="1.5"/> <!-- arbitrary value for base mass -->
+        <xacro:property name="base_width" value="0.25"/>
+        <xacro:property name="base_length" value="0.15"/>
+        <xacro:property name="base_height" value="0.03"/>
+        <xacro:property name="base_z_offset" value="0.06"/>
+        <xacro:property name="wheel_mass" value="0.05"/> <!-- arbitrary value for wheel mass -->
+        <xacro:property name="wheel_len" value="0.04"/>
+        <xacro:property name="wheel_radius" value="0.04"/>
+        <xacro:property name="wheel_x_alignment" value="0.0875"/>
+        <xacro:property name="wheel_y_alignment" value="0.125"/>
+        <xacro:property name="wheel_joint_z_offset" value="0.04"/> <!-- Space btw top of beam and each joint -->
 
-    <!-- Base Link -->
-    <link name="base_link">
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-        <geometry>
-          <box size="${base_width} ${base_length} ${base_height}" />
-        </geometry>
-      </collision>
+        <!-- Base Link -->
+        <link name="base_link">
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="${base_width} ${base_length} ${base_height}"/>
+                </geometry>
+            </collision>
 
-      <visual>
-        <origin xyz="0 0 ${base_height/2}" rpy="0 0 0" />
-        <geometry>
-          <box size="${base_width} ${base_length} ${base_height}" />
-        </geometry>
-        <material name="orange" />
-      </visual>
-    </link>
+            <visual>
+                <origin xyz="0 0 ${base_z_offset}" rpy="0 0 0"/>
+                <geometry>
+                    <box size="${base_width} ${base_length} ${base_height}"/>
+                </geometry>
+                <material name="orange"/>
+            </visual>
+        </link>
 
-    <!-- left front wheel joint -->
-    <joint name="lf_wheel_joint" type="continuous">
-      <parent link="base_link" />
-      <child link="lf_wheel" />
-      <origin xyz="0.03 -${base_width/2} ${z_offset}" rpy="0 0 0" />
-      <axis xyz="0 1 0" />
-      <dynamics damping="0.2" />
-      <limit effort="100" velocity="1.0" />
-    </joint>
+        <!-- left front wheel joint -->
+        <joint name="lf_wheel_joint" type="fixed">
+            <parent link="base_link"/>
+            <child link="lf_wheel"/>
+            <origin xyz="${wheel_x_alignment} ${wheel_y_alignment} ${wheel_joint_z_offset}" rpy="0 0 0"/>
+            <axis xyz="0 1 0"/>
+        </joint>
 
-    <!-- left front wheel Link -->
-    <link name="lf_wheel">
-      <collision>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}" />
-        </geometry>
-      </collision>
+        <!-- left front wheel Link -->
+        <link name="lf_wheel">
+            <collision>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+                </geometry>
+            </collision>
 
-      <visual>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}" />
-        </geometry>
-        <material name="black" />
-      </visual>
-    </link>
+            <visual>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+                </geometry>
+                <material name="black"/>
+            </visual>
+        </link>
 
-    <!-- right front wheel joint -->
-    <joint name="rf_wheel_joint" type="continuous">
-      <parent link="base_link" />
-      <child link="rf_wheel" />
-      <origin xyz="0.03 ${base_width/2} ${z_offset}" rpy="0 0 0" />
-      <axis xyz="0 1 0" />
-      <dynamics damping="0.2" />
-      <limit effort="100" velocity="1.0" />
-    </joint>
+        <!-- right front wheel joint -->
+        <joint name="rf_wheel_joint" type="continuous">
+            <parent link="base_link"/>
+            <child link="rf_wheel"/>
+            <origin xyz="${wheel_x_alignment} -${wheel_y_alignment} ${wheel_joint_z_offset}" rpy="0 0 0"/>
+            <axis xyz="0 1 0"/>
+        </joint>
 
-    <!-- right front wheel Link -->
-    <link name="rf_wheel">
-      <collision>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}" />
-        </geometry>
-      </collision>
+        <!-- right front wheel Link -->
+        <link name="rf_wheel">
+            <collision>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+                </geometry>
+            </collision>
 
-      <visual>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}" />
-        </geometry>
-        <material name="black" />
-      </visual>
-    </link>
+            <visual>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+                </geometry>
+                <material name="black"/>
+            </visual>
+        </link>
 
-    <!-- left back wheel joint -->
-    <joint name="lb_wheel_joint" type="continuous">
-      <parent link="base_link" />
-      <child link="lb_wheel" />
-      <origin xyz="-0.03 -${base_width/2} ${z_offset}" rpy="0 0 0" />
-      <axis xyz="0 1 0" />
-      <dynamics damping="0.2" />
-      <limit effort="100" velocity="1.0" />
-    </joint>
+        <!-- left back wheel joint -->
+        <joint name="lb_wheel_joint" type="continuous">
+            <parent link="base_link"/>
+            <child link="lb_wheel"/>
+            <origin xyz="-${wheel_x_alignment} ${wheel_y_alignment} ${wheel_joint_z_offset}" rpy="0 0 0"/>
+            <axis xyz="0 1 0"/>
+        </joint>
 
-    <!-- left back wheel Link -->
-    <link name="lb_wheel">
-      <collision>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}" />
-        </geometry>
-      </collision>
+        <!-- left back wheel Link -->
+        <link name="lb_wheel">
+            <collision>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+                </geometry>
+            </collision>
 
-      <visual>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}" />
-        </geometry>
-        <material name="black" />
-      </visual>
-    </link>
+            <visual>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+                </geometry>
+                <material name="black"/>
+            </visual>
+        </link>
 
-    <!-- right back wheel joint -->
-    <joint name="rb_wheel_joint" type="continuous">
-      <parent link="base_link" />
-      <child link="rb_wheel" />
-      <origin xyz="-0.03 ${base_width/2} ${z_offset}" rpy="0 0 0" />
-      <axis xyz="0 1 0" />
-      <dynamics damping="0.2" />
-      <limit effort="100" velocity="1.0" />
-    </joint>
+        <!-- right back wheel joint -->
+        <joint name="rb_wheel_joint" type="continuous">
+            <parent link="base_link"/>
+            <child link="rb_wheel"/>
+            <origin xyz="-${wheel_x_alignment} -${wheel_y_alignment} ${wheel_joint_z_offset}" rpy="0 0 0"/>
+            <axis xyz="0 1 0"/>
+        </joint>
 
-    <!-- right back wheel Link -->
-    <link name="rb_wheel">
-      <collision>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}" />
-        </geometry>
-      </collision>
+        <!-- right back wheel Link -->
+        <link name="rb_wheel">
+            <collision>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+                </geometry>
+            </collision>
 
-      <visual>
-        <origin xyz="0 0 0" rpy="${PI/2} 0 0" />
-        <geometry>
-          <cylinder length="${wheel_len}" radius="${wheel_radius}" />
-        </geometry>
-        <material name="black" />
-      </visual>
-    </link>
-  </xacro:macro>
+            <visual>
+                <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+                <geometry>
+                    <cylinder length="${wheel_len}" radius="${wheel_radius}"/>
+                </geometry>
+                <material name="black"/>
+            </visual>
+        </link>
+    </xacro:macro>
 </robot>

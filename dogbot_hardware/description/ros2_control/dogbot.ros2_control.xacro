@@ -1,49 +1,36 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="dogbot_ros2_control" params="name prefix">
+        <ros2_control name="${name}" type="system">
 
-  <xacro:macro name="dogbot_ros2_control" params="name prefix use_mock_hardware">
+            <hardware>
+                <plugin>dogbot_hardware/DogBotSystemHardware</plugin>
+                <param name="lf_wheel_name">lf_wheel_joint</param>
+                <param name="rf_wheel_name">rf_wheel_joint</param>
+                <param name="lb_wheel_name">lb_wheel_joint</param>
+                <param name="rb_wheel_name">rb_wheel_joint</param>
+                <param name="device">/dev/arduino</param>
+                <param name="baud_rate">115200</param>
+                <param name="timeout_ms">1000</param>
+                <param name="enc_counts_per_rev">1320</param>
+            </hardware>s
 
-    <ros2_control name="${name}" type="system">
-      <xacro:unless value="${use_mock_hardware}">
-        <hardware>
-          <plugin>dogbot_hardware/DogBotSystemHardware</plugin>
-          <param name="lf_wheel_name">lf_wheel_joint</param>
-          <param name="rf_wheel_name">rf_wheel_joint</param>
-          <param name="lb_wheel_name">lb_wheel_joint</param>
-          <param name="rb_wheel_name">rb_wheel_joint</param>
-          <param name="device">/dev/arduino</param>
-          <param name="baud_rate">115200</param>
-          <param name="timeout_ms">100</param>
-        </hardware>
-      </xacro:unless>
-      <xacro:if value="${use_mock_hardware}">
-        <hardware>
-          <plugin>mock_components/GenericSystem</plugin>
-          <param name="calculate_dynamics">true</param>
-        </hardware>
-      </xacro:if>
-      <joint name="${prefix}lf_wheel_joint">
-        <command_interface name="velocity" />
-        <state_interface name="position" />
-        <state_interface name="velocity" />
-      </joint>
-      <joint name="${prefix}rf_wheel_joint">
-        <command_interface name="velocity" />
-        <state_interface name="position" />
-        <state_interface name="velocity" />
-      </joint>
-      <joint name="${prefix}lb_wheel_joint">
-        <command_interface name="velocity" />
-        <state_interface name="position" />
-        <state_interface name="velocity" />
-      </joint>
-      <joint name="${prefix}rb_wheel_joint">
-        <command_interface name="velocity" />
-        <state_interface name="position" />
-        <state_interface name="velocity" />
-      </joint>
-    </ros2_control>
-
-  </xacro:macro>
-
+            <joint name="${prefix}lf_wheel_joint">
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+            </joint>
+            <joint name="${prefix}rf_wheel_joint">
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+            </joint>
+            <joint name="${prefix}lb_wheel_joint">
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+            </joint>
+            <joint name="${prefix}rb_wheel_joint">
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+            </joint>
+        </ros2_control>
+    </xacro:macro>
 </robot>

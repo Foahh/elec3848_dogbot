@@ -1,4 +1,4 @@
-# Copyright 2016 Open Source Robotics Foundation, Inc.
+# Copyright 2024 Long Liangmao
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,37 +15,69 @@
 import rclpy
 from rclpy.node import Node
 
-from std_msgs.msg import String
+import qwiic_icm20948
+
+from sensor_msgs.msg import MagneticField,Imu
 
 
-class MinimalSubscriber(Node):
+class IMUPublisher(Node):
 
     def __init__(self):
-        super().__init__('minimal_subscriber')
-        self.subscription = self.create_subscription(
-            String,
-            'topic',
-            self.listener_callback,
-            10)
-        self.subscription  # prevent unused variable warning
+        super().__init__('imu_publisher')
+        self.logger = self.get_logger()
 
-    def listener_callback(self, msg):
-        self.get_logger().info('I heard: "%s"' % msg.data)
+        self.raw_publisher_ = self.create_publisher(Imu, 'imu/data_raw', 10)
+        self.mag_publisher_ = self.create_publisher(MagneticField, 'imu/mag', 10)
 
+        timer_period = 0.02  # seconds
+        self.timer = self.create_timer(timer_period, self.callback)
+
+        self.imu = qwiic_icm20948.QwiicIcm20948()
+        if not self.imu.connected:
+            self.logger.error("IMU not connected. Please check connection.")
+        self.imu.begin()
+        self.imu.setFullScaleRangeGyro(qwiic_icm20948.dps2000)
+        self.imu.setFullScaleRangeAccel(qwiic_icm20948.gpm16)
+
+    def callback(self):
+        if self.imu.dataReady():
+            try:
+                self.imu.getAgmt()
+            except Exception as e:
+                self.logger.error(f"Error reading data from IMU: {e}")
+
+            raw_msg = Imu()
+            raw_msg.header.stamp = self.get_clock().now().to_msg()
+            raw_msg.header.frame_id = 'imu_link'
+            raw_msg.linear_acceleration.x =  self.imu.axRaw
+            raw_msg.linear_acceleration.y =  self.imu.ayRaw
+            raw_msg.linear_acceleration.z =  self.imu.azRaw
+            raw_msg.linear_acceleration_covariance[0] = -1
+            raw_msg.angular_velocity.x =  self.imu.gxRaw
+            raw_msg.angular_velocity.y =  self.imu.gyRaw
+            raw_msg.angular_velocity.z =  self.imu.gzRaw
+            raw_msg.angular_velocity_covariance[0] = -1
+            raw_msg.orientation_covariance[0] = -1
+            self.raw_publisher_.publish(raw_msg)
+
+            mag_msg = MagneticField()
+            mag_msg.header.stamp = self.get_clock().now().to_msg()
+            mag_msg.header.frame_id = 'imu_link'
+            mag_msg.magnetic_field.x =  self.imu.mxRaw
+            mag_msg.magnetic_field.y =  self.imu.myRaw
+            mag_msg.magnetic_field.z =  self.imu.mzRaw
+            mag_msg.magnetic_field_covariance[0] = -1
+            self.mag_publisher_.publish(mag_msg)
 
 def main(args=None):
     rclpy.init(args=args)
 
-    minimal_subscriber = MinimalSubscriber()
+    imu_publisher = IMUPublisher()
 
-    rclpy.spin(minimal_subscriber)
+    rclpy.spin(imu_publisher)
 
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    minimal_subscriber.destroy_node()
+    imu_publisher.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()

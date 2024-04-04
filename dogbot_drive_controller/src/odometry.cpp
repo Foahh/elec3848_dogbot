@@ -29,13 +29,8 @@ namespace dogbot_drive_controller {
               linear_x_(0.0),
               linear_y_(0.0),
               angular_(0.0),
-//              wheel_separation_x_(0.0),
-//              wheel_separation_y_(0.0),
               wheel_separation_k_(0.0),
-              lf_wheel_radius_(0.0),
-              rf_wheel_radius_(0.0),
-              lb_wheel_radius_(0.0),
-              rb_wheel_radius_(0.0),
+              wheel_radius_(0.0),
               lf_wheel_old_pos_(0.0),
               rf_wheel_old_pos_(0.0),
               lb_wheel_old_pos_(0.0),
@@ -59,16 +54,16 @@ namespace dogbot_drive_controller {
         }
 
         // Get current wheel joint positions:
-        const double lf_wheel_cur_pos = lf_pos;
-        const double rf_wheel_cur_pos = rf_pos;
-        const double lb_wheel_cur_pos = lb_pos;
-        const double rb_wheel_cur_pos = rb_pos;
+        const double lf_wheel_cur_pos = lf_pos * wheel_radius_;
+        const double rf_wheel_cur_pos = rf_pos * wheel_radius_;
+        const double lb_wheel_cur_pos = lb_pos * wheel_radius_;
+        const double rb_wheel_cur_pos = rb_pos * wheel_radius_;
 
         // Estimate velocity of wheels using old and current position:
-        const double lf_wheel_est_vel = (lf_wheel_cur_pos - lf_wheel_old_pos_) / dt;
-        const double rf_wheel_est_vel = (rf_wheel_cur_pos - rf_wheel_old_pos_) / dt;
-        const double lb_wheel_est_vel = (lb_wheel_cur_pos - lb_wheel_old_pos_) / dt;
-        const double rb_wheel_est_vel = (rb_wheel_cur_pos - rb_wheel_old_pos_) / dt;
+        const double lf_est_vel = lf_wheel_cur_pos - lf_wheel_old_pos_;
+        const double rf_est_vel = rf_wheel_cur_pos - rf_wheel_old_pos_;
+        const double lb_est_vel = lb_wheel_cur_pos - lb_wheel_old_pos_;
+        const double rb_est_vel = rb_wheel_cur_pos - rb_wheel_old_pos_;
 
         // Update old position with current:
         lf_wheel_old_pos_ = lf_wheel_cur_pos;
@@ -76,25 +71,14 @@ namespace dogbot_drive_controller {
         lb_wheel_old_pos_ = lb_wheel_cur_pos;
         rb_wheel_old_pos_ = rb_wheel_cur_pos;
 
-        updateFromVelocity(lf_wheel_est_vel, rf_wheel_est_vel, lb_wheel_est_vel, rb_wheel_est_vel, time);
+        const double linear_x = (lf_est_vel + rf_est_vel + lb_est_vel + rb_est_vel) / 4.0;
+        const double linear_y = (-lf_est_vel + rf_est_vel + lb_est_vel - rb_est_vel) / 4.0;
+        const double angular = (lf_est_vel - rf_est_vel + lb_est_vel - rb_est_vel) / (4.0 * wheel_separation_k_);
 
-        return true;
-    }
-
-    bool Odometry::updateFromVelocity(double lf, double rf, double lb, double rb, const rclcpp::Time &time) {
-        const double dt = time.seconds() - timestamp_.seconds();
-
-        // Estimate linear and angular speed:
-        const double linear_x = (lf + rf + lb + rb) / 4.0 / dt;
-        const double linear_y = (-lf + rf + lb - rb) / 4.0 / dt;
-        const double angular = (lf - rf + lb - rb) / (4.0 * wheel_separation_k_) / dt;
-
-        // Integrate odometry:
         integrate(linear_x, linear_y, angular);
 
         timestamp_ = time;
 
-        // Estimate speeds using a rolling mean to filter them out:
         linear_accumulator_x_.accumulate(linear_x / dt);
         linear_accumulator_y_.accumulate(linear_y / dt);
         angular_accumulator_.accumulate(angular / dt);
@@ -112,16 +96,9 @@ namespace dogbot_drive_controller {
         heading_ = 0.0;
     }
 
-    void Odometry::setWheelParams(double wheel_separation_x, double wheel_separation_y,
-                                  double lf_wheel_radius, double rf_wheel_radius, double lb_wheel_radius,
-                                  double rb_wheel_radius) {
-//        wheel_separation_x_ = wheel_separation_x;
-//        wheel_separation_y_ = wheel_separation_y;
+    void Odometry::setWheelParams(double wheel_separation_x, double wheel_separation_y, double wheel_radius) {
         wheel_separation_k_ = (wheel_separation_x + wheel_separation_y) / 2.0;
-        lf_wheel_radius_ = lf_wheel_radius;
-        rf_wheel_radius_ = rf_wheel_radius;
-        lb_wheel_radius_ = lb_wheel_radius;
-        rb_wheel_radius_ = rb_wheel_radius;
+        wheel_radius_ = wheel_radius;
     }
 
     void Odometry::setVelocityRollingWindowSize(size_t velocity_rolling_window_size) {

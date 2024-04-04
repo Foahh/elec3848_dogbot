@@ -24,13 +24,11 @@
 #include <chrono>
 #include <cmath>
 #include <memory>
-#include <queue>
 #include <string>
 #include <vector>
 
 #include "controller_interface/controller_interface.hpp"
 #include "dogbot_drive_controller/odometry.hpp"
-#include "dogbot_drive_controller/speed_limiter.hpp"
 #include "dogbot_drive_controller/visibility_control.h"
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
@@ -102,8 +100,6 @@ namespace dogbot_drive_controller {
 
         std::map<std::string, WheelHandle> registered_handles_;
 
-        const char *feedback_type() const;
-
         // Parameters from ROS
         std::shared_ptr<ParamListener> param_listener_;
         Params params_;
@@ -124,21 +120,8 @@ namespace dogbot_drive_controller {
 
         bool subscriber_is_active_ = false;
         rclcpp::Subscription<Twist>::SharedPtr velocity_command_subscriber_ = nullptr;
-        rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr velocity_command_unstamped_subscriber_ = nullptr;
-
+        
         realtime_tools::RealtimeBox<std::shared_ptr<Twist>> received_velocity_msg_ptr_{nullptr};
-
-        std::queue<Twist> previous_commands_; // last two commands
-
-        // speed limiters
-        SpeedLimiter limiter_linear_x_;
-        SpeedLimiter limiter_linear_y_;
-        SpeedLimiter limiter_angular_;
-
-        bool publish_limited_velocity_ = false;
-        std::shared_ptr<rclcpp::Publisher<Twist>> limited_velocity_publisher_ = nullptr;
-        std::shared_ptr<realtime_tools::RealtimePublisher<Twist>> realtime_limited_velocity_publisher_ =
-                nullptr;
 
         rclcpp::Time previous_update_timestamp_{0};
 
@@ -147,8 +130,7 @@ namespace dogbot_drive_controller {
         rclcpp::Duration publish_period_ = rclcpp::Duration::from_nanoseconds(0);
         rclcpp::Time previous_publish_timestamp_{0, 0, RCL_CLOCK_UNINITIALIZED};
 
-        bool is_halted = false;
-        bool use_stamped_vel_ = true;
+        bool is_halted_ = false;
 
         void reset();
 

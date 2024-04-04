@@ -33,7 +33,6 @@ generate_parameter_library(dogbot_drive_controller_parameters
 add_library(dogbot_drive_controller SHARED
   src/dogbot_drive_controller.cpp
   src/odometry.cpp
-  src/speed_limiter.cpp
 )
 target_compile_features(dogbot_drive_controller PUBLIC cxx_std_17)
 target_include_directories(dogbot_drive_controller PUBLIC

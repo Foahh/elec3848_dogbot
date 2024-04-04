@@ -32,6 +32,7 @@
 #include "rclcpp_lifecycle/state.hpp"
 
 #include "dogbot_hardware/serial_comms.hpp"
+#include "dogbot_hardware/wheel.hpp"
 
 namespace dogbot_hardware {
     class DogBotSystemHardware : public hardware_interface::SystemInterface {
@@ -40,13 +41,7 @@ namespace dogbot_hardware {
             std::string device;
             int baud_rate = 0;
             int timeout_ms = 1000;
-        };
-
-        struct Wheel {
-            std::string name;
-            double cmd = 0;
-            double pos = 0;
-            double vel = 0;
+            int enc_counts_per_rev = 0;
         };
 
     public:

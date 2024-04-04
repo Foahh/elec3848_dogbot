@@ -46,8 +46,6 @@ namespace dogbot_drive_controller {
 
         bool update(double lf_pos, double rf_pos, double lb_pos, double rb_pos, const rclcpp::Time &time);
 
-        bool updateFromVelocity(double lf_vel, double rf_vel, double lb_vel, double rb_vel, const rclcpp::Time &time);
-
         void resetOdometry();
 
         double getX() const { return x_; }
@@ -62,8 +60,7 @@ namespace dogbot_drive_controller {
 
         double getAngular() const { return angular_; }
 
-        void setWheelParams(double wheel_separation_length, double wheel_separation_width, double lf_wheel_radius,
-                            double rf_wheel_radius, double lb_wheel_radius, double rb_wheel_radius);
+        void setWheelParams(double wheel_separation_length, double wheel_separation_width, double wheel_radius);
 
         void setVelocityRollingWindowSize(size_t velocity_rolling_window_size);
 
@@ -93,13 +90,8 @@ namespace dogbot_drive_controller {
         double angular_;  // [rad/s]
 
         // Wheel kinematic parameters [m]:
-//        double wheel_separation_x_;
-//        double wheel_separation_y_;
         double wheel_separation_k_;
-        double lf_wheel_radius_;
-        double rf_wheel_radius_;
-        double lb_wheel_radius_;
-        double rb_wheel_radius_;
+        double wheel_radius_;
 
         // Previous wheel position/state [rad]:
         double lf_wheel_old_pos_;

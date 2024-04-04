@@ -1,6 +1,6 @@
-// Copyright 2024
+// Copyright 2020 PAL Robotics S.L.
 //
-// Modifies by Long Liangmao in 2024
+// Modified by Long Liangmao in 2024
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 // limitations under the License.
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,8 +27,6 @@
 
 namespace {
     constexpr auto DEFAULT_COMMAND_TOPIC = "~/cmd_vel";
-    constexpr auto DEFAULT_COMMAND_UNSTAMPED_TOPIC = "~/cmd_vel_unstamped";
-    constexpr auto DEFAULT_COMMAND_OUT_TOPIC = "~/cmd_vel_out";
     constexpr auto DEFAULT_ODOMETRY_TOPIC = "~/odom";
     constexpr auto DEFAULT_TRANSFORM_TOPIC = "/tf";
 } // namespace
@@ -43,10 +40,6 @@ namespace dogbot_drive_controller {
     using lifecycle_msgs::msg::State;
 
     DogBotDriveController::DogBotDriveController() : controller_interface::ControllerInterface() {}
-
-    const char *DogBotDriveController::feedback_type() const {
-        return params_.position_feedback ? HW_IF_POSITION : HW_IF_VELOCITY;
-    }
 
     controller_interface::CallbackReturn DogBotDriveController::on_init() {
         try {
@@ -67,63 +60,56 @@ namespace dogbot_drive_controller {
         conf_names.push_back(params_.rf_wheel_name + "/" + HW_IF_VELOCITY);
         conf_names.push_back(params_.lb_wheel_name + "/" + HW_IF_VELOCITY);
         conf_names.push_back(params_.rb_wheel_name + "/" + HW_IF_VELOCITY);
-        return {interface_configuration_type::ALL, conf_names};
+        return {interface_configuration_type::INDIVIDUAL, conf_names};
     }
 
     InterfaceConfiguration DogBotDriveController::state_interface_configuration() const {
         std::vector<std::string> conf_names;
-        conf_names.push_back(params_.lf_wheel_name + "/" + feedback_type());
-        conf_names.push_back(params_.rf_wheel_name + "/" + feedback_type());
-        conf_names.push_back(params_.lb_wheel_name + "/" + feedback_type());
-        conf_names.push_back(params_.rb_wheel_name + "/" + feedback_type());
-        return {interface_configuration_type::ALL, conf_names};
+        conf_names.push_back(params_.lf_wheel_name + "/" + HW_IF_POSITION);
+        conf_names.push_back(params_.rf_wheel_name + "/" + HW_IF_POSITION);
+        conf_names.push_back(params_.lb_wheel_name + "/" + HW_IF_POSITION);
+        conf_names.push_back(params_.rb_wheel_name + "/" + HW_IF_POSITION);
+        return {interface_configuration_type::INDIVIDUAL, conf_names};
     }
 
     controller_interface::return_type DogBotDriveController::update(
-            const rclcpp::Time &time, const rclcpp::Duration &period) {
+            const rclcpp::Time &time, const rclcpp::Duration &) {
         auto logger = get_node()->get_logger();
         if (get_state().id() == State::PRIMARY_STATE_INACTIVE) {
-            if (!is_halted) {
+            if (!is_halted_) {
                 halt();
-                is_halted = true;
+                is_halted_ = true;
             }
             return controller_interface::return_type::OK;
         }
 
-        std::shared_ptr<Twist> last_command_msg;
-        received_velocity_msg_ptr_.get(last_command_msg);
+        std::shared_ptr<Twist> command;
+        received_velocity_msg_ptr_.get(command);
 
-        if (last_command_msg == nullptr) {
+        if (command == nullptr) {
             RCLCPP_WARN(logger, "Velocity message received was a nullptr.");
             return controller_interface::return_type::ERROR;
         }
 
-        const auto age_of_last_command = time - last_command_msg->header.stamp;
-        // Brake if cmd_vel has timeout, override the stored command
+        const auto age_of_last_command = time - command->header.stamp;
+        // brake if cmd_vel has timeout, override the stored command
         if (age_of_last_command > cmd_vel_timeout_) {
-            last_command_msg->twist.linear.x = 0.0;
-            last_command_msg->twist.linear.y = 0.0;
-            last_command_msg->twist.angular.z = 0.0;
+            command->twist.linear.x = 0.0;
+            command->twist.linear.y = 0.0;
+            command->twist.angular.z = 0.0;
         }
 
-        // command may be limited further by SpeedLimit,
-        // without affecting the stored twist command
-        Twist command = *last_command_msg;
-        double &linear_command_x = command.twist.linear.x;
-        double &linear_command_y = command.twist.linear.y;
-        double &angular_command = command.twist.angular.z;
+        double &linear_command_x = command->twist.linear.x;
+        double &linear_command_y = command->twist.linear.y;
+        double &angular_command = command->twist.angular.z;
 
         previous_update_timestamp_ = time;
 
-        // Apply (possibly new) multipliers:
         const double wheel_separation_x = params_.wheel_separation_x;
         const double wheel_separation_y = params_.wheel_separation_y;
         const double wheel_separation_k = (wheel_separation_x + wheel_separation_y) / 2.0;
 
-        const double lf_wheel_radius = params_.lf_wheel_radius_multiplier * params_.wheel_radius;
-        const double rf_wheel_radius = params_.rf_wheel_radius_multiplier * params_.wheel_radius;
-        const double lb_wheel_radius = params_.lb_wheel_radius_multiplier * params_.wheel_radius;
-        const double rb_wheel_radius = params_.rb_wheel_radius_multiplier * params_.wheel_radius;
+        const double wheel_radius = params_.wheel_radius;
 
         const double lf_feedback = registered_handles_.at(params_.lf_wheel_name).feedback.get().get_value();
         const double rf_feedback = registered_handles_.at(params_.rf_wheel_name).feedback.get().get_value();
@@ -131,23 +117,11 @@ namespace dogbot_drive_controller {
         const double rb_feedback = registered_handles_.at(params_.rb_wheel_name).feedback.get().get_value();
 
         if (std::isnan(lf_feedback) || std::isnan(rf_feedback) || std::isnan(lb_feedback) || std::isnan(rb_feedback)) {
-            RCLCPP_ERROR(
-                    logger, "The wheel %s is invalid ", feedback_type());
+            RCLCPP_ERROR(logger, "The wheel %s is invalid ", HW_IF_POSITION);
             return controller_interface::return_type::ERROR;
         }
 
-        if (params_.position_feedback) {
-            odometry_.update(lf_feedback * lf_wheel_radius,
-                             rf_feedback * rf_wheel_radius,
-                             lb_feedback * lb_wheel_radius,
-                             rb_feedback * rb_wheel_radius, time);
-        } else {
-            odometry_.updateFromVelocity(
-                    lf_feedback * lf_wheel_radius * period.seconds(),
-                    rf_feedback * rf_wheel_radius * period.seconds(),
-                    lb_feedback * lb_wheel_radius * period.seconds(),
-                    rb_feedback * rb_wheel_radius * period.seconds(), time);
-        }
+        odometry_.update(lf_feedback, rf_feedback, lb_feedback, rb_feedback, time);
 
         tf2::Quaternion orientation;
         orientation.setRPY(0.0, 0.0, odometry_.getHeading());
@@ -160,7 +134,7 @@ namespace dogbot_drive_controller {
             }
         }
         catch (const std::runtime_error &) {
-            // Handle exceptions when the time source changes and initialize publish timestamp
+            // handle exceptions when the time source changes and initialize publish timestamp
             previous_publish_timestamp_ = time;
             should_publish = true;
         }
@@ -194,35 +168,15 @@ namespace dogbot_drive_controller {
             }
         }
 
-        auto &last_command = previous_commands_.back().twist;
-        auto &second_to_last_command = previous_commands_.front().twist;
-        limiter_linear_x_.limit(linear_command_x, last_command.linear.x, second_to_last_command.linear.x,
-                                period.seconds());
-        limiter_linear_y_.limit(linear_command_y, last_command.linear.y, second_to_last_command.linear.y,
-                                period.seconds());
-        limiter_angular_.limit(angular_command, last_command.angular.z, second_to_last_command.angular.z,
-                               period.seconds());
-
-        previous_commands_.pop();
-        previous_commands_.emplace(command);
-
-        // Publish limited velocity
-        if (publish_limited_velocity_ && realtime_limited_velocity_publisher_->trylock()) {
-            auto &limited_velocity_command = realtime_limited_velocity_publisher_->msg_;
-            limited_velocity_command.header.stamp = time;
-            limited_velocity_command.twist = command.twist;
-            realtime_limited_velocity_publisher_->unlockAndPublish();
-        }
-
-        // Compute wheels angular velocities (in rad/s):
+        // compute wheels angular velocities (to rad/s):
         const double angular_velocity_lf =
-                (linear_command_x - linear_command_y + angular_command * wheel_separation_k) / lf_wheel_radius;
+                (linear_command_x + linear_command_y - angular_command * wheel_separation_k) / wheel_radius;
         const double angular_velocity_rf =
-                (linear_command_x + linear_command_y - angular_command * wheel_separation_k) / rf_wheel_radius;
+                (linear_command_x - linear_command_y + angular_command * wheel_separation_k) / wheel_radius;
         const double angular_velocity_lb =
-                (linear_command_x + linear_command_y + angular_command * wheel_separation_k) / lb_wheel_radius;
+                (linear_command_x - linear_command_y - angular_command * wheel_separation_k) / wheel_radius;
         const double angular_velocity_rb =
-                (linear_command_x - linear_command_y - angular_command * wheel_separation_k) / rb_wheel_radius;
+                (linear_command_x + linear_command_y + angular_command * wheel_separation_k) / wheel_radius;
 
         // Set wheels angular velocities:
         registered_handles_.at(params_.lf_wheel_name).velocity.get().set_value(angular_velocity_lf);
@@ -245,100 +199,43 @@ namespace dogbot_drive_controller {
         const double wheel_separation_x = params_.wheel_separation_x;
         const double wheel_separation_y = params_.wheel_separation_y;
 
-        const double lf_wheel_radius = params_.lf_wheel_radius_multiplier * params_.wheel_radius;
-        const double rf_wheel_radius = params_.rf_wheel_radius_multiplier * params_.wheel_radius;
-        const double lb_wheel_radius = params_.lb_wheel_radius_multiplier * params_.wheel_radius;
-        const double rb_wheel_radius = params_.rb_wheel_radius_multiplier * params_.wheel_radius;
+        const double wheel_radius = params_.wheel_radius;
 
-        odometry_.setWheelParams(wheel_separation_x, wheel_separation_y, lf_wheel_radius, rf_wheel_radius,
-                                 lb_wheel_radius, rb_wheel_radius);
+        odometry_.setWheelParams(wheel_separation_x, wheel_separation_y, wheel_radius);
         odometry_.setVelocityRollingWindowSize(params_.velocity_rolling_window_size);
 
         cmd_vel_timeout_ = std::chrono::milliseconds{static_cast<int>(params_.cmd_vel_timeout * 1000.0)};
-        publish_limited_velocity_ = params_.publish_limited_velocity;
-        use_stamped_vel_ = params_.use_stamped_vel;
 
-        limiter_linear_x_ = SpeedLimiter(
-                params_.linear.x.has_velocity_limits, params_.linear.x.has_acceleration_limits,
-                params_.linear.x.has_jerk_limits, params_.linear.x.min_velocity, params_.linear.x.max_velocity,
-                params_.linear.x.min_acceleration, params_.linear.x.max_acceleration, params_.linear.x.min_jerk,
-                params_.linear.x.max_jerk);
-
-        limiter_linear_y_ = SpeedLimiter(
-                params_.linear.y.has_velocity_limits, params_.linear.y.has_acceleration_limits,
-                params_.linear.y.has_jerk_limits, params_.linear.y.min_velocity, params_.linear.y.max_velocity,
-                params_.linear.y.min_acceleration, params_.linear.y.max_acceleration, params_.linear.y.min_jerk,
-                params_.linear.y.max_jerk);
-
-        limiter_angular_ = SpeedLimiter(
-                params_.angular.z.has_velocity_limits, params_.angular.z.has_acceleration_limits,
-                params_.angular.z.has_jerk_limits, params_.angular.z.min_velocity,
-                params_.angular.z.max_velocity, params_.angular.z.min_acceleration,
-                params_.angular.z.max_acceleration, params_.angular.z.min_jerk, params_.angular.z.max_jerk);
         reset();
-
-//        if (!reset()) {
-//            return controller_interface::CallbackReturn::ERROR;
-//        }
-
-        if (publish_limited_velocity_) {
-            limited_velocity_publisher_ = get_node()->create_publisher<Twist>(DEFAULT_COMMAND_OUT_TOPIC,
-                                                                              rclcpp::SystemDefaultsQoS());
-            realtime_limited_velocity_publisher_ = std::make_shared<realtime_tools::RealtimePublisher<Twist>>(
-                    limited_velocity_publisher_);
-        }
 
         const Twist empty_twist;
         received_velocity_msg_ptr_.set(std::make_shared<Twist>(empty_twist));
 
-        // Fill last two commands with default constructed commands
-        previous_commands_.emplace(empty_twist);
-        previous_commands_.emplace(empty_twist);
-
         // initialize command subscriber
-        if (use_stamped_vel_) {
-            velocity_command_subscriber_ = get_node()->create_subscription<Twist>(
-                    DEFAULT_COMMAND_TOPIC, rclcpp::SystemDefaultsQoS(),
-                    [this](const std::shared_ptr<Twist> msg) -> void {
-                        if (!subscriber_is_active_) {
-                            RCLCPP_WARN(
-                                    get_node()->get_logger(), "Can't accept new commands. subscriber is inactive");
-                            return;
-                        }
-                        if ((msg->header.stamp.sec == 0) && (msg->header.stamp.nanosec == 0)) {
-                            RCLCPP_WARN_ONCE(
-                                    get_node()->get_logger(),
-                                    "Received TwistStamped with zero timestamp, setting it to current "
-                                    "time, this message will only be shown once");
-                            msg->header.stamp = get_node()->get_clock()->now();
-                        }
-                        received_velocity_msg_ptr_.set(std::move(msg));
-                    });
-        } else {
-            velocity_command_unstamped_subscriber_ =
-                    get_node()->create_subscription<geometry_msgs::msg::Twist>(
-                            DEFAULT_COMMAND_UNSTAMPED_TOPIC, rclcpp::SystemDefaultsQoS(),
-                            [this](const std::shared_ptr<geometry_msgs::msg::Twist> msg) -> void {
-                                if (!subscriber_is_active_) {
-                                    RCLCPP_WARN(
-                                            get_node()->get_logger(),
-                                            "Can't accept new commands. subscriber is inactive");
-                                    return;
-                                }
-                                std::shared_ptr<Twist> twist_stamped;
-                                received_velocity_msg_ptr_.get(twist_stamped);
-                                twist_stamped->twist = *msg;
-                                twist_stamped->header.stamp = get_node()->get_clock()->now();
-                            });
-        }
+        velocity_command_subscriber_ = get_node()->create_subscription<Twist>(
+                DEFAULT_COMMAND_TOPIC, rclcpp::SystemDefaultsQoS(),
+                [this](const std::shared_ptr<Twist> msg) -> void {
+                    if (!subscriber_is_active_) {
+                        RCLCPP_WARN(get_node()->get_logger(), "Can't accept new commands. subscriber is inactive");
+                        return;
+                    }
+                    if ((msg->header.stamp.sec == 0) && (msg->header.stamp.nanosec == 0)) {
+                        RCLCPP_WARN_ONCE(
+                                get_node()->get_logger(),
+                                "Received TwistStamped with zero timestamp, setting it to current "
+                                "time, this message will only be shown once");
+                        msg->header.stamp = get_node()->get_clock()->now();
+                    }
+                    received_velocity_msg_ptr_.set(std::move(msg));
+                });
 
-        // initialize odometry publisher and messasge
+        // initialize odometry publisher and message
         odometry_publisher_ = get_node()->create_publisher<nav_msgs::msg::Odometry>(DEFAULT_ODOMETRY_TOPIC,
                                                                                     rclcpp::SystemDefaultsQoS());
         realtime_odometry_publisher_ = std::make_shared<realtime_tools::RealtimePublisher<nav_msgs::msg::Odometry>>(
                 odometry_publisher_);
 
-        // Append the tf prefix if there is one
+        // append the tf prefix if there is one
         std::string tf_prefix;
         if (params_.tf_frame_prefix_enable) {
             if (!params_.tf_frame_prefix.empty()) {
@@ -406,7 +303,7 @@ namespace dogbot_drive_controller {
             return controller_interface::CallbackReturn::ERROR;
         }
 
-        is_halted = false;
+        is_halted_ = false;
         subscriber_is_active_ = true;
 
         return controller_interface::CallbackReturn::SUCCESS;
@@ -414,9 +311,9 @@ namespace dogbot_drive_controller {
 
     controller_interface::CallbackReturn DogBotDriveController::on_deactivate(const rclcpp_lifecycle::State &) {
         subscriber_is_active_ = false;
-        if (!is_halted) {
+        if (!is_halted_) {
             halt();
-            is_halted = true;
+            is_halted_ = true;
         }
         registered_handles_.clear();
         return controller_interface::CallbackReturn::SUCCESS;
@@ -424,35 +321,25 @@ namespace dogbot_drive_controller {
 
     controller_interface::CallbackReturn DogBotDriveController::on_cleanup(const rclcpp_lifecycle::State &) {
         reset();
-//        if (!reset()) {
-//            return controller_interface::CallbackReturn::ERROR;
-//        }
         received_velocity_msg_ptr_.set(std::make_shared<Twist>());
         return controller_interface::CallbackReturn::SUCCESS;
     }
 
     controller_interface::CallbackReturn DogBotDriveController::on_error(const rclcpp_lifecycle::State &) {
         reset();
-/*        if (!reset()) {
-            return controller_interface::CallbackReturn::ERROR;
-        }*/
         return controller_interface::CallbackReturn::SUCCESS;
     }
 
     void DogBotDriveController::reset() {
         odometry_.resetOdometry();
-
-        std::queue<Twist> empty;
-        std::swap(previous_commands_, empty);
-
+        
         registered_handles_.clear();
 
         subscriber_is_active_ = false;
         velocity_command_subscriber_.reset();
-        velocity_command_unstamped_subscriber_.reset();
 
         received_velocity_msg_ptr_.set(nullptr);
-        is_halted = false;
+        is_halted_ = false;
     }
 
     controller_interface::CallbackReturn DogBotDriveController::on_shutdown(const rclcpp_lifecycle::State &) {
@@ -473,7 +360,7 @@ namespace dogbot_drive_controller {
         }
 
         // register handle
-        const auto interface_name = feedback_type();
+        const auto interface_name = HW_IF_POSITION;
         const auto state_handle = std::find_if(
                 state_interfaces_.cbegin(), state_interfaces_.cend(),
                 [&wheel_name, &interface_name](const auto &interface) {

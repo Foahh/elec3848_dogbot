@@ -21,7 +21,7 @@ namespace dogbot_hardware {
                 serial_.setTimeout(serial::Timeout::max(), timeout_ms, 0, serial::Timeout::max(), 0);
                 serial_.open();
                 serial_.flush();
-                send("<S>");
+                send("<S>", true);
                 return true;
             }
             catch (std::exception &e) {
@@ -45,24 +45,29 @@ namespace dogbot_hardware {
             return serial_.isOpen();
         }
 
-        std::string send(const std::string &msg_to_send, bool print_output = false) {
+        std::string send(const std::string &msg_to_send, bool require_feedback) {
             serial_.flush();
-            std::string response;
-            serial_.write(msg_to_send);
             try {
-                response = serial_.readline(128UL, "\n");
+                serial_.write(msg_to_send);
             }
             catch (std::exception &e) {
                 std::cerr << "Serial Sending Exception: " << e.what() << "; Tried: " << msg_to_send << std::endl;
             }
-            if (print_output) {
-                std::cout << "Sent: " << msg_to_send << " Recv: " << response << std::endl;
+
+            if (!require_feedback) {
+                return "";
             }
-            return response;
+
+            try {
+                return serial_.readline(128UL, "\n");
+            }
+            catch (std::exception &e) {
+                std::cerr << "Serial Receiving Exception: " << e.what() << "; Tried: " << msg_to_send << std::endl;
+            }
         }
 
-        void read_feedback(const std::string &command, double &val_1, double &val_2, double &val_3, double &val_4) {
-            std::string response = send(command);
+        void read_feedback(long &val_1, long &val_2, long &val_3, long &val_4) {
+            std::string response = send("<E>", true);
 
             std::string delimiter = ",";
             size_t start = 0;
@@ -82,17 +87,17 @@ namespace dogbot_hardware {
             end = response.find(delimiter, start);
             std::string token_4 = response.substr(start, end - start);
 
-            val_1 = std::atof(token_1.c_str());
-            val_2 = std::atof(token_2.c_str());
-            val_3 = std::atof(token_3.c_str());
-            val_4 = std::atof(token_4.c_str());
+            val_1 = std::atol(token_1.c_str());
+            val_2 = std::atol(token_2.c_str());
+            val_3 = std::atol(token_3.c_str());
+            val_4 = std::atol(token_4.c_str());
         }
 
-        void set_angular_velocity(double vel_lf, double vel_rf, double vel_lb, double vel_rb) {
+        void set_motor_speed(double val_1, double val_2, double val_3, double val_4) {
             std::stringstream ss;
-            ss << std::fixed << std::setprecision(6) << "<M," << vel_lf << "," << vel_rf << "," << vel_lb << ","
-               << vel_rb << ">";
-            send(ss.str());
+            ss << std::fixed << std::setprecision(6) << "<M," << val_1 << "," << val_2 << "," << val_3 << ","
+               << val_4 << ">";
+            send(ss.str(), false);
         }
 
     private:

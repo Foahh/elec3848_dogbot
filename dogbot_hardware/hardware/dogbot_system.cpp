@@ -33,14 +33,15 @@ namespace dogbot_hardware {
         cfg_.device = info_.hardware_parameters["device"];
         cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
         cfg_.timeout_ms = std::stoi(info_.hardware_parameters["timeout_ms"]);
+        cfg_.enc_counts_per_rev = std::stoi(info_.hardware_parameters["enc_counts_per_rev"]);
 
-        wheel_lf_.name = info_.hardware_parameters["lf_wheel_name"];
-        wheel_rf_.name = info_.hardware_parameters["rf_wheel_name"];
-        wheel_lb_.name = info_.hardware_parameters["lb_wheel_name"];
-        wheel_rb_.name = info_.hardware_parameters["rb_wheel_name"];
+        wheel_lf_.setup(info_.hardware_parameters["lf_wheel_name"], cfg_.enc_counts_per_rev);
+        wheel_rf_.setup(info_.hardware_parameters["rf_wheel_name"], cfg_.enc_counts_per_rev);
+        wheel_lb_.setup(info_.hardware_parameters["lb_wheel_name"], cfg_.enc_counts_per_rev);
+        wheel_rb_.setup(info_.hardware_parameters["rb_wheel_name"], cfg_.enc_counts_per_rev);
 
         for (const hardware_interface::ComponentInfo &joint: info_.joints) {
-            // DogBotSystem has exactly two states and one command interface on each joint (wheel)
+            // DogBotSystem has exactly one states and one command interface on each joint (wheel)
             if (joint.command_interfaces.size() != 1) {
                 RCLCPP_FATAL(
                         rclcpp::get_logger("DogBotSystemHardware"),
@@ -72,14 +73,6 @@ namespace dogbot_hardware {
                         joint.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
                 return hardware_interface::CallbackReturn::ERROR;
             }
-
-            if (joint.state_interfaces[1].name != hardware_interface::HW_IF_VELOCITY) {
-                RCLCPP_FATAL(
-                        rclcpp::get_logger("DogBotSystemHardware"),
-                        "Joint '%s' have '%s' as second state interface. '%s' expected.", joint.name.c_str(),
-                        joint.state_interfaces[1].name.c_str(), hardware_interface::HW_IF_VELOCITY);
-                return hardware_interface::CallbackReturn::ERROR;
-            }
         }
 
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -89,24 +82,11 @@ namespace dogbot_hardware {
         RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Exporting State Interfaces... please wait...");
 
         std::vector<hardware_interface::StateInterface> state_interfaces;
+
         state_interfaces.emplace_back(wheel_lf_.name, hardware_interface::HW_IF_POSITION, &wheel_lf_.pos);
-        state_interfaces.emplace_back(
-                wheel_lf_.name, hardware_interface::HW_IF_VELOCITY, &wheel_lf_.vel);
-
-        state_interfaces.emplace_back(
-                wheel_rf_.name, hardware_interface::HW_IF_POSITION, &wheel_rf_.pos);
-        state_interfaces.emplace_back(
-                wheel_rf_.name, hardware_interface::HW_IF_VELOCITY, &wheel_rf_.vel);
-
-        state_interfaces.emplace_back(
-                wheel_lb_.name, hardware_interface::HW_IF_POSITION, &wheel_lb_.pos);
-        state_interfaces.emplace_back(
-                wheel_lb_.name, hardware_interface::HW_IF_VELOCITY, &wheel_lb_.vel);
-
-        state_interfaces.emplace_back(
-                wheel_rb_.name, hardware_interface::HW_IF_POSITION, &wheel_rb_.pos);
-        state_interfaces.emplace_back(
-                wheel_rb_.name, hardware_interface::HW_IF_VELOCITY, &wheel_rb_.vel);
+        state_interfaces.emplace_back(wheel_rf_.name, hardware_interface::HW_IF_POSITION, &wheel_rf_.pos);
+        state_interfaces.emplace_back(wheel_lb_.name, hardware_interface::HW_IF_POSITION, &wheel_lb_.pos);
+        state_interfaces.emplace_back(wheel_rb_.name, hardware_interface::HW_IF_POSITION, &wheel_rb_.pos);
 
         return state_interfaces;
     }
@@ -116,17 +96,10 @@ namespace dogbot_hardware {
 
         std::vector<hardware_interface::CommandInterface> command_interfaces;
 
-        command_interfaces.emplace_back(
-                wheel_lf_.name, hardware_interface::HW_IF_VELOCITY, &wheel_lf_.cmd);
-
-        command_interfaces.emplace_back(
-                wheel_rf_.name, hardware_interface::HW_IF_VELOCITY, &wheel_rf_.cmd);
-
-        command_interfaces.emplace_back(
-                wheel_lb_.name, hardware_interface::HW_IF_VELOCITY, &wheel_lb_.cmd);
-
-        command_interfaces.emplace_back(
-                wheel_rb_.name, hardware_interface::HW_IF_VELOCITY, &wheel_rb_.cmd);
+        command_interfaces.emplace_back(wheel_lf_.name, hardware_interface::HW_IF_VELOCITY, &wheel_lf_.cmd);
+        command_interfaces.emplace_back(wheel_rf_.name, hardware_interface::HW_IF_VELOCITY, &wheel_rf_.cmd);
+        command_interfaces.emplace_back(wheel_lb_.name, hardware_interface::HW_IF_VELOCITY, &wheel_lb_.cmd);
+        command_interfaces.emplace_back(wheel_rb_.name, hardware_interface::HW_IF_VELOCITY, &wheel_rb_.cmd);
 
         return command_interfaces;
     }
@@ -184,13 +157,18 @@ namespace dogbot_hardware {
             return hardware_interface::return_type::ERROR;
         }
         try {
-            comms_.read_feedback("<V>", wheel_lf_.vel, wheel_rf_.vel, wheel_lb_.vel, wheel_rb_.vel);
-            comms_.read_feedback("<P>", wheel_lf_.pos, wheel_rf_.pos, wheel_lb_.pos, wheel_rb_.pos);
+            comms_.read_feedback(wheel_lf_.enc, wheel_rf_.enc, wheel_lb_.enc, wheel_rb_.enc);
         }
         catch (const std::exception &e) {
             RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to read feedback data: %s", e.what());
             return hardware_interface::return_type::ERROR;
         }
+
+        wheel_lf_.update();
+        wheel_rf_.update();
+        wheel_lb_.update();
+        wheel_rb_.update();
+
         return hardware_interface::return_type::OK;
     }
 
@@ -200,13 +178,13 @@ namespace dogbot_hardware {
             return hardware_interface::return_type::ERROR;
         }
 
-        double motor_lf_velocity = wheel_lf_.cmd;
-        double motor_rf_velocity = wheel_rf_.cmd;
-        double motor_lb_velocity = wheel_lb_.cmd;
-        double motor_rb_velocity = wheel_rb_.cmd;
+        double motor_lf_speed = wheel_lf_.calculate_command_speed();
+        double motor_rf_speed = wheel_rf_.calculate_command_speed();
+        double motor_lb_speed = wheel_lb_.calculate_command_speed();
+        double motor_rb_speed = wheel_rb_.calculate_command_speed();
 
         try {
-            comms_.set_angular_velocity(motor_lf_velocity, motor_rf_velocity, motor_lb_velocity, motor_rb_velocity);
+            comms_.set_motor_speed(motor_lf_speed, motor_rf_speed, motor_lb_speed, motor_rb_speed);
         }
         catch (const std::exception &e) {
             RCLCPP_ERROR(rclcpp::get_logger("DogBotSystemHardware"), "Failed to set velocity values: %s", e.what());
