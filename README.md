@@ -1,6 +1,6 @@
 # ROS Humble Docker
 
-Docker for Jetson Nano & Raspberry Pi
+Docker for Jetson Nano
 
 ## Usage
 
