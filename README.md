@@ -2,8 +2,6 @@
 
 Docker for Jetson Nano
 
-Self-using docker for Jetson Nano
-
 ## Usage
 
 1. **Set up udev and Nvidia first:** `./setup_nvidia.sh && ./setup_udev.sh`
