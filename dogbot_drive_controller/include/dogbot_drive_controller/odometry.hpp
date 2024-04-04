@@ -15,6 +15,7 @@
 // limitations under the License.
 
 /*
+ * Author: Long Liangmao
  * Author: Luca Marchionni
  * Author: Bence Magyar
  * Author: Enrique Fernández
@@ -92,8 +93,8 @@ namespace dogbot_drive_controller {
         double angular_;  // [rad/s]
 
         // Wheel kinematic parameters [m]:
-        double wheel_separation_x_;
-        double wheel_separation_y_;
+//        double wheel_separation_x_;
+//        double wheel_separation_y_;
         double wheel_separation_k_;
         double lf_wheel_radius_;
         double rf_wheel_radius_;

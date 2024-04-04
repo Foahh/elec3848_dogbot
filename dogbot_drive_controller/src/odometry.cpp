@@ -29,8 +29,8 @@ namespace dogbot_drive_controller {
               linear_x_(0.0),
               linear_y_(0.0),
               angular_(0.0),
-              wheel_separation_x_(0.0),
-              wheel_separation_y_(0.0),
+//              wheel_separation_x_(0.0),
+//              wheel_separation_y_(0.0),
               wheel_separation_k_(0.0),
               lf_wheel_radius_(0.0),
               rf_wheel_radius_(0.0),
@@ -51,7 +51,6 @@ namespace dogbot_drive_controller {
         timestamp_ = time;
     }
 
-    // unit: meter
     bool Odometry::update(double lf_pos, double rf_pos, double lb_pos, double rb_pos, const rclcpp::Time &time) {
         // We cannot estimate the speed with very small-time intervals:
         const double dt = time.seconds() - timestamp_.seconds();
@@ -82,14 +81,13 @@ namespace dogbot_drive_controller {
         return true;
     }
 
-    // unit: m
     bool Odometry::updateFromVelocity(double lf, double rf, double lb, double rb, const rclcpp::Time &time) {
         const double dt = time.seconds() - timestamp_.seconds();
 
         // Estimate linear and angular speed:
-        const double linear_x = (lf + rf + lb + rb) / 4.0;
-        const double linear_y = (-lf + rf + lb - rb) / 4.0;
-        const double angular = (lf - rf + lb - rb) / (4.0 * wheel_separation_k_);
+        const double linear_x = (lf + rf + lb + rb) / 4.0 / dt;
+        const double linear_y = (-lf + rf + lb - rb) / 4.0 / dt;
+        const double angular = (lf - rf + lb - rb) / (4.0 * wheel_separation_k_) / dt;
 
         // Integrate odometry:
         integrate(linear_x, linear_y, angular);
@@ -117,8 +115,8 @@ namespace dogbot_drive_controller {
     void Odometry::setWheelParams(double wheel_separation_x, double wheel_separation_y,
                                   double lf_wheel_radius, double rf_wheel_radius, double lb_wheel_radius,
                                   double rb_wheel_radius) {
-        wheel_separation_x_ = wheel_separation_x;
-        wheel_separation_y_ = wheel_separation_y;
+//        wheel_separation_x_ = wheel_separation_x;
+//        wheel_separation_y_ = wheel_separation_y;
         wheel_separation_k_ = (wheel_separation_x + wheel_separation_y) / 2.0;
         lf_wheel_radius_ = lf_wheel_radius;
         rf_wheel_radius_ = rf_wheel_radius;
