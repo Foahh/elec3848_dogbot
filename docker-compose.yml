@@ -15,7 +15,10 @@ services:
     volumes:
       - ./colcon_ws:/home/ros/colcon_ws
     devices:
-      - /dev/gpiomem:/dev/gpiomem
+      - /dev/gpiomem0:/dev/gpiomem0
+      - /dev/gpiomem1:/dev/gpiomem1
+      - /dev/gpiomem2:/dev/gpiomem2
+      - /dev/gpiomem3:/dev/gpiomem3
       # - /dev/ydlidar:/dev/ydlidar
       # - /dev/arduino:/dev/arduino
       # - /dev/arduino:/dev/ttyUSB0
