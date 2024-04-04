@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer='Long Liangmao',
     maintainer_email='foah@connect.hku.hk',
-    description='IMU talker node for publishing ICM-20948 messages.',
+    description='ICM-20948 talker node for publishing imu messages.',
     license='Apache-2.0',
     entry_points={
         'console_scripts': [
