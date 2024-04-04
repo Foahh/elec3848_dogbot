@@ -2,7 +2,7 @@
 
 ## Usage
 
-1. Set up NVIDIA hardware support: `./setup_nvidia.sh`
+1. **Set up udev and Nvidia first:** `./setup_nvidia.sh && ./setup_udev.sh`
 
 2. Start docker container: `./compose.sh`
 

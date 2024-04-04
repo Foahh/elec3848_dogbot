@@ -22,14 +22,15 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - /tmp/.docker.xauth:/tmp/.docker.xauth:rw
+      - /proc/device-tree/compatible:/proc/device-tree/compatible
+      - /proc/device-tree/chosen:/proc/device-tree/chosen
       - ./colcon_ws:/home/ros/colcon_ws
     devices:
-      - dev/dri:/dev/dri
-      # - /dev/ydlidar:/dev/ydlidar # run /scripts/udev.sh in host first
-      # - /dev/ydlidar:/dev/ttyUSB0
+      - /dev/gpiochip0:/dev/gpiochip0
+      # - /dev/ydlidar:/dev/ydlidar
       - /dev/arduino:/dev/arduino
-      - /dev/arduino:/dev/ttyUSB1
-
+      - /dev/arduino:/dev/ttyUSB0
+    privelged: true
     ports:
       - "11311:11311"
       - "11345:11345"
@@ -39,3 +40,4 @@ services:
     stdin_open: true
     tty: true
     runtime: nvidia
+
