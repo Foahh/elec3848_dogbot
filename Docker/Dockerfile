@@ -14,6 +14,10 @@ RUN adduser --disabled-password --gecos '' $USERNAME && \
 USER $USERNAME
 
 RUN sudo apt-get update && \
+    sudo apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-desktop && \
+    sudo rm -rf /var/lib/apt/lists/*
+
+RUN sudo apt-get update && \
     rosdep update && \
     echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/$USERNAME/.bashrc && \
     sudo apt-get upgrade -y && \
