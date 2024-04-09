@@ -12,7 +12,9 @@ services:
     environment:
       - TERM=xterm-256color
       - LIDAR_TYPE=x2
+      - QT_X11_NO_MITSHM=1
     volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./colcon_ws:/home/ros/colcon_ws
     devices:
       - /dev/gpiomem0:/dev/gpiomem0
