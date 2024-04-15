@@ -100,6 +100,12 @@ namespace dogbot_hardware {
             send(ss.str(), false);
         }
 
+        void set_servo_position(int val_1, int val_2, int val_3) {
+            std::stringstream ss;
+            ss << "<P," << val_1 << "," << val_2 << "," << val_3 << ">";
+            send(ss.str(), false);
+        }
+
     private:
         serial::Serial serial_;
     };

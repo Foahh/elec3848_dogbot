@@ -1,0 +1,7 @@
+<library path="dogbot_drive_controller">
+    <class name="dogbot_drive_controller/DogBotDriveController" type="dogbot_drive_controller::DogBotDriveController" base_class_type="controller_interface::ControllerInterface">
+    <description>
+      The drive controller transforms linear and angular velocity messages into signals for 4 mecanum wheels of the robot.
+    </description>
+    </class>
+  </library>

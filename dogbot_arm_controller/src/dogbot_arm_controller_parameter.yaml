@@ -1,0 +1,19 @@
+dogbot_arm_controller:
+  arm_claw_name:
+    {
+      type: string,
+      default_value: "arm_claw_joint",
+      description: "Name of the arm claw's joint",
+    }
+  arm_shoulder_name:
+    {
+      type: string,
+      default_value: "arm_shoulder_joint",
+      description: "Name of the arm shoulder's joint",
+    }
+  arm_elbow_name:
+    {
+      type: string,
+      default_value: "arm_elbow_joint",
+      description: "Name of the arm elbow's joint",
+    }
