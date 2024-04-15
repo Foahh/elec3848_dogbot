@@ -9,6 +9,9 @@
                 <param name="rf_wheel_name">rf_wheel_joint</param>
                 <param name="lb_wheel_name">lb_wheel_joint</param>
                 <param name="rb_wheel_name">rb_wheel_joint</param>
+                <param name="servo_gripper_name">servo_gripper_joint</param>
+                <param name="servo_shoulder_name">servo_shoulder_joint</param>
+                <param name="servo_forearm_name">servo_forearm_joint</param>
                 <param name="device">/dev/arduino</param>
                 <param name="baud_rate">115200</param>
                 <param name="timeout_ms">1000</param>

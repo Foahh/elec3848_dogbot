@@ -31,8 +31,9 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include "dogbot_hardware/serial_comms.hpp"
+#include "dogbot_hardware/serial.hpp"
 #include "dogbot_hardware/wheel.hpp"
+#include "dogbot_hardware/servo.hpp"
 
 namespace dogbot_hardware {
     class DogBotSystemHardware : public hardware_interface::SystemInterface {
@@ -82,12 +83,15 @@ namespace dogbot_hardware {
                 const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
     private:
-        SerialComms comms_;
+        Serial comms_;
         Config cfg_;
         Wheel wheel_lf_;
         Wheel wheel_rf_;
         Wheel wheel_lb_;
         Wheel wheel_rb_;
+        Servo servo_gripper_;
+        Servo servo_shoulder_;
+        Servo servo_forearm_;
     };
 
 } // namespace dogbot_hardware

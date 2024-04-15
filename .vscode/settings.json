@@ -83,5 +83,6 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/home/fn/Desktop/colcon_ws/src/dogbot_hardware"
 }

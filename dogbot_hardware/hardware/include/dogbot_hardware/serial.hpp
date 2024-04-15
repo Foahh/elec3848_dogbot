@@ -9,10 +9,10 @@
 #include <unistd.h>
 
 namespace dogbot_hardware {
-    class SerialComms {
+    class Serial {
 
     public:
-        SerialComms() = default;
+        Serial() = default;
 
         bool connect(const std::string &serial_device, int32_t baud_rate, int32_t timeout_ms) {
             try {

@@ -1,31 +1,25 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>dogbot_drive_controller</name>
+  <name>dogbot_arm_controller</name>
   <version>1.0.0</version>
-  <description>Controller for the mecanum drive mobile base.</description>
+  <description>Controller for the dogbot's arm.</description>
 
   <maintainer email="foah@connect.hku.hk">Long Liangmao</maintainer>
-
-  <author email="bence.magyar.robotics@gmail.com">Bence Magyar</author>
-  <author email="jordan.palacios@pal-robotics.com">Jordan Palacios</author>
 
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <build_depend>generate_parameter_library</build_depend>
 
+  <depend>dogbot_interfaces</depend>
   <depend>backward_ros</depend>
   <depend>controller_interface</depend>
-  <depend>geometry_msgs</depend>
   <depend>hardware_interface</depend>
-  <depend>nav_msgs</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
   <depend>pluginlib</depend>
   <depend>rcpputils</depend>
   <depend>realtime_tools</depend>
-  <depend>tf2</depend>
-  <depend>tf2_msgs</depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>

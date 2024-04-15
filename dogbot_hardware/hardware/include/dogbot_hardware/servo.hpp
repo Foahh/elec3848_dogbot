@@ -1,12 +1,21 @@
-#ifndef DOGBOT_HARDWARE_ARM_HPP_
-#define DOGBOT_HARDWARE_ARM_HPP_
+#ifndef DOGBOT_HARDWARE_SERVO_HPP_
+#define DOGBOT_HARDWARE_SERVO_HPP_
+
+#include <string>
 
 namespace dogbot_hardware
 {
-   Servo Arm
+   class Servo
    {
-      string name;
+   public:
+      std::string name;
       double cmd = 0;
+      double pos = 0;
+      void setup(const std::string &wheel_name)
+      {
+         name = wheel_name;
+      }
+   };
+} // namespace dogbot_hardware
 
-   }
-}
+#endif // DOGBOT_HARDWARE_SERVO_HPP_
