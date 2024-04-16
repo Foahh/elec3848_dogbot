@@ -58,10 +58,10 @@ namespace dogbot_hardware {
                 return hardware_interface::CallbackReturn::ERROR;
             }
 
-            if (joint.state_interfaces.size() != 2) {
+            if (joint.state_interfaces.size() != 1) {
                 RCLCPP_FATAL(
                         rclcpp::get_logger("DogBotSystemHardware"),
-                        "Joint '%s' has %zu state interface. 2 expected.", joint.name.c_str(),
+                        "Joint '%s' has %zu state interface. 1 expected.", joint.name.c_str(),
                         joint.state_interfaces.size());
                 return hardware_interface::CallbackReturn::ERROR;
             }
