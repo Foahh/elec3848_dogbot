@@ -78,6 +78,7 @@ def generate_launch_description():
         parameters=[robot_description],
         remappings=[
             ("/dogbot_drive_controller/cmd_vel_unstamped", "/cmd_vel"),
+            ()
         ]
     )
     
