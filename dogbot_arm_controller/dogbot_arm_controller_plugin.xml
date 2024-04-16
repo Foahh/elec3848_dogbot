@@ -1,7 +1,0 @@
-<library path="dogbot_arm_controller">
-    <class name="dogbot_arm_controller/DogBotArmController" type="dogbot_arm_controller::DogBotArmController" base_class_type="controller_interface::ControllerInterface">
-    <description>
-      The arm controller listens to joint commands and sends them to the arm.
-    </description>
-    </class>
-  </library>
