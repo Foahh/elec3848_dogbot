@@ -83,12 +83,14 @@ namespace dogbot_hardware {
                 const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
     private:
-        Serial comms_;
+        Serial serial_;
         Config cfg_;
         Wheel wheel_lf_;
         Wheel wheel_rf_;
         Wheel wheel_lb_;
         Wheel wheel_rb_;
+        Servo servo_pan_;
+        Servo servo_tilt_;
         Servo servo_gripper_;
         Servo servo_shoulder_;
         Servo servo_forearm_;

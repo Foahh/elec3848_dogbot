@@ -16,15 +16,6 @@
         <xacro:property name="wheel_joint_z_offset" value="0.04" /> <!-- Space btw top of beam and
         each joint -->
 
-        <!-- Robot Footprint -->
-        <link name="base_footprint" />
-        
-        <joint name="base_joint" type="fixed">
-            <parent link="base_footprint" />
-            <child link="base_link" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </joint>
-
         <!-- Base Link -->
         <link name="base_link">
             <collision>
@@ -188,29 +179,47 @@
             </visual>
         </link>
 
-        <!-- servo forearm joint -->
-        <joint name="servo_forearm_joint" type="continuous">
+        <!-- servo pan joint -->
+        <joint name="servo_pan_joint" type="continuous">
             <parent link="base_link" />
-            <child link="servo_forearm" />
+            <child link="servo_pan" />
             <origin xyz="0 0 0" rpy="0 0 0" />
             <axis xyz="0 1 0" />
         </joint>
 
-        <!-- servo forearm Link -->
-        <link name="servo_forearm">
+        <!-- servo pan Link -->
+        <link name="servo_pan">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
-                    <box size="0.1 0.1 0.1" />
+                    <box size="0.05 0.05 0.05" />
                 </geometry>
                 <material name="green" />
             </visual>
+        </link>
 
+        <!-- servo tilt joint -->
+        <joint name="servo_tilt_joint" type="continuous">
+            <parent link="servo_pan" />
+            <child link="servo_tilt" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <axis xyz="0 1 0" />
+        </joint>
+
+        <!-- servo tilt Link -->
+        <link name="servo_tilt">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.05 0.05 0.05" />
+                </geometry>
+                <material name="green" />
+            </visual>
         </link>
 
         <!-- servo shoulder joint -->
         <joint name="servo_shoulder_joint" type="continuous">
-            <parent link="servo_forearm" />
+            <parent link="base_link" />
             <child link="servo_shoulder" />
             <origin xyz="0 0 0" rpy="0 0 0" />
             <axis xyz="0 1 0" />
@@ -221,7 +230,26 @@
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
-                    <box size="0.1 0.1 0.1" />
+                    <box size="0.05 0.05 0.05" />
+                </geometry>
+                <material name="green" />
+            </visual>
+        </link>
+
+        <!-- servo forearm joint -->
+        <joint name="servo_forearm_joint" type="continuous">
+            <parent link="servo_shoulder" />
+            <child link="servo_forearm" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <axis xyz="0 1 0" />
+        </joint>
+
+        <!-- servo forearm Link -->
+        <link name="servo_forearm">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.05 0.05 0.05" />
                 </geometry>
                 <material name="green" />
             </visual>
@@ -230,7 +258,7 @@
 
         <!-- servo gripper joint -->
         <joint name="servo_gripper_joint" type="continuous">
-            <parent link="servo_shoulder" />
+            <parent link="servo_forearm" />
             <child link="servo_gripper" />
             <origin xyz="0 0 0" rpy="0 0 0" />
             <axis xyz="0 1 0" />
@@ -241,7 +269,7 @@
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
-                    <box size="0.1 0.1 0.1" />
+                    <box size="0.05 0.05 0.05" />
                 </geometry>
                 <material name="green" />
             </visual>

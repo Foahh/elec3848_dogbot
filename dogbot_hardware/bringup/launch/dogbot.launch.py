@@ -23,7 +23,6 @@ from launch.actions import (
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
-from launch_ros.actions import LifecycleNode
 from launch.substitutions import (
     Command,
     FindExecutable,
@@ -47,6 +46,7 @@ def generate_launch_description():
 
     # Initialize Arguments
     gui = LaunchConfiguration("gui")
+    
     # Get URDF via xacro
     robot_description_content = Command(
         [
@@ -65,14 +65,6 @@ def generate_launch_description():
             FindPackageShare("dogbot_hardware"),
             "config",
             "dogbot_controllers.yaml",
-        ]
-    )
-
-    robot_ekf = PathJoinSubstitution(
-        [
-            FindPackageShare("dogbot_hardware"),
-            "config",
-            "ekf.yaml",
         ]
     )
 
@@ -95,9 +87,6 @@ def generate_launch_description():
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
-        remappings=[
-            ("/dogbot_drive_controller/cmd_vel_unstamped", "/cmd_vel"),
-        ],
     )
 
     rviz_node = Node(
@@ -119,7 +108,7 @@ def generate_launch_description():
         ],
     )
 
-    robot_controller_spawner = Node(
+    robot_drive_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
@@ -129,57 +118,16 @@ def generate_launch_description():
         ],
     )
 
-    imu_filter_node = Node(
-        package="imu_complementary_filter",
-        executable="complementary_filter_node",
-        output="screen",
-        parameters=[
-            {
-                "use_mag": True,
-                "do_bias_estimation": True,
-                "do_adaptive_gain": True,
-                "gain_acc": 0.01,
-                "gain_mag": 0.01,
-            }
+    dogbot_servo_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "dogbot_servo_controller",
+            "--controller-manager",
+            "/controller_manager",
         ],
     )
-
-    imu_node = Node(
-        package="dogbot_imu",
-        executable="imu_publisher",
-        output="screen",
-    )
-
-    robot_localization_node = Node(
-        package="robot_localization",
-        executable="ekf_node",
-        name="ekf_filter_node",
-        output="screen",
-        parameters=[robot_ekf],
-    )
-
-    # https://www.robotsfan.com/posts/7a5950c4.html
-    slam_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            PathJoinSubstitution(
-                [
-                    FindPackageShare("dogbot_hardware"),
-                    "launch",
-                    "slam_launch.py",
-                ]
-            )
-        ),
-        launch_arguments={
-            "use_sim_time": "false",
-        }.items(),
-    )
-
-    # robot_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=["dogbot_servo_controller", "--controller-manager", "/controller_manager"],
-    # )
-
+    
     # Delay rviz start after `joint_state_broadcaster`
     delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
         event_handler=OnProcessExit(
@@ -189,11 +137,47 @@ def generate_launch_description():
     )
 
     # Delay start of robot_controller after `joint_state_broadcaster`
-    delay_robot_controller_spawner_after_joint_state_broadcaster_spawner = (
+    delay_robot_drive_controller_spawner_after_joint_state_broadcaster_spawner = (
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=joint_state_broadcaster_spawner,
-                on_exit=[robot_controller_spawner],
+                on_exit=[robot_drive_controller_spawner],
+            )
+        )
+    )
+    
+    delay_dogbot_servo_controller_spawner_after_joint_state_broadcaster_spawner = (
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=joint_state_broadcaster_spawner,
+                on_exit=[dogbot_servo_controller_spawner],
+            )
+        )
+    )
+    
+    slam_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("dogbot_hardware"),
+                    "launch",
+                    "slam.launch.py",
+                ]
+            )
+        ),
+        launch_arguments={
+            "use_sim_time": "false",
+        }.items(),
+    )
+    
+    imu_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("dogbot_hardware"),
+                    "launch",
+                    "imu.launch.py",
+                ]
             )
         )
     )
@@ -203,11 +187,8 @@ def generate_launch_description():
         robot_state_pub_node,
         joint_state_broadcaster_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
-        delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
-        imu_filter_node,
-        imu_node,
-        robot_localization_node,
-        slam_node
+        delay_robot_drive_controller_spawner_after_joint_state_broadcaster_spawner,
+        delay_dogbot_servo_controller_spawner_after_joint_state_broadcaster_spawner
     ]
 
     return LaunchDescription(declared_arguments + nodes)

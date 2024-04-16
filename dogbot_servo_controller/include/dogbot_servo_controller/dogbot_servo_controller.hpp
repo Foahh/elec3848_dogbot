@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/*
- * Author: Bence Magyar, Enrique Fernández, Manuel Meraz
- */
-
 #ifndef DOGBOT_SERVO_CONTROLLER_DOGBOT_SERVO_CONTROLLER_HPP_
 #define DOGBOT_SERVO_CONTROLLER_DOGBOT_SERVO_CONTROLLER_HPP_
 
@@ -102,7 +98,6 @@ namespace dogbot_servo_controller
         rclcpp::Subscription<ServoPosition>::SharedPtr position_command_subscriber_ = nullptr;
         realtime_tools::RealtimeBox<std::shared_ptr<ServoPosition>> received_position_msg_ptr_{nullptr};
 
-        // publish rate limiter
         double publish_rate_ = 50.0;
         rclcpp::Duration publish_period_ = rclcpp::Duration::from_nanoseconds(0);
         rclcpp::Time previous_publish_timestamp_{0, 0, RCL_CLOCK_UNINITIALIZED};

@@ -1,6 +1,4 @@
-// Copyright 2020 PAL Robotics S.L.
-//
-// Modified by Long Liangmao in 2024
+// Copyright 2024 Long Liangmao
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,24 +54,24 @@ namespace dogbot_servo_controller
 
     controller_interface::InterfaceConfiguration DogBotServoController::state_interface_configuration() const
     {
-        auto logger = get_node()->get_logger();
-        RCLCPP_WARN(logger, "RUNNING.");
         std::vector<std::string> conf_names;
-        conf_names.push_back(params_.servo_gripper_name + "/" + HW_IF_POSITION);
+        conf_names.push_back(params_.servo_pan_name + "/" + HW_IF_POSITION);
+        conf_names.push_back(params_.servo_tilt_name + "/" + HW_IF_POSITION);
         conf_names.push_back(params_.servo_shoulder_name + "/" + HW_IF_POSITION);
         conf_names.push_back(params_.servo_forearm_name + "/" + HW_IF_POSITION);
-        return {interface_configuration_type::ALL, conf_names};
+        conf_names.push_back(params_.servo_gripper_name + "/" + HW_IF_POSITION);
+        return {interface_configuration_type::INDIVIDUAL, conf_names};
     }
 
     InterfaceConfiguration DogBotServoController::command_interface_configuration() const
     {
-        auto logger = get_node()->get_logger();
-        RCLCPP_WARN(logger, "RUNNING.");
         std::vector<std::string> conf_names;
+        conf_names.push_back(params_.servo_pan_name + "/" + HW_IF_POSITION);
+        conf_names.push_back(params_.servo_tilt_name + "/" + HW_IF_POSITION);
         conf_names.push_back(params_.servo_gripper_name + "/" + HW_IF_POSITION);
         conf_names.push_back(params_.servo_shoulder_name + "/" + HW_IF_POSITION);
         conf_names.push_back(params_.servo_forearm_name + "/" + HW_IF_POSITION);
-        return {interface_configuration_type::ALL, conf_names};
+        return {interface_configuration_type::INDIVIDUAL, conf_names};
     }
 
     controller_interface::return_type DogBotServoController::update(
@@ -86,6 +84,7 @@ namespace dogbot_servo_controller
             {
                 halt();
                 is_halted_ = true;
+                RCLCPP_INFO(get_node()->get_logger(), "Inactive. Reset all servos.");
             }
             return controller_interface::return_type::OK;
         }
@@ -99,25 +98,26 @@ namespace dogbot_servo_controller
             return controller_interface::return_type::ERROR;
         }
 
-        const double gripper_command = command->gripper;
+        const double pan_command = command->pan;
+        const double tilt_command = command->tilt;
         const double shoulder_command = command->shoulder;
         const double forearm_command = command->forearm;
+        const double gripper_command = command->gripper;
 
-        registered_handles_.at(params_.servo_gripper_name).position.get().set_value(gripper_command);
+        registered_handles_.at(params_.servo_pan_name).position.get().set_value(pan_command);
+        registered_handles_.at(params_.servo_tilt_name).position.get().set_value(tilt_command);
         registered_handles_.at(params_.servo_shoulder_name).position.get().set_value(shoulder_command);
         registered_handles_.at(params_.servo_forearm_name).position.get().set_value(forearm_command);
-
+        registered_handles_.at(params_.servo_gripper_name).position.get().set_value(gripper_command);
         return controller_interface::return_type::OK;
     }
 
     controller_interface::CallbackReturn DogBotServoController::on_configure(const rclcpp_lifecycle::State &)
     {
-        auto logger = get_node()->get_logger();
-
         if (param_listener_->is_old(params_))
         {
             params_ = param_listener_->get_params();
-            RCLCPP_INFO(logger, "Parameters were updated");
+            RCLCPP_INFO(get_node()->get_logger(), "Parameters were updated");
         }
 
         reset();
@@ -141,14 +141,18 @@ namespace dogbot_servo_controller
 
     controller_interface::CallbackReturn DogBotServoController::on_activate(const rclcpp_lifecycle::State &)
     {
-        const auto gripper_result = configure_servo(params_.servo_gripper_name);
+        const auto pan_result = configure_servo(params_.servo_pan_name);
+        const auto tilt_result = configure_servo(params_.servo_tilt_name);
         const auto shoulder_result = configure_servo(params_.servo_shoulder_name);
         const auto forearm_result = configure_servo(params_.servo_forearm_name);
+        const auto gripper_result = configure_servo(params_.servo_gripper_name);
 
         if (
-            gripper_result == controller_interface::CallbackReturn::ERROR ||
+            pan_result == controller_interface::CallbackReturn::ERROR ||
+            tilt_result == controller_interface::CallbackReturn::ERROR ||
             shoulder_result == controller_interface::CallbackReturn::ERROR ||
-            forearm_result == controller_interface::CallbackReturn::ERROR)
+            forearm_result == controller_interface::CallbackReturn::ERROR ||
+            gripper_result == controller_interface::CallbackReturn::ERROR)
         {
             return controller_interface::CallbackReturn::ERROR;
         }
@@ -209,7 +213,6 @@ namespace dogbot_servo_controller
     controller_interface::CallbackReturn DogBotServoController::configure_servo(const std::string &servo_name)
     {
         auto logger = get_node()->get_logger();
-
         if (servo_name.empty())
         {
             return controller_interface::CallbackReturn::ERROR;
@@ -217,17 +220,18 @@ namespace dogbot_servo_controller
 
         const auto interface_name = HW_IF_POSITION;
         const auto state_handle = std::find_if(
-                state_interfaces_.cbegin(), state_interfaces_.cend(),
-                [&servo_name, &interface_name](const auto &interface) {
-                    return interface.get_prefix_name() == servo_name &&
-                           interface.get_interface_name() == interface_name;
-                });
+            state_interfaces_.cbegin(), state_interfaces_.cend(),
+            [&servo_name, &interface_name](const auto &interface)
+            {
+                return interface.get_prefix_name() == servo_name &&
+                       interface.get_interface_name() == interface_name;
+            });
 
-        if (state_handle == state_interfaces_.cend()) {
+        if (state_handle == state_interfaces_.cend())
+        {
             RCLCPP_ERROR(logger, "Unable to obtain joint state handle for %s", servo_name.c_str());
             return controller_interface::CallbackReturn::ERROR;
         }
-
 
         const auto command_handle = std::find_if(
             command_interfaces_.begin(), command_interfaces_.end(),
