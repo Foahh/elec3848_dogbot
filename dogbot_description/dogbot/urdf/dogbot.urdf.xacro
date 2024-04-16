@@ -188,7 +188,7 @@
             </visual>
         </link>
 
-        <!-- arm forearm joint -->
+        <!-- servo forearm joint -->
         <joint name="servo_forearm_joint" type="continuous">
             <parent link="base_link" />
             <child link="servo_forearm" />
@@ -196,7 +196,7 @@
             <axis xyz="0 1 0" />
         </joint>
 
-        <!-- arm forearm Link -->
+        <!-- servo forearm Link -->
         <link name="servo_forearm">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
@@ -208,7 +208,7 @@
 
         </link>
 
-        <!-- arm shoulder joint -->
+        <!-- servo shoulder joint -->
         <joint name="servo_shoulder_joint" type="continuous">
             <parent link="servo_forearm" />
             <child link="servo_shoulder" />
@@ -216,7 +216,7 @@
             <axis xyz="0 1 0" />
         </joint>
 
-        <!-- arm shoulder Link -->
+        <!-- servo shoulder Link -->
         <link name="servo_shoulder">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
@@ -228,7 +228,7 @@
 
         </link>
 
-        <!-- arm gripper joint -->
+        <!-- servo gripper joint -->
         <joint name="servo_gripper_joint" type="continuous">
             <parent link="servo_shoulder" />
             <child link="servo_gripper" />
@@ -236,7 +236,7 @@
             <axis xyz="0 1 0" />
         </joint>
 
-        <!-- arm gripper Link -->
+        <!-- servo gripper Link -->
         <link name="servo_gripper">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />

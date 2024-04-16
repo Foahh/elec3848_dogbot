@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'dogbot_arm'
+package_name = 'dogbot_server'
 
 setup(
     name=package_name,
@@ -13,11 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='humble',
-    maintainer_email='humble@todo.todo',
+    maintainer='fn',
+    maintainer_email='87050903+NFHr@users.noreply.github.com',
     description='TODO: Package description',
-    license='TODO: License declaration',
-    tests_require=['pytest'],
+    license='Apache-2.0',
     entry_points={
         'console_scripts': [
         ],

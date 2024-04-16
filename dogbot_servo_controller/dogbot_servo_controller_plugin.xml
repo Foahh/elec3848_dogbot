@@ -1,0 +1,7 @@
+<library path="dogbot_servo_controller">
+    <class name="dogbot_servo_controller/DogBotServoController" type="dogbot_servo_controller::DogBotServoController" base_class_type="controller_interface::ControllerInterface">
+    <description>
+      The servo controller listens to joint commands and sends them to the servo.
+    </description>
+    </class>
+  </library>

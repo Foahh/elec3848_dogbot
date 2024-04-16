@@ -8,8 +8,8 @@ controller_manager:
     dogbot_base_controller:
       type: dogbot_drive_controller/DogBotDriveController
 
-    # dogbot_arm_controller:
-    #   type: dogbot_arm_controller/DogBotArmController
+    # dogbot_servo_controller:
+    #   type: dogbot_servo_controller/DogBotServoController
 
 dogbot_base_controller:
   ros__parameters:
@@ -33,7 +33,7 @@ dogbot_base_controller:
     publish_rate: 50.0
 
 
-# dogbot_arm_controller:
+# dogbot_servo_controller:
 #   ros__parameters:
 #     servo_gripper_name: "servo_gripper_joint"
 #     servo_forearm_name: "servo_forearm_joint"

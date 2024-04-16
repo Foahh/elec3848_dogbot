@@ -1,0 +1,19 @@
+dogbot_servo_controller:
+  servo_gripper_name:
+    {
+      type: string,
+      default_value: "servo_gripper_joint",
+      description: "Name of the servo gripper's joint",
+    }
+  servo_shoulder_name:
+    {
+      type: string,
+      default_value: "servo_shoulder_joint",
+      description: "Name of the servo shoulder's joint",
+    }
+  servo_forearm_name:
+    {
+      type: string,
+      default_value: "servo_forearm_joint",
+      description: "Name of the servo forearm's joint",
+    }
