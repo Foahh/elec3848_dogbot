@@ -106,6 +106,8 @@ namespace dogbot_drive_controller {
 
         Odometry odometry_;
 
+        const char *feedback_type() const;
+
         // Timeout to consider cmd_vel commands old
         std::chrono::milliseconds cmd_vel_timeout_{500};
 

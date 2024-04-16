@@ -41,6 +41,10 @@ namespace dogbot_drive_controller {
 
     DogBotDriveController::DogBotDriveController() : controller_interface::ControllerInterface() {}
 
+    const char *DogBotDriveController::feedback_type() const {
+        return HW_IF_POSITION;
+    }
+
     controller_interface::CallbackReturn DogBotDriveController::on_init() {
         try {
             param_listener_ = std::make_shared<ParamListener>(get_node());
@@ -60,16 +64,16 @@ namespace dogbot_drive_controller {
         conf_names.push_back(params_.rf_wheel_name + "/" + HW_IF_VELOCITY);
         conf_names.push_back(params_.lb_wheel_name + "/" + HW_IF_VELOCITY);
         conf_names.push_back(params_.rb_wheel_name + "/" + HW_IF_VELOCITY);
-        return {interface_configuration_type::INDIVIDUAL, conf_names};
+        return {interface_configuration_type::ALL, conf_names};
     }
 
     InterfaceConfiguration DogBotDriveController::state_interface_configuration() const {
         std::vector<std::string> conf_names;
-        conf_names.push_back(params_.lf_wheel_name + "/" + HW_IF_POSITION);
-        conf_names.push_back(params_.rf_wheel_name + "/" + HW_IF_POSITION);
-        conf_names.push_back(params_.lb_wheel_name + "/" + HW_IF_POSITION);
-        conf_names.push_back(params_.rb_wheel_name + "/" + HW_IF_POSITION);
-        return {interface_configuration_type::INDIVIDUAL, conf_names};
+        conf_names.push_back(params_.lf_wheel_name + "/" + feedback_type());
+        conf_names.push_back(params_.rf_wheel_name + "/" + feedback_type());
+        conf_names.push_back(params_.lb_wheel_name + "/" + feedback_type());
+        conf_names.push_back(params_.rb_wheel_name + "/" + feedback_type());
+        return {interface_configuration_type::ALL, conf_names};
     }
 
     controller_interface::return_type DogBotDriveController::update(
@@ -114,7 +118,7 @@ namespace dogbot_drive_controller {
         const double rb_feedback = registered_handles_.at(params_.rb_wheel_name).feedback.get().get_value();
 
         if (std::isnan(lf_feedback) || std::isnan(rf_feedback) || std::isnan(lb_feedback) || std::isnan(rb_feedback)) {
-            RCLCPP_ERROR(logger, "The wheel %s is invalid ", HW_IF_POSITION);
+            RCLCPP_ERROR(logger, "The wheel %s is invalid ", feedback_type());
             return controller_interface::return_type::ERROR;
         }
 
@@ -363,7 +367,7 @@ namespace dogbot_drive_controller {
         }
 
         // register handle
-        const auto interface_name = HW_IF_POSITION;
+        const auto interface_name = feedback_type();
         const auto state_handle = std::find_if(
                 state_interfaces_.cbegin(), state_interfaces_.cend(),
                 [&wheel_name, &interface_name](const auto &interface) {
