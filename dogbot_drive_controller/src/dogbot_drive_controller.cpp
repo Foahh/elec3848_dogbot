@@ -127,7 +127,7 @@ namespace dogbot_drive_controller {
             return controller_interface::return_type::ERROR;
         }
         
-        RCLCPP_INFO(logger, "Odometry: x: %f, y: %f, heading: %f; Velocity: x: %f, y: %f, angular: %f", odometry_.getX(), odometry_.getY(), odometry_.getHeading(), odometry_.getLinearX(), odometry_.getLinearY(), odometry_.getAngular());
+        // RCLCPP_INFO(logger, "Odometry: x: %f, y: %f, heading: %f; Velocity: x: %f, y: %f, angular: %f", odometry_.getX(), odometry_.getY(), odometry_.getHeading(), odometry_.getLinearX(), odometry_.getLinearY(), odometry_.getAngular());
 
         tf2::Quaternion orientation;
         orientation.setRPY(0.0, 0.0, odometry_.getHeading());

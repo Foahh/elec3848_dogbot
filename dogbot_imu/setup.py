@@ -19,7 +19,7 @@ setup(
     license='Apache-2.0',
     entry_points={
         'console_scripts': [
-            'talker = dogbot_imu.publisher:main',
+            'imu_publisher = dogbot_imu.publisher:main',
         ],
     },
 )
