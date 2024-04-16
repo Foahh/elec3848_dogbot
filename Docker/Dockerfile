@@ -1,4 +1,4 @@
-FROM arm64v8/ros:humble-perception
+FROM dustynv/ros:humble-ros-core-l4t-r32.7.1
 SHELL ["/bin/bash", "-c"]
 
 ARG USER_ID=1000
@@ -10,11 +10,12 @@ RUN adduser --disabled-password --gecos '' $USERNAME && \
     usermod --shell /bin/bash $USERNAME && \
     adduser $USERNAME sudo && \
     adduser $USERNAME dialout && \
+    adduser $USERNAME gpio && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER $USERNAME
 
 RUN sudo apt-get update && \
-    sudo apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-desktop && \
+    sudo apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-base ros-${ROS_DISTRO}-perception && \
     sudo rm -rf /var/lib/apt/lists/*
 
 RUN sudo apt-get update && \
