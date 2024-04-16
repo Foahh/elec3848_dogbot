@@ -6,7 +6,7 @@ Docker for Jetson Nano
 
 1. **Set up udev and Nvidia first:** `./setup_nvidia.sh && ./setup_udev.sh`
 
-2. Start docker container: `docker compose up`
+2. Start docker container: `docker compose up -d`
 
 3. Enter the container: `./attach.sh`
 
