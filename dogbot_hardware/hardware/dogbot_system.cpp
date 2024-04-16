@@ -116,7 +116,6 @@ namespace dogbot_hardware
     hardware_interface::CallbackReturn DogBotSystemHardware::on_configure(
         const rclcpp_lifecycle::State & /*previous_state*/)
     {
-        return hardware_interface::CallbackReturn::SUCCESS;
         RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Configuring... please wait...");
         if (serial_.connected())
         {
@@ -135,7 +134,6 @@ namespace dogbot_hardware
     hardware_interface::CallbackReturn DogBotSystemHardware::on_cleanup(
         const rclcpp_lifecycle::State & /*previous_state*/)
     {
-        return hardware_interface::CallbackReturn::SUCCESS;
         RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Cleaning... please wait...");
         if (serial_.connected() && serial_.disconnect())
         {
@@ -149,7 +147,6 @@ namespace dogbot_hardware
     hardware_interface::CallbackReturn DogBotSystemHardware::on_activate(
         const rclcpp_lifecycle::State & /*previous_state*/)
     {
-        return hardware_interface::CallbackReturn::SUCCESS;
         RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Activating ...please wait...");
         if (!serial_.connected())
         {
@@ -174,7 +171,6 @@ namespace dogbot_hardware
     hardware_interface::return_type DogBotSystemHardware::read(
         const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
     {
-        return hardware_interface::return_type::OK;
         if (!serial_.connected())
         {
             RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Failed to read!");
@@ -207,7 +203,6 @@ namespace dogbot_hardware
     hardware_interface::return_type dogbot_hardware::DogBotSystemHardware::write(
         const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
     {
-        return hardware_interface::return_type::OK;
         if (!serial_.connected())
         {
             return hardware_interface::return_type::ERROR;
