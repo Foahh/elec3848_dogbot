@@ -56,20 +56,24 @@ namespace dogbot_arm_controller
 
     controller_interface::InterfaceConfiguration DogBotArmController::state_interface_configuration() const
     {
+        auto logger = get_node()->get_logger();
+        RCLCPP_WARN(logger, "RUNNING.");
         std::vector<std::string> conf_names;
         conf_names.push_back(params_.servo_gripper_name + "/" + HW_IF_POSITION);
         conf_names.push_back(params_.servo_shoulder_name + "/" + HW_IF_POSITION);
         conf_names.push_back(params_.servo_forearm_name + "/" + HW_IF_POSITION);
-        return {interface_configuration_type::INDIVIDUAL, conf_names};
+        return {interface_configuration_type::ALL, conf_names};
     }
 
     InterfaceConfiguration DogBotArmController::command_interface_configuration() const
     {
+        auto logger = get_node()->get_logger();
+        RCLCPP_WARN(logger, "RUNNING.");
         std::vector<std::string> conf_names;
         conf_names.push_back(params_.servo_gripper_name + "/" + HW_IF_POSITION);
         conf_names.push_back(params_.servo_shoulder_name + "/" + HW_IF_POSITION);
         conf_names.push_back(params_.servo_forearm_name + "/" + HW_IF_POSITION);
-        return {interface_configuration_type::INDIVIDUAL, conf_names};
+        return {interface_configuration_type::ALL, conf_names};
     }
 
     controller_interface::return_type DogBotArmController::update(

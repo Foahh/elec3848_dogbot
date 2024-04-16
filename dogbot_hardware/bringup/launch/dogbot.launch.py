@@ -78,7 +78,6 @@ def generate_launch_description():
         parameters=[robot_description],
         remappings=[
             ("/dogbot_drive_controller/cmd_vel_unstamped", "/cmd_vel"),
-            ()
         ]
     )
     
@@ -102,6 +101,12 @@ def generate_launch_description():
         executable="spawner",
         arguments=["dogbot_base_controller", "--controller-manager", "/controller_manager"],
     )
+    
+    # robot_controller_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=["dogbot_arm_controller", "--controller-manager", "/controller_manager"],
+    # )
 
     # Delay rviz start after `joint_state_broadcaster`
     delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
