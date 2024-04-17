@@ -30,3 +30,4 @@ if [ $flag -eq 1 ]; then
 fi
 
 getent group gpio
+getent group i2c
