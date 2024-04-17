@@ -16,8 +16,8 @@ import rclpy
 import math
 from rclpy.node import Node
 
-import icm20948  # https://github.com/pimoroni/icm20948-python
-
+from icm20948 import ICM20948 # https://github.com/pimoroni/icm20948-python
+from smbus import SMBus
 from sensor_msgs.msg import MagneticField, Imu
 
 GYRO_FS_SEL_0 = 250
@@ -41,8 +41,9 @@ class IMUPublisher(Node):
 
         timer_period = 0.005  # seconds
         self.timer = self.create_timer(timer_period, self.callback)
-
-        self.imu = icm20948.ICM20948()
+        
+        self.bus = SMBus(0)
+        self.imu = ICM20948(i2c_bus=self.bus)
         self.raw_msg = Imu()
         self.mag_msg = MagneticField()
         self.imu.set_accelerometer_full_scale(ACCEL_FS_SEL_1)
@@ -71,48 +72,9 @@ class IMUPublisher(Node):
         self.mag_msg.magnetic_field.z = mz * 1e-6
         self.mag_publisher.publish(self.mag_msg)
 
-
-class IMUPublisherDummy(Node):
-    def __init__(self):
-        super().__init__("imu_publisher")
-        self.logger = self.get_logger()
-
-        self.raw_publisher = self.create_publisher(Imu, "imu/data_raw", 10)
-        self.mag_publisher = self.create_publisher(MagneticField, "imu/mag", 10)
-
-        timer_period = 0.005  # seconds
-        self.timer = self.create_timer(timer_period, self.callback)
-
-        self.imu = icm20948.ICM20948()
-        self.raw_msg = Imu()
-        self.mag_msg = MagneticField()
-        self.imu.set_accelerometer_full_scale(ACCEL_FS_SEL_1)
-        self.imu.set_gyro_full_scale(GYRO_FS_SEL_1)
-
-    def callback(self):
-        timestamp = self.get_clock().now().to_msg()
-
-        self.raw_msg.header.stamp = timestamp
-        self.raw_msg.header.frame_id = "imu_link"
-        self.raw_msg.linear_acceleration.x = 0.0
-        self.raw_msg.linear_acceleration.y = 0.0
-        self.raw_msg.linear_acceleration.z = 0.0
-        self.raw_msg.angular_velocity.x = 0.0
-        self.raw_msg.angular_velocity.y = 0.0
-        self.raw_msg.angular_velocity.z = 0.0
-        self.raw_publisher.publish(self.raw_msg)
-
-        self.mag_msg.header.stamp = timestamp
-        self.mag_msg.header.frame_id = "imu_link"
-        self.mag_msg.magnetic_field.x = 0.0
-        self.mag_msg.magnetic_field.y = 0.0
-        self.mag_msg.magnetic_field.z = 0.0
-        self.mag_publisher.publish(self.mag_msg)
-
-
 def main(args=None):
     rclpy.init(args=args)
-    imu_publisher = IMUPublisherDummy()
+    imu_publisher = IMUPublisher()
     rclpy.spin(imu_publisher)
     imu_publisher.destroy_node()
     rclpy.shutdown()
