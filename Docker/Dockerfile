@@ -1,7 +1,7 @@
 FROM arm64v8/ros:humble-ros-base AS humble-dev
 SHELL ["/bin/bash", "-c"]
 
-RUN sudo apt-get update && sudo apt-get install -y \
+RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     ros-dev-tools \
     ros-${ROS_DISTRO}-robot-localization \
     ros-${ROS_DISTRO}-imu-tools \
@@ -16,7 +16,7 @@ RUN sudo apt-get update && sudo apt-get install -y \
     ros-${ROS_DISTRO}-nav2-bringup && \
     rm -rf /var/lib/apt/lists/*
 
-RUN sudo apt-get update && sudo apt-get install -y \
+RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     python3-pip \
     libi2c-dev \
     i2c-tools && \ 
@@ -40,8 +40,7 @@ RUN adduser --disabled-password --gecos '' $USERNAME && \
     adduser $USERNAME dialout && \
     adduser $USERNAME i2c && \
     adduser $USERNAME gpio && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
-    chmod a=r,o= /etc/sudoers.d/user
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER $USERNAME
 
 RUN sudo apt-get update && \
