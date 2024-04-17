@@ -2,8 +2,8 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>dogbot_interfaces</name>
-  <version>0.0.1</version>
-  <description>Package of msg/srv interfaces for Dogbot.</description>
+  <version>1.0.0</version>
+  <description>Package of msg interface for Dogbot.</description>
   <maintainer email="foah@connect.hku.hk">Long Liangmao</maintainer>
   <license>Apache-2.0</license>
 
