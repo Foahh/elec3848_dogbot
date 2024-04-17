@@ -10,6 +10,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./colcon_ws:/home/turtle/colcon_ws
+      - /etc/udev/rules.d:/etc/udev/rules.d
     network_mode: host
     runtime: nvidia
     privileged: true
