@@ -41,7 +41,6 @@ RUN adduser --disabled-password --gecos '' $USERNAME && \
     adduser $USERNAME i2c && \
     adduser $USERNAME gpio && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
-    echo 'Defaults exempt_group+=user' >> /etc/sudoers.d/user && \
     chmod a=r,o= /etc/sudoers.d/user
 USER $USERNAME
 
