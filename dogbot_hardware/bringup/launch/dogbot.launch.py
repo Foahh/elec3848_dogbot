@@ -39,7 +39,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "gui",
-            default_value="true",
+            default_value="false",
             description="Start RViz2 automatically with this launch file.",
         )
     )
@@ -153,6 +153,8 @@ def generate_launch_description():
         )
     )
 
+    #############################################################################
+
     slam_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
@@ -169,24 +171,57 @@ def generate_launch_description():
     )
 
     imu_filter_node = Node(
-            package="imu_complementary_filter",
-            executable="complementary_filter_node",
-            output="screen",
-            parameters=[
-                {
-                    "use_mag": True,
-                    "do_bias_estimation": True,
-                    "do_adaptive_gain": True,
-                    "gain_acc": 0.01,
-                    "gain_mag": 0.01,
-                }
-            ],
-        )
+        package="imu_complementary_filter",
+        executable="complementary_filter_node",
+        output="screen",
+        parameters=[
+            {
+                "use_mag": True,
+                "do_bias_estimation": True,
+                "do_adaptive_gain": True,
+                "gain_acc": 0.01,
+                "gain_mag": 0.01,
+                "publish_tf": False,
+            }
+        ],
+    )
 
     imu_publisher_node = Node(
         package="dogbot_imu",
         executable="imu_publisher",
         output="screen",
+    )
+
+    ekf_localization_node = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        output="screen",
+        parameters=[
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("dogbot_hardware"),
+                    "config",
+                    "ekf.yaml",
+                ]
+            )
+        ],
+    )
+
+    #############################################################################
+
+    navigation2_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [FindPackageShare("nav2_bringup"), "launch", "navigation_launch.py"]
+            )
+        ),
+        launch_arguments={
+            "use_sim_time": "false",
+            "autostart": "true",
+            "params_file": PathJoinSubstitution(
+                [FindPackageShare("dogbot_hardware"), "config", "navigation.yaml"]
+            ),
+        }.items(),
     )
 
     nodes = [
@@ -198,7 +233,8 @@ def generate_launch_description():
         delay_dogbot_servo_controller_spawner_after_joint_state_broadcaster_spawner,
         imu_publisher_node,
         imu_filter_node,
-        slam_launch
+        slam_launch,
+        ekf_localization_node,
     ]
 
     return LaunchDescription(declared_arguments + nodes)
