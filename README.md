@@ -1,4 +1,4 @@
-# ELEC2848 Project - DogBot
+# ELEC3848 Project - DogBot
 
 ## Introduction
 
