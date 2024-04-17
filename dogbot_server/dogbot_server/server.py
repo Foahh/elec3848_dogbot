@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import TwistStamped
-from dogbot_interfaces.msg import ServoPosition
+from std_msgs.msg import Float64MultiArray
 from threading import Thread
 import socket
 
@@ -14,9 +14,9 @@ class ServerPublisherNode(Node):
             TwistStamped, "dogbot_base_controller", 10
         )
         self.twist_stamped = TwistStamped()
-        self.servo_position = ServoPosition()
+        self.servo_position = Float64MultiArray()
         self.servo_publisher = self.create_publisher(
-            ServoPosition, "dogbot_servo_controller", 10
+            Float64MultiArray, "dogbot_servo_controller", 10
         )
         self.default_vel = 0.25
         self.data = ""
@@ -86,11 +86,7 @@ class ServerPublisherNode(Node):
         self.twist_publisher.publish(self.twist_stamped)
 
     def cmd_pos(self, pan, tilt, shoulder, forearm, gripper):
-        self.servo_position.pan = pan
-        self.servo_position.tilt = tilt
-        self.servo_position.shoulder = shoulder
-        self.servo_position.forearm = forearm
-        self.servo_position.gripper = gripper
+        self.servo_position.data = (pan, tilt, shoulder, forearm, gripper)
         self.servo_publisher.publish(self.servo_position)
 
     def on_receive(

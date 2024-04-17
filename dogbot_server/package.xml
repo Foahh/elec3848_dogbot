@@ -7,8 +7,6 @@
   <maintainer email="foah@connect.hku.hk">Long Liangmao</maintainer>
   <license>Apache-2.0</license>
 
-  <exec_depend>dogbot_interfaces</exec_depend>
-
   <export>
     <build_type>ament_python</build_type>
   </export>
