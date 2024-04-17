@@ -168,16 +168,25 @@ def generate_launch_description():
         }.items(),
     )
 
-    imu_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            PathJoinSubstitution(
-                [
-                    FindPackageShare("dogbot_hardware"),
-                    "launch",
-                    "imu.launch.py",
-                ]
-            )
+    imu_filter_node = Node(
+            package="imu_complementary_filter",
+            executable="complementary_filter_node",
+            output="screen",
+            parameters=[
+                {
+                    "use_mag": True,
+                    "do_bias_estimation": True,
+                    "do_adaptive_gain": True,
+                    "gain_acc": 0.01,
+                    "gain_mag": 0.01,
+                }
+            ],
         )
+
+    imu_publisher_node = Node(
+        package="dogbot_imu",
+        executable="imu_publisher",
+        output="screen",
     )
 
     nodes = [
@@ -187,7 +196,8 @@ def generate_launch_description():
         delay_rviz_after_joint_state_broadcaster_spawner,
         delay_robot_drive_controller_spawner_after_joint_state_broadcaster_spawner,
         delay_dogbot_servo_controller_spawner_after_joint_state_broadcaster_spawner,
-        imu_launch,
+        imu_publisher_node,
+        imu_filter_node,
         slam_launch
     ]
 
