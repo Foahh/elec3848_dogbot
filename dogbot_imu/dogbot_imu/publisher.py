@@ -57,9 +57,9 @@ class IMUPublisher(Node):
 
         self.raw_msg.header.stamp = timestamp
         self.raw_msg.header.frame_id = "imu_link"
-        self.raw_msg.linear_acceleration.x = ax * 9.80665
-        self.raw_msg.linear_acceleration.y = ay * 9.80665
-        self.raw_msg.linear_acceleration.z = az * 9.80665
+        self.raw_msg.linear_acceleration.x = ax * 9.81
+        self.raw_msg.linear_acceleration.y = ay * 9.81
+        self.raw_msg.linear_acceleration.z = az * 9.81
         self.raw_msg.angular_velocity.x = gx * math.pi / 180.0
         self.raw_msg.angular_velocity.y = gy * math.pi / 180.0
         self.raw_msg.angular_velocity.z = gz * math.pi / 180.0
