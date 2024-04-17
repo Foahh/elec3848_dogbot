@@ -15,6 +15,8 @@ services:
       - /dev/arduino:/dev/arduino:rw
       - /dev/gpiochip0:/dev/gpiochip0:rw
       - /dev/gpiochip1:/dev/gpiochip1:rw
+      - /dev/i2c-0:/dev/i2c-0:rw
+      - /dev/i2c-1:/dev/i2c-1:rw
 
     # ports: # not necessary with network_mode: host
     #   - "11311:11311"
