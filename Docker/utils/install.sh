@@ -3,11 +3,10 @@
 sudo apt-get update
 
 # tools
-sudo apt-get install -y \
-     vim \
-     python3-pip
-
-pip install icm20948
+sudo apt-get install -y python3-pip && \
+    libi2c-dev && \
+    i2c-tools && \
+sudo pip install icm20948
 
 # ros-related packages
 sudo apt-get install -y \
@@ -18,10 +17,10 @@ sudo apt-get install -y \
     ros-"$ROS_DISTRO"-slam-toolbox \
     ros-"$ROS_DISTRO"-ros2-control \
     ros-"$ROS_DISTRO"-ros2-controllers \
-    ros-"$ROS_DISTRO"-control-toolbox \
     ros-"$ROS_DISTRO"-realtime-tools \
     ros-"$ROS_DISTRO"-control-msgs \
-    ros-"$ROS_DISTRO"-ros2-controllers-test-nodes \
-    ros-"$ROS_DISTRO"-joint-state-publisher-gui
+    ros-"$ROS_DISTRO"-joint-state-publisher-gui \
+    ros-"$ROS_DISTRO"-navigation2 \
+    ros-"$ROS_DISTRO"-nav2-bringup
 
 sudo rm -rf /var/lib/apt/lists/*

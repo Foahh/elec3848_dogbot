@@ -28,3 +28,5 @@ fi
 if [ $flag -eq 1 ]; then
     sudo udevadm control --reload-rules && sudo service udev restart && sudo udevadm trigger
 fi
+
+getent group gpio

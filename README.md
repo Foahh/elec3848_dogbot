@@ -1,16 +1,16 @@
 # ROS Humble Docker
 
-Docker for Jetson Nano
+Docker for arm64v8 devices.
 
 ## Usage
 
-1. **Set up udev and Nvidia first:** `./setup_nvidia.sh && ./setup_udev.sh`
+1. **Set up udev first:** `./setup_udev.sh`
 
 2. Start docker container: `docker compose up -d`
 
 3. Enter the container: `./attach.sh`
 
-4. Support Dev Container in vscode
+4. Dev Container is supported.
 
 ## Credits
 

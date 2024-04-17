@@ -1,22 +1,23 @@
-FROM dustynv/ros:humble-ros-core-l4t-r32.7.1
+FROM arm64v8/ros:humble-ros-base
 SHELL ["/bin/bash", "-c"]
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
+ARG GPIO_ID
 ENV USERNAME turtle
+RUN groupadd -f -r -g $GPIO_ID gpio
 RUN adduser --disabled-password --gecos '' $USERNAME && \
     usermod  --uid ${USER_ID} $USERNAME && \
     groupmod --gid ${GROUP_ID} $USERNAME && \
     usermod --shell /bin/bash $USERNAME && \
     adduser $USERNAME sudo && \
     adduser $USERNAME dialout && \
+    adduser $USERNAME i2c && \
     adduser $USERNAME gpio && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && \
+    echo 'Defaults exempt_group+=user' >> /etc/sudoers.d/user && \
+    chmod a=r,o= /etc/sudoers.d/user
 USER $USERNAME
-
-RUN sudo apt-get update && \
-    sudo apt-get install -y --no-install-recommends ros-${ROS_DISTRO}-base ros-${ROS_DISTRO}-perception && \
-    sudo rm -rf /var/lib/apt/lists/*
 
 RUN sudo apt-get update && \
     rosdep update && \
