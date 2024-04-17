@@ -10,9 +10,15 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./colcon_ws:/home/turtle/colcon_ws
-      - /etc/udev/rules.d:/etc/udev/rules.d
+    devices:
+      - /dev/arduino:/dev/arduino
+      - /dev/ydlidar:/dev/ydlidar
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      - /dev/ttyUSB1:/dev/ttyUSB1
+      - /dev/i2c-0:/dev/i2c-0
+      - /dev/i2c-1:/dev/i2c-1
     network_mode: host
     runtime: nvidia
-    privileged: true
+    # privileged: true
     stdin_open: true
     tty: true

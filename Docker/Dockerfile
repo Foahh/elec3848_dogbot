@@ -29,20 +29,13 @@ FROM humble-dev
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
-ARG GPIO_ID=999
-ARG I2C_ID=108
 ENV USERNAME turtle
-RUN groupadd -f -r -g $GPIO_ID gpio
-RUN groupadd -f -r -g $I2C_ID i2c
 RUN adduser --disabled-password --gecos '' $USERNAME && \
     usermod  --uid ${USER_ID} $USERNAME && \
     groupmod --gid ${GROUP_ID} $USERNAME && \
     usermod --shell /bin/bash $USERNAME && \
     adduser $USERNAME sudo && \
     adduser $USERNAME dialout && \
-    adduser $USERNAME i2c && \
-    adduser $USERNAME gpio && \
-    adduser $USERNAME input && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER $USERNAME
 
