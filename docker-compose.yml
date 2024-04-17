@@ -6,7 +6,9 @@ services:
       context: ./Docker
     environment:
       - TERM=xterm-256color
+      # - QT_X11_NO_MITSHM=1
     volumes:
+      # - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./colcon_ws:/home/turtle/colcon_ws
     # devices: # not necessary with privileged: true
     #   - /dev/gpiochip0:/dev/gpiochip0
