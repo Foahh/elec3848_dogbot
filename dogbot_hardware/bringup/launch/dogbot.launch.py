@@ -153,8 +153,6 @@ def generate_launch_description():
         )
     )
 
-    #############################################################################
-
     slam_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
@@ -207,8 +205,6 @@ def generate_launch_description():
         ],
     )
 
-    #############################################################################
-
     navigation2_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
@@ -235,6 +231,7 @@ def generate_launch_description():
         imu_filter_node,
         slam_launch,
         ekf_localization_node,
+        navigation2_launch
     ]
 
     return LaunchDescription(declared_arguments + nodes)
