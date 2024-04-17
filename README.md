@@ -2,7 +2,7 @@
 
 ## Introduction
 
-DogBot is a simple bot mainly designed for slam and navigation running on ROS2 Humble.
+DogBot is a simple bot designed for performing tasks like navigation running on ROS2 Humble, object detection with jetson-inferences and mechanical arm controls.
 
 ## Implementation
 
