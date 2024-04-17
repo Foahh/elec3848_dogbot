@@ -24,13 +24,3 @@ RUN sudo apt-get update && sudo apt-get install -y \
     i2c-tools && \
     rm -rf /var/lib/apt/lists/* && \
     sudo pip install icm20948
-
-RUN sudo apt-get update && \
-    rosdep update && \
-    echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/$USERNAME/.bashrc && \
-    sudo apt-get upgrade -y && \
-    sudo rm -rf /var/lib/apt/lists/*
-
-RUN --mount=type=bind,source="./utils/build.sh",target="/tmp/build.sh" source /opt/ros/${ROS_DISTRO}/setup.bash && bash /tmp/build.sh
-
-WORKDIR /home/$USERNAME
