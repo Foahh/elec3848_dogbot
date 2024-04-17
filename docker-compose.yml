@@ -6,18 +6,16 @@ services:
       context: ./Docker
     environment:
       - TERM=xterm-256color
-      - QT_X11_NO_MITSHM=1
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./colcon_ws:/home/turtle/colcon_ws
-    # devices: # with privileged: true, this is not necessary
+    # devices: # not necessary with privileged: true
     #   - /dev/gpiochip0:/dev/gpiochip0
     #   - /dev/gpiochip1:/dev/gpiochip1
     #   - /dev/ydlidar:/dev/ydlidar
     #   - /dev/ydlidar:/dev/ttyUSB1
     #   - /dev/arduino:/dev/arduino
     #   - /dev/arduino:/dev/ttyUSB0
-    # ports: # with network_mode: host, this is not necessary
+    # ports: # not necessary with network_mode: host
     #   - "11311:11311"
     #   - "11345:11345"
     #   - "11356:11356"
