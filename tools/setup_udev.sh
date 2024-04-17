@@ -20,6 +20,10 @@ if [ ! -f /etc/udev/rules.d/ydlidar-2303.rules ]; then
 fi
 
 if [ ! -f /etc/udev/rules.d/arduino.rules ]; then
+	sudo systemctl stop brltty-udev.service
+    sudo systemctl mask brltty-udev.service
+    sudo systemctl stop brltty.service
+    sudo systemctl disable brltty.service
     echo 'KERNEL=="ttyUSB*", ATTRS{idProduct}=="7523", ATTRS{idVendor}=="1a86", MODE:="0666", GROUP:="dialout", SYMLINK+="arduino"' | sudo tee /etc/udev/rules.d/arduino.rules >/dev/null
     echo '"/etc/udev/rules.d/arduino.rules" Created'
     flag=1
