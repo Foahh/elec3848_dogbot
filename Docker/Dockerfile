@@ -1,7 +1,7 @@
 FROM arm64v8/ros:humble-ros-base AS humble-dev
 SHELL ["/bin/bash", "-c"]
 
-RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+RUN sudo apt-get update && sudo apt-get install -y \
     ros-dev-tools \
     ros-${ROS_DISTRO}-desktop \
     ros-${ROS_DISTRO}-robot-localization \
@@ -18,7 +18,7 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-nav2-bringup && \
     rm -rf /var/lib/apt/lists/*
 
-RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+RUN sudo apt-get update && sudo apt-get install -y \
     python3-pip \
     libi2c-dev \
     i2c-tools && \ 
@@ -42,6 +42,7 @@ RUN adduser --disabled-password --gecos '' $USERNAME && \
     adduser $USERNAME dialout && \
     adduser $USERNAME i2c && \
     adduser $USERNAME gpio && \
+    adduser $USERNAME input && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER $USERNAME
 
@@ -52,5 +53,6 @@ RUN sudo apt-get update && \
     sudo rm -rf /var/lib/apt/lists/*
 
 RUN --mount=type=bind,source="./utils/build.sh",target="/tmp/build.sh" source /opt/ros/${ROS_DISTRO}/setup.bash && bash /tmp/build.sh
+RUN --mount=type=bind,source="./utils/setup.sh",target="/tmp/setup.sh" bash /tmp/setup.sh
 
 WORKDIR /home/$USERNAME
