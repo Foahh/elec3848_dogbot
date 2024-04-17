@@ -11,8 +11,11 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./colcon_ws:/home/turtle/colcon_ws
     devices:
-      - /dev/ydlidar:/dev/ydlidar
-      - /dev/arduino:/dev/arduino
+      - /dev/ydlidar:/dev/ydlidar:rw
+      - /dev/arduino:/dev/arduino:rw
+      - /dev/gpiochip0:/dev/gpiochip0:rw
+      - /dev/gpiochip1:/dev/gpiochip1:rw
+
     # ports: # not necessary with network_mode: host
     #   - "11311:11311"
     #   - "11345:11345"
@@ -20,6 +23,6 @@ services:
     #   - "8080:8080"
     network_mode: host
     runtime: nvidia
-    privileged: true
+    # privileged: true
     stdin_open: true
     tty: true

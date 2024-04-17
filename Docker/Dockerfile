@@ -3,9 +3,11 @@ SHELL ["/bin/bash", "-c"]
 
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     ros-dev-tools \
+    ros-${ROS_DISTRO}-desktop \
     ros-${ROS_DISTRO}-robot-localization \
     ros-${ROS_DISTRO}-imu-tools \
     ros-${ROS_DISTRO}-urdf \
+    ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-slam-toolbox \
     ros-${ROS_DISTRO}-ros2-control \
     ros-${ROS_DISTRO}-ros2-controllers \
