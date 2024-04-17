@@ -23,6 +23,7 @@ services:
     #   - "11356:11356"
     #   - "8080:8080"
     network_mode: host
+    runtime: nvidia
     privileged: true
     stdin_open: true
     tty: true
