@@ -187,6 +187,8 @@ def generate_launch_description():
         delay_rviz_after_joint_state_broadcaster_spawner,
         delay_robot_drive_controller_spawner_after_joint_state_broadcaster_spawner,
         delay_dogbot_servo_controller_spawner_after_joint_state_broadcaster_spawner,
+        slam_launch,
+        imu_launch
     ]
 
     return LaunchDescription(declared_arguments + nodes)
