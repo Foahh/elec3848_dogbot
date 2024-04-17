@@ -51,22 +51,12 @@ namespace dogbot_hardware
 
         for (const hardware_interface::ComponentInfo &joint : info_.joints)
         {
-            // DogBotSystem has exactly one states and one command interface on each joint (wheel & servo)
             if (joint.command_interfaces.size() != 1)
             {
                 RCLCPP_FATAL(
                     rclcpp::get_logger("DogBotSystemHardware"),
                     "Joint '%s' has %zu command interfaces found. 1 expected.", joint.name.c_str(),
                     joint.command_interfaces.size());
-                return hardware_interface::CallbackReturn::ERROR;
-            }
-
-            if (joint.state_interfaces.size() != 1)
-            {
-                RCLCPP_FATAL(
-                    rclcpp::get_logger("DogBotSystemHardware"),
-                    "Joint '%s' has %zu state interface. 1 expected.", joint.name.c_str(),
-                    joint.state_interfaces.size());
                 return hardware_interface::CallbackReturn::ERROR;
             }
         }
@@ -85,11 +75,6 @@ namespace dogbot_hardware
         state_interfaces.emplace_back(wheel_lb_.name, hardware_interface::HW_IF_POSITION, &wheel_lb_.pos);
         state_interfaces.emplace_back(wheel_rb_.name, hardware_interface::HW_IF_POSITION, &wheel_rb_.pos);
 
-        state_interfaces.emplace_back(servo_pan_.name, hardware_interface::HW_IF_POSITION, &servo_pan_.pos);
-        state_interfaces.emplace_back(servo_tilt_.name, hardware_interface::HW_IF_POSITION, &servo_tilt_.pos);
-        state_interfaces.emplace_back(servo_shoulder_.name, hardware_interface::HW_IF_POSITION, &servo_shoulder_.pos);
-        state_interfaces.emplace_back(servo_forearm_.name, hardware_interface::HW_IF_POSITION, &servo_forearm_.pos);
-        state_interfaces.emplace_back(servo_gripper_.name, hardware_interface::HW_IF_POSITION, &servo_gripper_.pos);
         return state_interfaces;
     }
 
@@ -161,6 +146,7 @@ namespace dogbot_hardware
     hardware_interface::CallbackReturn DogBotSystemHardware::on_deactivate(
         const rclcpp_lifecycle::State & /*previous_state*/)
     {
+
         return hardware_interface::CallbackReturn::SUCCESS;
         RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Deactivating ...please wait...");
         RCLCPP_INFO(rclcpp::get_logger("DogBotSystemHardware"), "Successfully deactivated!");
@@ -191,12 +177,6 @@ namespace dogbot_hardware
         wheel_lb_.update();
         wheel_rb_.update();
 
-        servo_pan_.pos = servo_pan_.cmd;
-        servo_tilt_.pos = servo_tilt_.cmd;
-        servo_gripper_.pos = servo_gripper_.cmd;
-        servo_shoulder_.pos = servo_shoulder_.cmd;
-        servo_forearm_.pos = servo_forearm_.cmd;
-
         return hardware_interface::return_type::OK;
     }
 
@@ -213,11 +193,11 @@ namespace dogbot_hardware
         double motor_lb_speed = wheel_lb_.calculate_command_speed();
         double motor_rb_speed = wheel_rb_.calculate_command_speed();
 
-        int servo_pan_pos = (int)servo_pan_.cmd;
-        int servo_tilt_pos = (int)servo_tilt_.cmd;
-        int servo_gripper_pos = (int)servo_gripper_.cmd;
-        int servo_shoulder_pos = (int)servo_shoulder_.cmd;
-        int servo_forearm_pos = (int)servo_forearm_.cmd;
+        int servo_pan_pos = servo_pan_.get_position();
+        int servo_tilt_pos = servo_tilt_.get_position();
+        int servo_gripper_pos = servo_gripper_.get_position();
+        int servo_shoulder_pos = servo_shoulder_.get_position();
+        int servo_forearm_pos = servo_forearm_.get_position();
 
         try
         {

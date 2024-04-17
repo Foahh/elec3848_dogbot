@@ -120,6 +120,8 @@ namespace dogbot_drive_controller
         double &linear_command_y = command->twist.linear.y;
         double &angular_command = command->twist.angular.z;
 
+        // RCLCPP_INFO(logger, "Received command: linear_x: %f, linear_y: %f, angular: %f", linear_command_x, linear_command_y, angular_command);
+
         previous_update_timestamp_ = time;
 
         const double wheel_separation_k = (params_.wheel_separation_x + params_.wheel_separation_y) / 2.0;

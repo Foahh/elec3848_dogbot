@@ -52,7 +52,7 @@ namespace dogbot_hardware
             return serial_.isOpen();
         }
 
-        std::string send(const std::string &msg_to_send, bool require_feedback)
+        std::string send(const std::string &msg_to_send, bool debug_output = false)
         {
             serial_.flush();
             try
@@ -64,11 +64,6 @@ namespace dogbot_hardware
                 std::cerr << "Serial Sending Exception: " << e.what() << "; Tried: " << msg_to_send << std::endl;
             }
 
-            if (!require_feedback)
-            {
-                return "";
-            }
-
             try
             {
                 return serial_.readline(128UL, "\n");
@@ -76,6 +71,11 @@ namespace dogbot_hardware
             catch (std::exception &e)
             {
                 std::cerr << "Serial Receiving Exception: " << e.what() << "; Tried: " << msg_to_send << std::endl;
+            }
+
+            if (debug_output)
+            {
+                std::cout << "Sent: " << msg_to_send << "   Received: " << std::endl;
             }
 
             return "";

@@ -39,23 +39,18 @@
 
             <joint name="${prefix}servo_pan_joint">
                 <command_interface name="position" />
-                <state_interface name="position" />
             </joint>
             <joint name="${prefix}servo_tilt_joint">
                 <command_interface name="position" />
-                <state_interface name="position" />
             </joint>
             <joint name="${prefix}servo_shoulder_joint">
                 <command_interface name="position" />
-                <state_interface name="position" />
             </joint>
             <joint name="${prefix}servo_forearm_joint">
                 <command_interface name="position" />
-                <state_interface name="position" />
             </joint>
             <joint name="${prefix}servo_gripper_joint">
                 <command_interface name="position" />
-                <state_interface name="position" />
             </joint>
 
         </ros2_control>

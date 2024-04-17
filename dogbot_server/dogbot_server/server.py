@@ -21,7 +21,7 @@ class ServerPublisherNode(Node):
         self.default_vel = 0.25
         self.data = ""
 
-    def __add_header(self, func):
+    def __twist_add_header(self, func):
         def warp():
             timestamp = self.get_clock().now().to_msg()
             self.twist_stamped.header.stamp = timestamp
@@ -29,56 +29,56 @@ class ServerPublisherNode(Node):
 
         return warp
 
-    @__add_header
+    @__twist_add_header
     def forward(self):
         self.twist_stamped.twist.linear.x = self.default_vel
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @__add_header
+    @__twist_add_header
     def backward(self):
         self.twist_stamped.twist.linear.x = -self.default_vel
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @__add_header
+    @__twist_add_header
     def left(self):
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = self.default_vel
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @__add_header
+    @__twist_add_header
     def right(self):
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = -self.default_vel
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @__add_header
+    @__twist_add_header
     def turn_left(self):
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = self.default_vel
         self.twist_publisher.publish(self.twist_stamped)
 
-    @__add_header
+    @__twist_add_header
     def turn_right(self):
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = -self.default_vel
         self.twist_publisher.publish(self.twist_stamped)
 
-    @__add_header
+    @__twist_add_header
     def stop(self):
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @__add_header
+    @__twist_add_header
     def cmd_vel(self, linear_x, linear_y, angular_z):
         self.twist_stamped.twist.linear.x = linear_x
         self.twist_stamped.twist.linear.y = linear_y
