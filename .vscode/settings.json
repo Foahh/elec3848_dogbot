@@ -8,6 +8,7 @@
         "/opt/ros/humble/local/lib/python3.10/dist-packages"
     ],
     "files.associations": {
+        "*.aff": "arcaea-aff",
         "stdexcept": "cpp",
         "cctype": "cpp",
         "clocale": "cpp",
@@ -82,7 +83,8 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "xlocale": "cpp"
     },
     "cmake.sourceDirectory": "/home/fn/Desktop/colcon_ws/src/dogbot_hardware"
 }

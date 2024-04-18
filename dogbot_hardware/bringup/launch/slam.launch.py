@@ -19,6 +19,7 @@ from launch_ros.events.lifecycle import ChangeState
 from lifecycle_msgs.msg import Transition
 from launch_ros.substitutions import FindPackageShare
 
+
 def generate_launch_description():
     autostart = LaunchConfiguration("autostart")
     use_lifecycle_manager = LaunchConfiguration("use_lifecycle_manager")
@@ -61,7 +62,7 @@ def generate_launch_description():
         output="screen",
         namespace="",
     )
-    
+
     start_ydlidar_node = LifecycleNode(
         package="ydlidar_ros2_driver",
         executable="ydlidar_ros2_driver_node",
