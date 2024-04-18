@@ -2,13 +2,13 @@
 
 ## Introduction
 
-DogBot is a simple bot designed for performing tasks like navigation running on ROS2 Humble, object detection with jetson-inferences and mechanical arm controls.
+DogBot is a simple bot designed for performing tasks like navigation running on ROS2 Humble, object detection with jetson inferences and mechanical arm controls.
 
 ## Implementation
 
 The core functionality of the bot is powered by ros2_control, slam_toolbox and nav2.
 
-Firmware for Arduino: https://github.com/NFHr/elec3848_dogbot_firmware.git
+Firmware for Arduino: https://github.com/NFHr/dogbot_firmware
 
 ## Hardware connected with Jetson Nano
 
@@ -18,7 +18,7 @@ Firmware for Arduino: https://github.com/NFHr/elec3848_dogbot_firmware.git
 
 ## Build
 
-Development environment: `https://github.com/NFHr/humble-docker.git`
+Development environment: `https://github.com/NFHr/dogbot-docker.git`
 
 ```sh
 mkdir dogbot_ws && cd dogbot_ws
