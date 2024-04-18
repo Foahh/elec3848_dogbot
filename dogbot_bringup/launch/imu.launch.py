@@ -16,7 +16,6 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    
     imu_filter_node = Node(
         package="imu_complementary_filter",
         executable="complementary_filter_node",

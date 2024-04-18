@@ -1,102 +1,118 @@
-# Copyright 2024 Long Liangmao in 2024
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 from launch import LaunchDescription
-from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.actions import (
+    DeclareLaunchArgument,
+    EmitEvent,
+    LogInfo,
+    RegisterEventHandler,
+)
+from launch.conditions import IfCondition
+from launch.events import matches_action
+from launch.substitutions import (
+    AndSubstitution,
+    LaunchConfiguration,
+    NotSubstitution,
+    PathJoinSubstitution,
+)
+from launch_ros.actions import LifecycleNode
+from launch_ros.event_handlers import OnStateTransition
+from launch_ros.events.lifecycle import ChangeState
+from lifecycle_msgs.msg import Transition
+from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    # Declare arguments
-    declared_arguments = []
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "use_mag",
-            default_value=True,
-            description="Use magnetometer data.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "do_bias_estimation",
-            default_value=True,
-            description="Do bias estimation.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "do_adaptive_gain",
-            default_value=True,
-            description="Do adaptive gain.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "gain_acc",
-            default_value=0.01,
-            description="Gain for accelerometer.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "gain_mag",
-            default_value=0.01,
-            description="Gain for magnetometer.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "publish_tf",
-            default_value=False,
-            description="Publish TF.",
-        )
+    autostart = LaunchConfiguration("autostart")
+    use_lifecycle_manager = LaunchConfiguration("use_lifecycle_manager")
+    use_sim_time = LaunchConfiguration("use_sim_time")
+
+    slam_params = PathJoinSubstitution(
+        [
+            FindPackageShare("dogbot_hardware"),
+            "config",
+            "slam.yaml",
+        ]
     )
 
-    # Initialize Arguments
-    use_mag = LaunchConfiguration("use_mag")
-    do_bias_estimation = LaunchConfiguration("do_bias_estimation")
-    do_adaptive_gain = LaunchConfiguration("do_adaptive_gain")
-    gain_acc = LaunchConfiguration("gain_acc")
-    gain_mag = LaunchConfiguration("gain_mag")
-    publish_tf = LaunchConfiguration("publish_tf")
+    declare_autostart_cmd = DeclareLaunchArgument(
+        "autostart",
+        default_value="true",
+        description="Automatically startup the slamtoolbox. "
+        "Ignored when use_lifecycle_manager is true.",
+    )
+    declare_use_lifecycle_manager = DeclareLaunchArgument(
+        "use_lifecycle_manager",
+        default_value="false",
+        description="Enable bond connection during node activation",
+    )
+    declare_use_sim_time_argument = DeclareLaunchArgument(
+        "use_sim_time", default_value="false", description="Use simulation/Gazebo clock"
+    )
 
-    imu_filter_node = Node(
-        package="imu_complementary_filter",
-        executable="complementary_filter_node",
-        output="screen",
+    start_async_slam_toolbox_node = LifecycleNode(
         parameters=[
+            slam_params,
             {
-                "use_mag": use_mag,
-                "do_bias_estimation": do_bias_estimation,
-                "do_adaptive_gain": do_adaptive_gain,
-                "gain_acc": gain_acc,
-                "gain_mag": gain_mag,
-                "publish_tf": publish_tf,
-            }
+                "use_lifecycle_manager": use_lifecycle_manager,
+                "use_sim_time": use_sim_time,
+            },
         ],
-    )
-
-    imu_publisher_node = Node(
-        package="dogbot_imu",
-        executable="imu_publisher",
+        package="slam_toolbox",
+        executable="async_slam_toolbox_node",
+        name="slam_toolbox",
         output="screen",
+        namespace="",
     )
 
-    nodes = [
-        imu_filter_node,
-        imu_publisher_node,
-    ]
+    start_ydlidar_node = LifecycleNode(
+        package="ydlidar_ros2_driver",
+        executable="ydlidar_ros2_driver_node",
+        name="ydlidar_ros2_driver_node",
+        output="screen",
+        emulate_tty=True,
+        parameters=[slam_params],
+        namespace="/",
+    )
 
-    return LaunchDescription(nodes)
+    configure_event = EmitEvent(
+        event=ChangeState(
+            lifecycle_node_matcher=matches_action(start_async_slam_toolbox_node),
+            transition_id=Transition.TRANSITION_CONFIGURE,
+        ),
+        condition=IfCondition(
+            AndSubstitution(autostart, NotSubstitution(use_lifecycle_manager))
+        ),
+    )
+
+    activate_event = RegisterEventHandler(
+        OnStateTransition(
+            target_lifecycle_node=start_async_slam_toolbox_node,
+            start_state="configuring",
+            goal_state="inactive",
+            entities=[
+                LogInfo(msg="[LifecycleLaunch] Slamtoolbox node is activating."),
+                EmitEvent(
+                    event=ChangeState(
+                        lifecycle_node_matcher=matches_action(
+                            start_async_slam_toolbox_node
+                        ),
+                        transition_id=Transition.TRANSITION_ACTIVATE,
+                    )
+                ),
+            ],
+        ),
+        condition=IfCondition(
+            AndSubstitution(autostart, NotSubstitution(use_lifecycle_manager))
+        ),
+    )
+
+    ld = LaunchDescription()
+
+    ld.add_action(declare_autostart_cmd)
+    ld.add_action(declare_use_lifecycle_manager)
+    ld.add_action(declare_use_sim_time_argument)
+    ld.add_action(start_async_slam_toolbox_node)
+    ld.add_action(start_ydlidar_node)
+    ld.add_action(configure_event)
+    ld.add_action(activate_event)
+
+    return ld

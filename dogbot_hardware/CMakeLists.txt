@@ -62,6 +62,10 @@ install(TARGETS dogbot_hardware
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
+install(
+  DIRECTORY bringup/launch bringup/config
+  DESTINATION share/dogbot_hardware
+)
 
 ## EXPORTS
 ament_export_targets(export_dogbot_hardware HAS_LIBRARY_TARGET)
