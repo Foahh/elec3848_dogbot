@@ -168,26 +168,16 @@ def generate_launch_description():
         }.items(),
     )
 
-    imu_filter_node = Node(
-        package="imu_complementary_filter",
-        executable="complementary_filter_node",
-        output="screen",
-        parameters=[
-            {
-                "use_mag": True,
-                "do_bias_estimation": True,
-                "do_adaptive_gain": True,
-                "gain_acc": 0.01,
-                "gain_mag": 0.01,
-                "publish_tf": False,
-            }
-        ],
-    )
-
-    imu_publisher_node = Node(
-        package="dogbot_imu",
-        executable="imu_publisher",
-        output="screen",
+    imu_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("dogbot_hardware"),
+                    "launch",
+                    "imu.launch.py",
+                ]
+            )
+        )
     )
 
     ekf_localization_node = Node(
@@ -227,11 +217,10 @@ def generate_launch_description():
         delay_rviz_after_joint_state_broadcaster_spawner,
         delay_robot_drive_controller_spawner_after_joint_state_broadcaster_spawner,
         delay_dogbot_servo_controller_spawner_after_joint_state_broadcaster_spawner,
-        imu_publisher_node,
-        imu_filter_node,
+        imu_launch,
         slam_launch,
         ekf_localization_node,
-        navigation2_launch
+        navigation2_launch,
     ]
 
     return LaunchDescription(declared_arguments + nodes)
