@@ -1,2 +1,2 @@
 #!/bin/bash
-docker exec -it ros-devel /bin/bash
+docker exec -it dogbot /bin/bash

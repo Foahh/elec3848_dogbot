@@ -1,6 +1,6 @@
 # ROS Humble Docker
 
-Docker for arm64v8 devices.
+Self-using Docker image for the [project](https://github.com/NFHr/elec3848_dogbot) development.
 
 ## Usage
 

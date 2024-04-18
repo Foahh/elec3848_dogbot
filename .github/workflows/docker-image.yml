@@ -23,6 +23,6 @@ jobs:
           context: ./Docker
           platforms: linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ros:humble
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ros:dogbot-latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
