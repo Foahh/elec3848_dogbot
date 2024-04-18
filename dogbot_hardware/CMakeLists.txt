@@ -56,10 +56,6 @@ install(
   DIRECTORY description/launch description/ros2_control description/urdf
   DESTINATION share/dogbot_hardware
 )
-install(
-  DIRECTORY bringup/launch bringup/config
-  DESTINATION share/dogbot_hardware
-)
 install(TARGETS dogbot_hardware
   EXPORT export_dogbot_hardware
   ARCHIVE DESTINATION lib
