@@ -6,18 +6,12 @@ services:
       context: ./Docker
     environment:
       - TERM=xterm-256color
-      - QT_X11_NO_MITSHM=1
-      - DISPLAY=${DISPLAY}
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./colcon_ws:/colcon_ws
     devices:
       - /dev/arduino:/dev/arduino
       - /dev/ydlidar:/dev/ydlidar
-      - /dev/ttyUSB0:/dev/ttyUSB0
-      - /dev/ttyUSB1:/dev/ttyUSB1
       - /dev/i2c-0:/dev/i2c-0
-      - /dev/i2c-1:/dev/i2c-1
     network_mode: host
     runtime: nvidia
     stdin_open: true
