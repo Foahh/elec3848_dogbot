@@ -38,7 +38,7 @@ if __name__ == '__main__' :
     client = ClientSide()
     while True:
         try:
-            userIn = input()
+            userIn = input(">> ", )
             if userIn == 'q':
                 exit(0)
             client.sending(userIn)

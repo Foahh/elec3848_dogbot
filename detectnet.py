@@ -185,14 +185,12 @@ while True:
     if (Area != 0): 
         # condition2.1： 偏左 -> turn right
         if (objX < width/2 - error):
-            # trun right
-            # client_sock.sending(">") # return turnoffset
+            # client_sock.sending("r_cw") # return turnoffset
             pass
             
         # condition2.2 : 偏右 -> turn left
         elif (objX > width/2 + error) :
-            # turn left
-            # client_sock.sending("<") # return turnoffset
+            # client_sock.sending("r_ccw") # return turnoffset
             pass
     
         # condition3: redball detect and in the center, but not close enough -> go advance
@@ -205,7 +203,8 @@ while True:
     
             # condition4: readball detect, in the center, close engough --> grab
             else:
-                symbol = "grab"
+                pass
+                # client_sock.sending("grab")
                 # return grab_y -> servo1_close -> servo2_initial
     
     ##===================##

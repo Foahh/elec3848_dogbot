@@ -3,7 +3,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float64MultiArray
 from threading import Thread
-import socket
+import socket, time
 from functools import wraps
 
 
@@ -139,13 +139,31 @@ class ServerPublisherNode(Node):
                     case "approaching":
                         self.state = "approaching"
                         self.__send(client_socket, cmd)
+                    case "r_cw":
+                        # (angle) = map(float, args)
+                        self.cmd_vel(0, 0, -1)
+                        time.sleep(0.5)
+                        self.stop()
+                    case "r_ccw":
+                        # (angle) = map(float, args)
+                        self.cmd_vel(0, 0, 1)
+                        time.sleep(0.5)
+                        self.stop()
+                    case "grab":
+                        forearm_down = 210 # 53
+                        forearm_up = 90 # ??
+                        gripper_close = 95
+                        gripper_open = 30
+                        self.cmd_pos(0, 0, 0, forearm, gripper_open)
+                        # need to stuck here
                     case _:
                         self.stop()
                         self.get_logger().error(f"Invalid command: {cmd}")
             except ValueError:
                 self.get_logger().error(f"Invalid parameters: {self.data}")
             except TypeError as e:
-                self.get_logger().error(e)
+                self.get_logger().error(e) 
+                # This exception error could not be solved. It's weird.
 
             self.data = ""
 
@@ -176,10 +194,7 @@ def main(args=None):
     nodes_thread = Thread(target=Nodes, args=(node,))
     nodes_thread.start()
 
-    # clients = []
     while True:
         client_socket, _ = server_socket.accept()
         client_thread = Thread(target=node.on_receive, args=(client_socket,))
         client_thread.start()
-        # clients.append((client_socket, client_thread))
-        # clients[-1][-1].start()
