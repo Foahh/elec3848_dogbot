@@ -104,7 +104,6 @@ class ServerPublisherNode(Node):
                 continue
 
             self.data += data_buffer.decode("utf-8")
-            # what if use json?
             if self.data[-1] != "\n":
                 continue
 
@@ -148,7 +147,7 @@ def main(args=None):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind(("0.0.0.0", 8080))
-    server_socket.listen(5)  # docker 上的端口映射是多少？8080
+    server_socket.listen(5)
     node = ServerPublisherNode(server_socket)
     node.get_logger().info("Waiting for connection...")
 
