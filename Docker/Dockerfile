@@ -19,6 +19,7 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
 
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     python3-pip \
+    vim \
     libi2c-dev \
     i2c-tools && \
     rm -rf /var/lib/apt/lists/* && \
