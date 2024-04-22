@@ -34,31 +34,9 @@ def generate_launch_description():
     )
 
     imu_publisher_node = Node(
-        package="mpu6050driver",
-        executable="mpu6050driver",
-        name="mpu6050driver_node",
+        package="dogbot_imu",
+        executable="mpu6050",
         output="screen",
-        emulate_tty=True,
-        parameters=[
-            {
-                "calibrate": True,
-
-                "gyro_range": 0,
-                "accel_range": 1,
-                "dlpf_bandwidth": 2,
-                "gyro_x_offset": 0.0,  # [deg/s]
-                "gyro_y_offset": 0.0,  # [deg/s]
-                "gyro_z_offset": 0.0,  # [deg/s]
-                "accel_x_offset": 0.0,  # [m/s²]
-                "accel_y_offset": 0.0,  # [m/s²]
-                "accel_z_offset": 0.0,  # [m/s²]
-                "frequency": 200,  # [Hz]
-            }
-        ],
-        remappings=[ 
-            ("/imu/data_raw", "/imu/data_raw"),
-            ("/imu/mag", "/imu/mag"),
-        ],
     )
 
     nodes = [
