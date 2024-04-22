@@ -5,6 +5,7 @@ class ClientSide:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.client_socket.settimeout(3)
+        self.client_socket.bind(('192.168.50.182', 8080))
         server_address = ('192.168.50.100', 8080)
         while True:
             try:
@@ -13,7 +14,7 @@ class ClientSide:
             except socket.timeout:
                 print("Connection failed. Retrying in 3 seconds...")
                 time.sleep(3)
-        print("Connection established at from client side.")
+        print("Connection established at client side.")
         return
     
     def __send(self, msg) -> object:
