@@ -37,7 +37,7 @@ def generate_launch_description():
     
 
     nodes = [
-
+        teleop_twist_keyboard_node,
     ]
 
     return LaunchDescription(nodes)
