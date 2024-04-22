@@ -16,7 +16,7 @@ import rclpy
 import math
 from rclpy.node import Node
 import time
-from icm20948 import ICM20948 # https://github.com/pimoroni/icm20948-python
+from icm20948 import ICM20948  # https://github.com/pimoroni/icm20948-python
 from smbus import SMBus
 from sensor_msgs.msg import MagneticField, Imu
 
@@ -41,7 +41,7 @@ class IMUPublisher(Node):
 
         timer_period = 0.005  # seconds
         self.timer = self.create_timer(timer_period, self.callback)
-        
+
         self.bus = SMBus(0)
         time.sleep(1)
         self.imu = ICM20948(i2c_bus=self.bus)
@@ -72,6 +72,7 @@ class IMUPublisher(Node):
         self.mag_msg.magnetic_field.y = my * 1e-6
         self.mag_msg.magnetic_field.z = mz * 1e-6
         self.mag_publisher.publish(self.mag_msg)
+
 
 def main(args=None):
     rclpy.init(args=args)

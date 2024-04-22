@@ -15,18 +15,8 @@
 import rclpy
 import math
 from rclpy.node import Node
-from MPU6050 import MPU6050
+from mpu6050 import mpu6050
 from sensor_msgs.msg import Imu
-
-GYRO_FS_SEL_0 = 250
-GYRO_FS_SEL_1 = 500
-GYRO_FS_SEL_2 = 1000
-GYRO_FS_SEL_3 = 2000
-
-ACCEL_FS_SEL_0 = 2
-ACCEL_FS_SEL_1 = 4
-ACCEL_FS_SEL_2 = 8
-ACCEL_FS_SEL_3 = 16
 
 
 class IMUPublisher(Node):
@@ -39,20 +29,23 @@ class IMUPublisher(Node):
         timer_period = 0.005  # seconds
         self.timer = self.create_timer(timer_period, self.callback)
 
-        self.imu = MPU6050.mpu6050(0x68, bus=0)
-        self.imu.reset()
+        self.imu = mpu6050(0x68, 0)
+        self.imu.set_accel_range(mpu6050.ACCEL_RANGE_4G)
+        self.imu.set_gyro_range(mpu6050.GYRO_RANGE_250DEG)
         self.raw_msg = Imu()
+
     def callback(self):
-        ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
-        
+        accel_data = self.imu.get_accel_data(True)
+        gyro_data = self.imu.get_gyro_data()
+
         self.raw_msg.header.stamp = self.get_clock().now().to_msg()
         self.raw_msg.header.frame_id = "imu_link"
-        self.raw_msg.linear_acceleration.x = ax * 9.81
-        self.raw_msg.linear_acceleration.y = ay * 9.81
-        self.raw_msg.linear_acceleration.z = az * 9.81
-        self.raw_msg.angular_velocity.x = gx * math.pi / 180.0
-        self.raw_msg.angular_velocity.y = gy * math.pi / 180.0
-        self.raw_msg.angular_velocity.z = gz * math.pi / 180.0
+        self.raw_msg.linear_acceleration.x = accel_data["x"]
+        self.raw_msg.linear_acceleration.y = accel_data["y"]
+        self.raw_msg.linear_acceleration.z = accel_data["z"]
+        self.raw_msg.angular_velocity.x = gyro_data["x"] * math.pi / 180.0
+        self.raw_msg.angular_velocity.y = gyro_data["y"] * math.pi / 180.0
+        self.raw_msg.angular_velocity.z = gyro_data["z"] * math.pi / 180.0
         self.raw_publisher.publish(self.raw_msg)
 
 

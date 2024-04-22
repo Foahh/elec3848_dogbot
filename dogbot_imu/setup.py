@@ -19,7 +19,8 @@ setup(
     license='Apache-2.0',
     entry_points={
         'console_scripts': [
-            'imu_publisher = dogbot_imu.publisher:main',
+            'icm20948 = dogbot_imu.icm20948:main',
+            'mpu6050 = dogbot_imu.mpu6050:main'
         ],
     },
 )
