@@ -131,8 +131,8 @@ class ServerPublisherNode(Node):
                         pan, tilt, shoulder, forearm, gripper = map(float, args)
                         self.cmd_pos(pan, tilt, shoulder, forearm, gripper)
                     case "crusing":
-                        self.state = "crusing"
                         self.__send(client_socket, cmd)
+                        self.state = "crusing"
                         self.get_logger().info(f"crusing got")
                     case "approaching":
                         self.state = "approaching"
