@@ -19,11 +19,7 @@ setup(
     license='Apache-2.0',
     entry_points={
         'console_scripts': [
-<<<<<<< HEAD:dogbot_camera/setup.py
-            'camera = dogbot_camera.publisher:main',
-=======
             'dogbot_server = dogbot_server.dogbot_server:main',
->>>>>>> 1f30eccbc4bbad8cc725f0ff7beb3b0497bf9b8c:dogbot_server/setup.py
         ],
     },
 )
