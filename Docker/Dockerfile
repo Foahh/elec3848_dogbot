@@ -23,7 +23,7 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     libi2c-dev \
     i2c-tools && \
     rm -rf /var/lib/apt/lists/* && \
-    pip install icm20948
+    pip install icm20948 mpu6050-raspberrypi
 
 RUN sudo apt-get update && \
     echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc && \

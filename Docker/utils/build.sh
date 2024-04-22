@@ -22,9 +22,3 @@ git clone -b humble https://github.com/YDLIDAR/ydlidar_ros2_driver.git /src/ydli
 cd /src/ydlidar_ws || exit 1
 colcon build --symlink-install
 echo "source ~/src/ydlidar_ws/install/setup.bash --extend" >>~/.bashrc
-
-# MPU6050
-git clone https://github.com/hiwad-aziz/ros2_mpu6050_driver.git /src/mpu6050_ws/src/
-cd /src/mpu6050_ws || exit 1
-colcon build --packages-select mpu6050driver
-echo "source ~/src/mpu6050_ws/install/setup.bash" >>~/.bashrc
