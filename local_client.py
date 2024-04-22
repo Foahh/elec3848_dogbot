@@ -41,9 +41,9 @@ if __name__ == '__main__' :
             userIn = input()
             if userIn == 'q':
                 exit(0)
-            elif userIn == "Crusing":
+            elif userIn == "crusing":
                 client.sending(userIn)
-            elif userIn == "Approaching":
+            elif userIn == "approaching":
                 client.sending(userIn)
         except KeyboardInterrupt:
             continue
