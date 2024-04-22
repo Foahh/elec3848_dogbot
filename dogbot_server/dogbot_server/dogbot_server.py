@@ -90,10 +90,7 @@ class ServerPublisherNode(Node):
         self.servo_position.data = (pan, tilt, shoulder, forearm, gripper)
         self.servo_publisher.publish(self.servo_position)
 
-    def on_receive(
-        self,
-        client_socket,
-    ):
+    def on_receive(self,client_socket):
         while True:
             data_buffer = client_socket.recv(1024)
 
