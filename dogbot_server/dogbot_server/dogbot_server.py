@@ -109,7 +109,6 @@ class ServerPublisherNode(Node):
 
             try:
                 cmd, *args = self.data.split(",")
-                self.get_logger().info(f"Received command: {cmd}")
                 match cmd:
                     case "F":
                         self.forward()

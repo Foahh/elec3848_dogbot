@@ -24,7 +24,7 @@ class ClientSide:
         return
     
     def sending(self, msg) -> None:
-        sending_thread = threading.Thread(target=self.__send, args=(msg + '\n', ))
+        sending_thread = threading.Thread(target=self.__send, args=(msg, ))
         sending_thread.start()
         print("Msg sent.")
         return
