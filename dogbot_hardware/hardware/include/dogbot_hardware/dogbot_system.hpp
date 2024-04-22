@@ -89,10 +89,7 @@ namespace dogbot_hardware {
         Wheel wheel_rf_;
         Wheel wheel_lb_;
         Wheel wheel_rb_;
-        Servo servo_pan_;
-        Servo servo_tilt_;
         Servo servo_gripper_;
-        Servo servo_shoulder_;
         Servo servo_forearm_;
     };
 

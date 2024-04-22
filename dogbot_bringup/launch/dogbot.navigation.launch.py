@@ -97,18 +97,12 @@ def generate_launch_description():
         }.items(),
     )
 
-    server_node = Node(
-        package="dogbot_server",
-        executable="dogbot_server",
-        output="screen",
-    )
-
     nodes = [
         hardware_launch,
         imu_launch,
         slam_launch,
         ekf_localization_node,
-        server_node,
+        navigation2_launch,
     ]
 
     return LaunchDescription(nodes)
