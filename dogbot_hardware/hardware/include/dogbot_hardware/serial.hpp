@@ -117,10 +117,10 @@ namespace dogbot_hardware
             send(ss.str(), false);
         }
 
-        void set_servo_position(int val_1, int val_2, int val_3, int val_4, int val_5)
+        void set_servo_position(int val_1, int val_2)
         {
             std::stringstream ss;
-            ss << "<P," << val_1 << "," << val_2 << "," << val_3 << "," << val_4 << "," << val_5 << ">";
+            ss << "<P," << val_1 << "," << val_2 << ">";
             send(ss.str(), false);
         }
 

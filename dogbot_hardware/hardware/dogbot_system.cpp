@@ -43,11 +43,8 @@ namespace dogbot_hardware
         wheel_lb_.setup(info_.hardware_parameters["lb_wheel_name"], cfg_.enc_counts_per_rev);
         wheel_rb_.setup(info_.hardware_parameters["rb_wheel_name"], cfg_.enc_counts_per_rev);
 
-        servo_pan_.setup(info_.hardware_parameters["servo_pan_name"]);
-        servo_tilt_.setup(info_.hardware_parameters["servo_tilt_name"]);
         servo_forearm_.setup(info_.hardware_parameters["servo_forearm_name"]);
         servo_gripper_.setup(info_.hardware_parameters["servo_gripper_name"]);
-        servo_shoulder_.setup(info_.hardware_parameters["servo_shoulder_name"]);
 
         for (const hardware_interface::ComponentInfo &joint : info_.joints)
         {
@@ -89,9 +86,6 @@ namespace dogbot_hardware
         command_interfaces.emplace_back(wheel_lb_.name, hardware_interface::HW_IF_VELOCITY, &wheel_lb_.cmd);
         command_interfaces.emplace_back(wheel_rb_.name, hardware_interface::HW_IF_VELOCITY, &wheel_rb_.cmd);
 
-        command_interfaces.emplace_back(servo_pan_.name, hardware_interface::HW_IF_POSITION, &servo_pan_.cmd);
-        command_interfaces.emplace_back(servo_tilt_.name, hardware_interface::HW_IF_POSITION, &servo_tilt_.cmd);
-        command_interfaces.emplace_back(servo_shoulder_.name, hardware_interface::HW_IF_POSITION, &servo_shoulder_.cmd);
         command_interfaces.emplace_back(servo_forearm_.name, hardware_interface::HW_IF_POSITION, &servo_forearm_.cmd);
         command_interfaces.emplace_back(servo_gripper_.name, hardware_interface::HW_IF_POSITION, &servo_gripper_.cmd);
 
@@ -193,16 +187,13 @@ namespace dogbot_hardware
         double motor_lb_speed = wheel_lb_.calculate_command_speed();
         double motor_rb_speed = wheel_rb_.calculate_command_speed();
 
-        int servo_pan_pos = servo_pan_.get_position();
-        int servo_tilt_pos = servo_tilt_.get_position();
         int servo_gripper_pos = servo_gripper_.get_position();
-        int servo_shoulder_pos = servo_shoulder_.get_position();
         int servo_forearm_pos = servo_forearm_.get_position();
 
         try
         {
             serial_.set_motor_speed(motor_lf_speed, motor_rf_speed, motor_lb_speed, motor_rb_speed);
-            serial_.set_servo_position(servo_pan_pos, servo_tilt_pos, servo_shoulder_pos, servo_forearm_pos, servo_gripper_pos);
+            serial_.set_servo_position(servo_forearm_pos, servo_gripper_pos);
         }
         catch (const std::exception &e)
         {

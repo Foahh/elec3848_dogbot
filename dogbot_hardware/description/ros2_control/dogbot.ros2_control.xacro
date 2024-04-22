@@ -9,9 +9,6 @@
                 <param name="rf_wheel_name">rf_wheel_joint</param>
                 <param name="lb_wheel_name">lb_wheel_joint</param>
                 <param name="rb_wheel_name">rb_wheel_joint</param>
-                <param name="servo_pan_name">servo_pan_joint</param>
-                <param name="servo_tilt_name">servo_tilt_joint</param>
-                <param name="servo_shoulder_name">servo_shoulder_joint</param>
                 <param name="servo_forearm_name">servo_forearm_joint</param>
                 <param name="servo_gripper_name">servo_gripper_joint</param>
                 <param name="device">/dev/arduino</param>
@@ -37,15 +34,6 @@
                 <state_interface name="position" />
             </joint>
 
-            <joint name="${prefix}servo_pan_joint">
-                <command_interface name="position" />
-            </joint>
-            <joint name="${prefix}servo_tilt_joint">
-                <command_interface name="position" />
-            </joint>
-            <joint name="${prefix}servo_shoulder_joint">
-                <command_interface name="position" />
-            </joint>
             <joint name="${prefix}servo_forearm_joint">
                 <command_interface name="position" />
             </joint>

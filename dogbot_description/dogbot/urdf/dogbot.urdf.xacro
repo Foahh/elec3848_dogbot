@@ -179,66 +179,9 @@
             </visual>
         </link>
 
-        <!-- servo pan joint -->
-        <joint name="servo_pan_joint" type="continuous">
-            <parent link="base_link" />
-            <child link="servo_pan" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <axis xyz="0 1 0" />
-        </joint>
-
-        <!-- servo pan Link -->
-        <link name="servo_pan">
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <box size="0.05 0.05 0.05" />
-                </geometry>
-                <material name="green" />
-            </visual>
-        </link>
-
-        <!-- servo tilt joint -->
-        <joint name="servo_tilt_joint" type="continuous">
-            <parent link="servo_pan" />
-            <child link="servo_tilt" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <axis xyz="0 1 0" />
-        </joint>
-
-        <!-- servo tilt Link -->
-        <link name="servo_tilt">
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <box size="0.05 0.05 0.05" />
-                </geometry>
-                <material name="green" />
-            </visual>
-        </link>
-
-        <!-- servo shoulder joint -->
-        <joint name="servo_shoulder_joint" type="continuous">
-            <parent link="base_link" />
-            <child link="servo_shoulder" />
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <axis xyz="0 1 0" />
-        </joint>
-
-        <!-- servo shoulder Link -->
-        <link name="servo_shoulder">
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <box size="0.05 0.05 0.05" />
-                </geometry>
-                <material name="green" />
-            </visual>
-        </link>
-
         <!-- servo forearm joint -->
         <joint name="servo_forearm_joint" type="continuous">
-            <parent link="servo_shoulder" />
+            <parent link="base_link" />
             <child link="servo_forearm" />
             <origin xyz="0 0 0" rpy="0 0 0" />
             <axis xyz="0 1 0" />

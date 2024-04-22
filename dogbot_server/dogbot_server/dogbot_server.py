@@ -6,13 +6,16 @@ from threading import Thread
 import socket, time
 from functools import wraps
 
+
 def twist_add_header(func):
     @wraps(func)
     def _impl(self, func):
         timestamp = self.get_clock().now().to_msg()
         self.twist_stamped.header.stamp = timestamp
         func()
+
     return _impl
+
 
 class ServerPublisherNode(Node):
     def __init__(self, server_socket):
@@ -29,7 +32,7 @@ class ServerPublisherNode(Node):
         self.default_vel = 0.25
         self.data = ""
         self.state = "stop"
-        
+
     @twist_add_header
     def forward(self):
         self.twist_stamped.twist.linear.x = self.default_vel
@@ -80,17 +83,17 @@ class ServerPublisherNode(Node):
         self.twist_publisher.publish(self.twist_stamped)
 
     @twist_add_header
-    def cmd_vel(self, linear_x, linear_y, angular_z):
+    def ser_wheel_velocity(self, linear_x, linear_y, angular_z):
         self.twist_stamped.twist.linear.x = linear_x
         self.twist_stamped.twist.linear.y = linear_y
         self.twist_stamped.twist.angular.z = angular_z
         self.twist_publisher.publish(self.twist_stamped)
 
-    def cmd_pos(self, pan, tilt, shoulder, forearm, gripper):
-        self.servo_position.data = (pan, tilt, shoulder, forearm, gripper)
+    def set_servo_position(self, forearm, gripper):
+        self.servo_position.data = (forearm, gripper)
         self.servo_publisher.publish(self.servo_position)
 
-    def on_receive(self,client_socket):
+    def on_receive(self, client_socket):
         while True:
             data_buffer = client_socket.recv(1024)
 
@@ -115,7 +118,7 @@ class ServerPublisherNode(Node):
             self.get_logger().info(f"Received: {self.data}")
 
             try:
-                cmd, *args = self.data.strip('\n').split(",")
+                cmd, *args = self.data.strip("\n").split(",")
                 match cmd:
                     case "F":
                         self.forward()
@@ -131,12 +134,12 @@ class ServerPublisherNode(Node):
                         self.turn_right()
                     case "S":
                         self.stop()
-                    case "V": # V,1.0,0.0,0.0\nF
+                    case "V":
                         linear_x, linear_y, angular_z = map(float, args)
-                        self.cmd_vel(linear_x, linear_y, angular_z)
+                        self.ser_wheel_velocity(linear_x, linear_y, angular_z)
                     case "P":
-                        pan, tilt, shoulder, forearm, gripper = map(float, args)
-                        self.cmd_pos(pan, tilt, shoulder, forearm, gripper)  # 210, 95 close, 30 open
+                        forearm, gripper = map(float, args)
+                        self.set_servo_position(forearm, gripper)
                     case "crusing":
                         self.__send(client_socket, cmd)
                         self.state = "crusing"
@@ -181,11 +184,13 @@ class ServerPublisherNode(Node):
         print(data)
         return
 
+
 def Nodes(node) -> None:
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
     return
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -197,10 +202,10 @@ def main(args=None):
     node = ServerPublisherNode(server_socket)
     node.get_logger().info("Waiting for connection...")
 
-    nodes_thread =Thread(target=Nodes, args=(node, ))
+    nodes_thread = Thread(target=Nodes, args=(node,))
     nodes_thread.start()
 
     while True:
         client_socket, _ = server_socket.accept()
-        client_thread = Thread(target=node.on_receive, args=(client_socket, ))
+        client_thread = Thread(target=node.on_receive, args=(client_socket,))
         client_thread.start()

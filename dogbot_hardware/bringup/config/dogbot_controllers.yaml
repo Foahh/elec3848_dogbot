@@ -37,9 +37,6 @@ dogbot_base_controller:
 forward_position_controller:
   ros__parameters:
     joints:
-      - servo_pan_joint
-      - servo_tilt_joint
-      - servo_shoulder_joint
       - servo_forearm_joint
       - servo_gripper_joint
     interface_name: position
