@@ -3,8 +3,15 @@ from rclpy.node import Node
 from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float64MultiArray
 from threading import Thread
-import socket, time
+import socket
+import time
 from functools import wraps
+from sensor_msgs.msg import Imu
+from tf_transformations import euler_from_quaternion
+
+
+DEFAULT_LINEAR_VELOCITY = 0.25
+DEFAULT_ANGULAR_VELOCITY = 0.5
 
 
 def twist_add_header(func):
@@ -17,32 +24,41 @@ def twist_add_header(func):
     return _impl
 
 
-class ServerPublisherNode(Node):
+class ServerPublisher(Node):
     def __init__(self, server_socket):
         super().__init__("DogbotServerNode")
         self.server_socket = server_socket
+
+        self.twist_stamped = TwistStamped()
+        self.servo_position = Float64MultiArray()
+        self.imu_data = Imu()
+
         self.twist_publisher = self.create_publisher(
             TwistStamped, "dogbot_base_controller", 10
         )
-        self.twist_stamped = TwistStamped()
-        self.servo_position = Float64MultiArray()
         self.servo_publisher = self.create_publisher(
             Float64MultiArray, "dogbot_servo_controller", 10
         )
-        self.default_vel = 0.25
+        self.imu_subscriber = self.create_subscription(
+            Imu, "imu/data", self.imu_callback, 10
+        )
+
         self.data = ""
         self.state = "stop"
 
+    def imu_callback(self, msg):
+        self.imu_data = msg
+
     @twist_add_header
     def forward(self):
-        self.twist_stamped.twist.linear.x = self.default_vel
+        self.twist_stamped.twist.linear.x = DEFAULT_LINEAR_VELOCITY
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
     @twist_add_header
     def backward(self):
-        self.twist_stamped.twist.linear.x = -self.default_vel
+        self.twist_stamped.twist.linear.x = -DEFAULT_LINEAR_VELOCITY
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
@@ -50,29 +66,29 @@ class ServerPublisherNode(Node):
     @twist_add_header
     def left(self):
         self.twist_stamped.twist.linear.x = 0.0
-        self.twist_stamped.twist.linear.y = self.default_vel
+        self.twist_stamped.twist.linear.y = DEFAULT_LINEAR_VELOCITY
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
     @twist_add_header
     def right(self):
         self.twist_stamped.twist.linear.x = 0.0
-        self.twist_stamped.twist.linear.y = -self.default_vel
+        self.twist_stamped.twist.linear.y = -DEFAULT_LINEAR_VELOCITY
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
     @twist_add_header
-    def turn_left(self):
+    def spin_cw(self):
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
-        self.twist_stamped.twist.angular.z = self.default_vel
+        self.twist_stamped.twist.angular.z = DEFAULT_ANGULAR_VELOCITY
         self.twist_publisher.publish(self.twist_stamped)
 
     @twist_add_header
-    def turn_right(self):
+    def spin_ccw(self):
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
-        self.twist_stamped.twist.angular.z = -self.default_vel
+        self.twist_stamped.twist.angular.z = -DEFAULT_ANGULAR_VELOCITY
         self.twist_publisher.publish(self.twist_stamped)
 
     @twist_add_header
@@ -122,24 +138,34 @@ class ServerPublisherNode(Node):
             try:
                 cmd, *args = self.data.strip("\n").split(",")
                 match cmd:
-                    case "F":
+                    case "angle":
+                        roll, pitch, yaw = euler_from_quaternion(
+                            (
+                                self.imu_data.orientation.x,
+                                self.imu_data.orientation.y,
+                                self.imu_data.orientation.z,
+                                self.imu_data.orientation.w,
+                            )
+                        )
+                        self.__send(client_socket, f"angle,{roll},{pitch},{yaw}")
+                    case "forward":
                         self.forward()
-                    case "B":
+                    case "backward":
                         self.backward()
-                    case "L":
+                    case "left":
                         self.left()
-                    case "R":
+                    case "right":
                         self.right()
-                    case "<":
-                        self.turn_left()
-                    case ">":
-                        self.turn_right()
-                    case "S":
+                    case "spin_cw":
+                        self.spin_cw()
+                    case "spin_ccw":
+                        self.spin_ccw()
+                    case "stop":
                         self.stop()
-                    case "V":
+                    case "velocity":
                         linear_x, linear_y, angular_z = map(float, args)
                         self.ser_wheel_velocity(linear_x, linear_y, angular_z)
-                    case "P":
+                    case "position":
                         forearm, gripper = map(float, args)
                         self.set_servo_position(forearm, gripper)
                     case "crusing":
@@ -163,8 +189,8 @@ class ServerPublisherNode(Node):
                         self.state = "heading_target"
                         self.tstamp = time.time()
                     case "grab":
-                        forearm_down = 210 # 53
-                        forearm_up = 90 # ??
+                        forearm_down = 210  # 53
+                        forearm_up = 90  # ??
                         gripper_close = 95
                         gripper_open = 30
                         self.cmd_pos(0, 0, 0, forearm, gripper_open)
@@ -175,7 +201,7 @@ class ServerPublisherNode(Node):
             except ValueError:
                 self.get_logger().error(f"Invalid parameters: {self.data}")
             except TypeError as e:
-                self.get_logger().error(e) 
+                self.get_logger().error(e)
                 # This exception error could not be solved. It's weird.
 
             self.data = ""
@@ -201,7 +227,7 @@ def main(args=None):
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind(("0.0.0.0", 8080))
     server_socket.listen(5)
-    node = ServerPublisherNode(server_socket)
+    node = ServerPublisher(server_socket)
     node.get_logger().info("Waiting for connection...")
 
     nodes_thread = Thread(target=Nodes, args=(node,))

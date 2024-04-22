@@ -39,6 +39,18 @@ def generate_launch_description():
             "gui": "false",
         }.items(),
     )
+    
+    imu_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("dogbot_bringup"),
+                    "launch",
+                    "mpu6050.launch.py",
+                ]
+            )
+        )
+    )
 
     server_node = Node(
         package="dogbot_server",
@@ -48,6 +60,7 @@ def generate_launch_description():
 
     nodes = [
         hardware_launch,
+        imu_launch,
         server_node,
     ]
 
