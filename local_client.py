@@ -41,10 +41,11 @@ if __name__ == '__main__' :
             userIn = input(">> ", )
             if userIn == 'q':
                 exit(0)
-            client.sending(userIn)
-            # elif userIn == "crusing":
-            #     client.sending(userIn)
-            # elif userIn == "approaching":
-            #     client.sending(userIn)
+            elif userIn == "crusing":
+                client.sending(userIn)
+            elif userIn == "approaching":
+                client.sending(userIn)
+            else:
+                client.sending(userIn)
         except KeyboardInterrupt:
             print(flush=True)
