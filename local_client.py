@@ -19,7 +19,8 @@ class ClientSide:
     def __send(self, msg) -> object:
         self.client_socket.sendall(msg.encode())
         data = self.client_socket.recv(1024).decode()
-        return data
+        print(data)
+        return
     
     def sending(self, msg) -> None:
         sending_thread = threading.Thread(target=self.__send, args=(msg))
@@ -31,3 +32,17 @@ class ClientSide:
         self.client_socket.close()
         print("Connection closed.")
         return
+
+if __name__ == '__main__' :
+    client = ClientSide()
+    while True:
+        try:
+            userIn = input()
+            if userIn == 'q':
+                exit(0)
+            elif userIn == "Crusing":
+                client.sending(userIn)
+            elif userIn == "Approaching":
+                client.sending(userIn)
+        except KeyboardInterrupt:
+            continue
