@@ -27,7 +27,7 @@ def generate_launch_description():
 
     slam_params = PathJoinSubstitution(
         [
-            FindPackageShare("dogbot_hardware"),
+            FindPackageShare("dogbot_bringup"),
             "config",
             "slam.yaml",
         ]
