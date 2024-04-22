@@ -93,6 +93,7 @@ class ServerPublisher(Node):
 
     @twist_add_header
     def stop(self):
+        self.state = "stop"
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
@@ -126,7 +127,6 @@ class ServerPublisher(Node):
                     continue
                 else:
                     self.stop()
-                    self.state = "stop"
                     continue
 
             self.data += data_buffer.decode("utf-8")
