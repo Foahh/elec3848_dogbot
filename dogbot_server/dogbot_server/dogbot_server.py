@@ -108,7 +108,7 @@ class ServerPublisherNode(Node):
             self.get_logger().info(f"Received: {self.data}")
 
             try:
-                cmd, *args = self.data.split(",")
+                cmd, *args = self.data.strip('\n').split(",")
                 match cmd:
                     case "F":
                         self.forward()
@@ -133,16 +133,17 @@ class ServerPublisherNode(Node):
                     case "crusing":
                         self.__send(client_socket, cmd)
                         self.state = "crusing"
-                        self.get_logger().info(f"crusing got")
                     case "approaching":
                         self.state = "approaching"
                         self.__send(client_socket, cmd)
                     case _:
-                        pass # stop() function has occurred problems
-                        # self.stop()
-                        # self.get_logger().error(f"Invalid command: {cmd}")
+                        # pass
+                        self.stop()
+                        self.get_logger().error(f"Invalid command: {cmd}")
             except ValueError:
                 self.get_logger().error(f"Invalid parameters: {self.data}")
+            except TypeError as e:
+                self.get_logger().error(e)
 
             self.data = ""
 

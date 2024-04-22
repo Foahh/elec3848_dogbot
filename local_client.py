@@ -47,4 +47,4 @@ if __name__ == '__main__' :
             # elif userIn == "approaching":
             #     client.sending(userIn)
         except KeyboardInterrupt:
-            continue
+            print(flush=True)
