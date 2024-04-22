@@ -111,7 +111,7 @@ net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
 
-# client_sock = ClientSide()
+client_sock = ClientSide()
 f = open('area.txt', 'w')
 f.close()
 # process frames until the user exits
@@ -185,26 +185,22 @@ while True:
     if (Area != 0): 
         # condition2.1： 偏左 -> turn right
         if (objX < width/2 - error):
-            # client_sock.sending("r_cw") # return turnoffset
-            pass
+            client_sock.sending("r_cw") # return turnoffset
             
         # condition2.2 : 偏右 -> turn left
         elif (objX > width/2 + error) :
-            # client_sock.sending("r_ccw") # return turnoffset
-            pass
+            client_sock.sending("r_ccw") # return turnoffset
     
         # condition3: redball detect and in the center, but not close enough -> go advance
         elif (objX > width/2 + error and objX < width/2 - error):
             # if window size, objx, objy ture -> compare window size
             if (Area < boundary_area):
-                # client_sock.sending("heading_target") # return turnoffset
-                pass
+                client_sock.sending("heading_target") # return turnoffset
                 # return window size
     
             # condition4: readball detect, in the center, close engough --> grab
             else:
-                pass
-                # client_sock.sending("grab")
+                client_sock.sending("grab")
                 # return grab_y -> servo1_close -> servo2_initial
     
     ##===================##
