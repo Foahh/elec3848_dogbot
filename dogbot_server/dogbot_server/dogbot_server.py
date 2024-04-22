@@ -6,7 +6,6 @@ from threading import Thread
 import socket
 import time
 from functools import wraps
-from sensor_msgs.msg import Imu
 from tf_transformations import euler_from_quaternion
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
@@ -41,20 +40,13 @@ class ServerPublisher(Node):
         self.servo_publisher = self.create_publisher(
             Float64MultiArray, "dogbot_servo_controller", 10
         )
-        self.imu_subscriber = self.create_subscription(
-            Imu, "imu/data", self.imu_callback, 10
-        )
 
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
-        self.publisher_2d_pose = self.create_publisher(
-            Float64MultiArray, "/debug_tf", 10
-        )
-
-        self.current_x = 0.0 # meters
-        self.current_y = 0.0 # meters
-        self.current_z = 0.0 # radians
+        self.current_x = 0.0  # meters
+        self.current_y = 0.0  # meters
+        self.current_z = 0.0  # radians
 
         self.data = ""
         self.state = "stop"
@@ -66,23 +58,26 @@ class ServerPublisher(Node):
             )
             self.current_x = transform.transform.translation.x
             self.current_y = transform.transform.translation.y
-            self.current_z = euler_from_quaternion(
+            roll, pitch, yaw = euler_from_quaternion(
                 (
                     transform.transform.rotation.x,
                     transform.transform.rotation.y,
                     transform.transform.rotation.z,
                     transform.transform.rotation.w,
                 )
-            )[2]
+            )
+            self.current_z = yaw
         except TransformException as e:
             self.get_logger().error(e)
-            
+
     def send_pose(self, client_socket):
         self.update_tf()
         self.get_logger().info(
-                            f"Current pose: ({self.current_x}, {self.current_y}, {self.current_z})"
-                        )
-        self.__send(client_socket,f"pose,{self.current_x},{self.current_y},{self.current_z}")
+            f"Current pose: ({self.current_x}, {self.current_y}, {self.current_z})"
+        )
+        self.__send(
+            client_socket, f"pose,{self.current_x},{self.current_y},{self.current_z}"
+        )
 
     @twist_add_header
     def forward(self):
