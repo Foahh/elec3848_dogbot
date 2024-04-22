@@ -28,6 +28,7 @@ class ServerPublisherNode(Node):
         )
         self.default_vel = 0.25
         self.data = ""
+        self.state = 'stop'
         
     @twist_add_header
     def forward(self):
@@ -132,10 +133,10 @@ class ServerPublisherNode(Node):
                     case "P":
                         pan, tilt, shoulder, forearm, gripper = map(float, args)
                         self.cmd_pos(pan, tilt, shoulder, forearm, gripper)
-                    case "Crusing":
-                        pass
-                    case "Approaching":
-                        pass
+                    case "crusing":
+                        self.state = 'crusing'
+                    case "approaching":
+                        self.state = 'approaching'
                     case _:
                         self.stop()
                         self.get_logger().error(f"Invalid command: {cmd}")
