@@ -73,8 +73,8 @@ namespace dogbot_drive_controller {
 
         // Compute linear and angular displacement:
         const double linear_x = (lf_est_vel + rf_est_vel + lb_est_vel + rb_est_vel) / 4.0;
-        const double linear_y = (-lf_est_vel + rf_est_vel + lb_est_vel - rb_est_vel) / 4.0;
-        const double angular = (lf_est_vel - rf_est_vel + lb_est_vel - rb_est_vel) / (4.0 * wheel_separation_k_);
+        const double linear_y = (lf_est_vel - rf_est_vel - lb_est_vel + rb_est_vel) / 4.0;
+        const double angular = (-lf_est_vel + rf_est_vel - lb_est_vel + rb_est_vel) / (4.0 * wheel_separation_k_);
 
         integrate(linear_x, linear_y, angular);
 

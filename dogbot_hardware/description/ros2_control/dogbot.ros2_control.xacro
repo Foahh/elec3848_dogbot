@@ -9,9 +9,11 @@
                 <param name="rf_wheel_name">rf_wheel_joint</param>
                 <param name="lb_wheel_name">lb_wheel_joint</param>
                 <param name="rb_wheel_name">rb_wheel_joint</param>
-                <param name="servo_gripper_name">servo_gripper_joint</param>
+                <param name="servo_pan_name">servo_pan_joint</param>
+                <param name="servo_tilt_name">servo_tilt_joint</param>
                 <param name="servo_shoulder_name">servo_shoulder_joint</param>
                 <param name="servo_forearm_name">servo_forearm_joint</param>
+                <param name="servo_gripper_name">servo_gripper_joint</param>
                 <param name="device">/dev/arduino</param>
                 <param name="baud_rate">115200</param>
                 <param name="timeout_ms">1000</param>
@@ -19,34 +21,37 @@
             </hardware>
 
             <joint name="${prefix}lf_wheel_joint">
-                <command_interface name="velocity"/>
-                <state_interface name="position"/>
+                <command_interface name="velocity" />
+                <state_interface name="position" />
             </joint>
             <joint name="${prefix}rf_wheel_joint">
-                <command_interface name="velocity"/>
-                <state_interface name="position"/>
+                <command_interface name="velocity" />
+                <state_interface name="position" />
             </joint>
             <joint name="${prefix}lb_wheel_joint">
-                <command_interface name="velocity"/>
-                <state_interface name="position"/>
+                <command_interface name="velocity" />
+                <state_interface name="position" />
             </joint>
             <joint name="${prefix}rb_wheel_joint">
-                <command_interface name="velocity"/>
-                <state_interface name="position"/>
+                <command_interface name="velocity" />
+                <state_interface name="position" />
             </joint>
 
-            <!-- <joint name="${prefix}servo_gripper_joint">
-                <command_interface name="position"/>
-                <state_interface name="position"/>
+            <joint name="${prefix}servo_pan_joint">
+                <command_interface name="position" />
+            </joint>
+            <joint name="${prefix}servo_tilt_joint">
+                <command_interface name="position" />
             </joint>
             <joint name="${prefix}servo_shoulder_joint">
-                <command_interface name="position"/>
-                <state_interface name="position"/>
+                <command_interface name="position" />
             </joint>
             <joint name="${prefix}servo_forearm_joint">
-                <command_interface name="position"/>
-                <state_interface name="position"/>
-            </joint> -->
+                <command_interface name="position" />
+            </joint>
+            <joint name="${prefix}servo_gripper_joint">
+                <command_interface name="position" />
+            </joint>
 
         </ros2_control>
     </xacro:macro>
