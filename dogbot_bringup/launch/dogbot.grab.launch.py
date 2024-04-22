@@ -51,6 +51,22 @@ def generate_launch_description():
             )
         )
     )
+    
+    ekf_localization_node = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        output="screen",
+        parameters=[
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("dogbot_bringup"),
+                    "config",
+                    "ekf_filter.yaml",
+                ]
+            )
+        ],
+    )
+
 
     server_node = Node(
         package="dogbot_server",

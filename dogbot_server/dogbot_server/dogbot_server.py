@@ -8,6 +8,9 @@ import time
 from functools import wraps
 from sensor_msgs.msg import Imu
 from tf_transformations import euler_from_quaternion
+from tf2_ros import TransformException
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
 
 
 DEFAULT_LINEAR_VELOCITY = 0.25
@@ -31,7 +34,6 @@ class ServerPublisher(Node):
 
         self.twist_stamped = TwistStamped()
         self.servo_position = Float64MultiArray()
-        self.imu_data = Imu()
 
         self.twist_publisher = self.create_publisher(
             TwistStamped, "dogbot_base_controller", 10
@@ -43,11 +45,37 @@ class ServerPublisher(Node):
             Imu, "imu/data", self.imu_callback, 10
         )
 
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
+
+        self.publisher_2d_pose = self.create_publisher(
+            Float64MultiArray, "/debug_tf", 10
+        )
+
+        self.current_x = 0.0 # meters
+        self.current_y = 0.0 # meters
+        self.current_z = 0.0 # radians
+
         self.data = ""
         self.state = "stop"
 
-    def imu_callback(self, msg):
-        self.imu_data = msg
+    def update_tf(self):
+        try:
+            transform = self.tf_buffer.lookup_transform(
+                "map", "base_link", rclpy.time.Time()
+            )
+            self.current_x = transform.transform.translation.x
+            self.current_y = transform.transform.translation.y
+            self.current_z = euler_from_quaternion(
+                (
+                    transform.transform.rotation.x,
+                    transform.transform.rotation.y,
+                    transform.transform.rotation.z,
+                    transform.transform.rotation.w,
+                )
+            )[2]
+        except TransformException as e:
+            self.get_logger().error(e)
 
     @twist_add_header
     def forward(self):
@@ -138,16 +166,15 @@ class ServerPublisher(Node):
             try:
                 cmd, *args = self.data.strip("\n").split(",")
                 match cmd:
-                    case "angle":
-                        roll, pitch, yaw = euler_from_quaternion(
-                            (
-                                self.imu_data.orientation.x,
-                                self.imu_data.orientation.y,
-                                self.imu_data.orientation.z,
-                                self.imu_data.orientation.w,
-                            )
+                    case "pose":
+                        self.update_tf()
+                        self.get_logger().info(
+                            f"Current pose: ({self.current_x}, {self.current_y}, {self.current_z})"
                         )
-                        self.__send(client_socket, f"angle,{roll},{pitch},{yaw}")
+                        self.__send(
+                            client_socket,
+                            f"pose,{self.current_x},{self.current_y},{self.current_z}",
+                        )
                     case "forward":
                         self.forward()
                     case "backward":
