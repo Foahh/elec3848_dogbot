@@ -132,6 +132,7 @@ class ServerPublisherNode(Node):
                         self.cmd_pos(pan, tilt, shoulder, forearm, gripper)
                     case "crusing":
                         self.state = 'crusing'
+                        self.__send(client_socket, 'on cursing')
                     case "approaching":
                         self.state = 'approaching'
                     case _:
@@ -141,6 +142,12 @@ class ServerPublisherNode(Node):
                 self.get_logger().error(f"Invalid parameters: {self.data}")
 
             self.data = ""
+
+    def __send(client_socket, msg) -> object:
+        client_socket.sendall(msg.encode())
+        data = client_socket.recv(1024).decode()
+        print(data)
+        return
 
 def Nodes(node) -> None:
     rclpy.spin(node)
