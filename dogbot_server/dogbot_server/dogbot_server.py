@@ -162,12 +162,12 @@ def main(args=None):
     node.get_logger().info("Waiting for connection...")
 
     nodes_thread =Thread(target=Nodes, args=node)
-    nodes_thread.start() 
+    nodes_thread.start()
 
     clients = []
     while True:
         client_socket, _ = server_socket.accept()
-        client_thread = Thread(target=node.on_receive, args=(client_socket, server_socket))
+        client_thread = Thread(target=node.on_receive, args=client_socket)
         clients.append((client_socket, client_thread))
         clients[-1][-1].start()
 
