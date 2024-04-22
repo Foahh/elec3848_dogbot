@@ -110,6 +110,8 @@ class ServerPublisherNode(Node):
                     continue
                 else:
                     self.stop()
+                    self.state = "stop"
+                    continue
 
             self.data += data_buffer.decode("utf-8")
             if self.data[-1] != "\n":
