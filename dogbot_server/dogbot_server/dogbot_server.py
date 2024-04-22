@@ -126,7 +126,7 @@ class ServerPublisherNode(Node):
                         self.turn_right()
                     case "S":
                         self.stop()
-                    case "V":
+                    case "V": # V,1.0,0.0,0.0\nF
                         linear_x, linear_y, angular_z = map(float, args)
                         self.cmd_vel(linear_x, linear_y, angular_z)
                     case "P":
@@ -147,7 +147,7 @@ def main(args=None):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind(("0.0.0.0", 8080))
-    server_socket.listen(5)
+    server_socket.listen(5)  # docker 上的端口映射是多少？8080
     node = ServerPublisherNode(server_socket)
     node.get_logger().info("Waiting for connection...")
 

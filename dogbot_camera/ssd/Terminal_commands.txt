@@ -1,0 +1,23 @@
+#### IDP Jetson Inference Detectnet Training
+#### 2021-2022
+
+#### Section 1: Setting Environment Variables
+#### CHANGE "tools" IN LINES BELOW THEN COPY AND PASTE THE FOLLOWING TO THE TERMINAL (W/O THE FIRST 4 HASHES)
+
+SSD=~/jetson-inference/python/training/detection/ssd
+
+NET=~/jetson-inference/python/training/detection/ssd/models/tools
+
+#### Section 2: Training and Converting
+
+cd $SSD
+
+python3 train_ssd.py --dataset-type=voc --data=$SSD/data/tools --model-dir=$SSD/models/tools
+
+python3 onnx_export.py --model-dir=models/tools
+
+#### Section 3: Launching Detection Program
+cd $SSD
+
+python3 detectnet_20210723_USB.py --model=$NET/ssd-mobilenet.onnx --labels=$NET/labels.txt --input-blob=input_0 --output-cvg=scores --threshould=0.95 --output-bbox=boxes csi://0
+
