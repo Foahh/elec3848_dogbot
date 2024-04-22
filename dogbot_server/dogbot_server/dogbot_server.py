@@ -133,6 +133,7 @@ class ServerPublisherNode(Node):
                     case "crusing":
                         self.state = 'crusing'
                         self.__send(client_socket, 'on cursing')
+                        break
                     case "approaching":
                         self.state = 'approaching'
                     case _:

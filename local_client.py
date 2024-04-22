@@ -5,7 +5,7 @@ class ClientSide:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.client_socket.settimeout(3)
-        self.client_socket.bind(('192.168.50.182', 8080))
+        self.client_socket.bind(('0.0.0.0', 8080))
         server_address = ('192.168.50.100', 8080)
         while True:
             try:
@@ -24,7 +24,7 @@ class ClientSide:
         return
     
     def sending(self, msg) -> None:
-        sending_thread = threading.Thread(target=self.__send, args=(msg))
+        sending_thread = threading.Thread(target=self.__send, args=(msg + '\n', ))
         sending_thread.start()
         print("Msg sent.")
         return
