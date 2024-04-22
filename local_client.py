@@ -24,7 +24,7 @@ class ClientSide:
         return
     
     def sending(self, msg) -> None:
-        sending_thread = threading.Thread(target=self.__send, args=(msg, ))
+        sending_thread = threading.Thread(target=self.__send, args=(msg + '\n', ))
         sending_thread.start()
         print("Msg sent.")
         return
@@ -41,9 +41,10 @@ if __name__ == '__main__' :
             userIn = input()
             if userIn == 'q':
                 exit(0)
-            elif userIn == "crusing":
-                client.sending(userIn)
-            elif userIn == "approaching":
-                client.sending(userIn)
+            client.sending(userIn)
+            # elif userIn == "crusing":
+            #     client.sending(userIn)
+            # elif userIn == "approaching":
+            #     client.sending(userIn)
         except KeyboardInterrupt:
             continue

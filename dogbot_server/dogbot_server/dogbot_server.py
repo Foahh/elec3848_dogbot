@@ -133,13 +133,13 @@ class ServerPublisherNode(Node):
                     case "crusing":
                         self.state = 'crusing'
                         self.get_logger().info("crusing got")
-                        self.__send(client_socket, 'on cursing')
                     case "approaching":
                         self.state = 'approaching'
                     case _:
-                        pass
+                        pass # stop() function has occurred problems
                         # self.stop()
                         # self.get_logger().error(f"Invalid command: {cmd}")
+                self.__send(client_socket, cmd)
             except ValueError:
                 self.get_logger().error(f"Invalid parameters: {self.data}")
 
