@@ -199,7 +199,8 @@ while True:
         elif (objX > width/2 + error and objX < width/2 - error):
             # if window size, objx, objy ture -> compare window size
             if (Area < boundary_area):
-                symbol = "advance"
+                # client_sock.sending("heading_target") # return turnoffset
+                pass
                 # return window size
     
             # condition4: readball detect, in the center, close engough --> grab
