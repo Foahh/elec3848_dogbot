@@ -76,7 +76,7 @@ def generate_launch_description():
                 [
                     FindPackageShare("dogbot_bringup"),
                     "config",
-                    "ekf.yaml",
+                    "ekf_filter.yaml",
                 ]
             )
         ],
@@ -108,7 +108,6 @@ def generate_launch_description():
         imu_launch,
         slam_launch,
         ekf_localization_node,
-        navigation2_launch,
         server_node,
     ]
 
