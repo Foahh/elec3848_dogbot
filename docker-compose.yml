@@ -9,7 +9,7 @@ services:
     devices:
       - /dev/arduino:/dev/arduino
       - /dev/ydlidar:/dev/ydlidar
-      - /dev/i2c-0:/dev/i2c-0
+      - /dev/i2c-0:/dev/i2c-1
     ports:
       - "8080:8080"
       - "11311:11311"
