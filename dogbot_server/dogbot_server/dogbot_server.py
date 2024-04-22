@@ -132,14 +132,15 @@ class ServerPublisherNode(Node):
                         self.cmd_pos(pan, tilt, shoulder, forearm, gripper)
                     case "crusing":
                         self.state = 'crusing'
+                        self.__send(client_socket, cmd)
                         self.get_logger().info(f"crusing got")
                     case "approaching":
                         self.state = 'approaching'
+                        self.__send(client_socket, cmd)
                     case _:
                         pass # stop() function has occurred problems
                         # self.stop()
                         # self.get_logger().error(f"Invalid command: {cmd}")
-                self.__send(client_socket, cmd)
             except ValueError:
                 self.get_logger().error(f"Invalid parameters: {self.data}")
 
