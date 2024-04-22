@@ -101,6 +101,13 @@ class ServerPublisherNode(Node):
                 client_socket, _ = self.server_socket.accept()
                 continue
 
+            if self.state in ["r_cw", "r_ccw", "heading_target"]:
+                # discard all the coming-in commands before finishing
+                if time.time() - self.tstamp < 0.5:
+                    continue
+                else:
+                    self.stop()
+
             self.data += data_buffer.decode("utf-8")
             if self.data[-1] != "\n":
                 continue
@@ -139,13 +146,17 @@ class ServerPublisherNode(Node):
                     case "r_cw":
                         # (angle) = map(float, args)
                         self.cmd_vel(0, 0, -1)
-                        time.sleep(0.5)
-                        self.stop()
+                        self.state = "r_cw"
+                        self.tstamp = time.time()
                     case "r_ccw":
                         # (angle) = map(float, args)
                         self.cmd_vel(0, 0, 1)
-                        time.sleep(0.5)
-                        self.stop()
+                        self.state = "r_ccw"
+                        self.tstamp = time.time()
+                    case "heading_target":
+                        self.cmd_vel(1, 0, 0)
+                        self.state = "heading_target"
+                        self.tstamp = time.time()
                     case "grab":
                         forearm_down = 210 # 53
                         forearm_up = 90 # ??

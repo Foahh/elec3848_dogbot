@@ -6,5 +6,5 @@
 # ./attach.sh
 source install/setup.bash
 colcon build
-ros2 run dogbot_server
+ros2 run dogbot_server dogbot_server
 
