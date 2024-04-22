@@ -14,8 +14,8 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-control-msgs \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-navigation2 \
-    ros-${ROS_DISTRO}-nav2-bringup && \
     ros-${ROS_DISTRO}-teleop-twist-keyboard \
+    ros-${ROS_DISTRO}-nav2-bringup && \
     rm -rf /var/lib/apt/lists/*
 
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
