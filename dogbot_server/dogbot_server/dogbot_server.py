@@ -132,7 +132,7 @@ class ServerPublisherNode(Node):
                         self.cmd_pos(pan, tilt, shoulder, forearm, gripper)
                     case "crusing":
                         self.state = 'crusing'
-                        self.get_logger().info("crusing got")
+                        self.get_logger().info(f"crusing got")
                     case "approaching":
                         self.state = 'approaching'
                     case _:
