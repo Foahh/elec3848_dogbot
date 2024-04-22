@@ -61,7 +61,7 @@ def generate_launch_description():
                 [
                     FindPackageShare("dogbot_bringup"),
                     "launch",
-                    "imu.launch.py",
+                    "mpu6050.launch.py",
                 ]
             )
         )

@@ -34,7 +34,7 @@ def generate_launch_description():
 
     imu_publisher_node = Node(
         package="dogbot_imu",
-        executable="imu_publisher",
+        executable="icm20948",
         output="screen",
     )
 
