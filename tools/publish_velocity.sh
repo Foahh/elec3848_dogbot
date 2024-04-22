@@ -1,3 +1,4 @@
+#!/bin/bash
 ros2 topic pub --rate 30 /dogbot_base_controller/cmd_vel geometry_msgs/msg/TwistStamped "
 twist:
   linear:
