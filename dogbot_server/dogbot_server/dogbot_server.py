@@ -28,7 +28,7 @@ class ServerPublisherNode(Node):
         )
         self.default_vel = 0.25
         self.data = ""
-        self.state = 'stop'
+        self.state = "stop"
         
     @twist_add_header
     def forward(self):
@@ -131,11 +131,11 @@ class ServerPublisherNode(Node):
                         pan, tilt, shoulder, forearm, gripper = map(float, args)
                         self.cmd_pos(pan, tilt, shoulder, forearm, gripper)
                     case "crusing":
-                        self.state = 'crusing'
+                        self.state = "crusing"
                         self.__send(client_socket, cmd)
                         self.get_logger().info(f"crusing got")
                     case "approaching":
-                        self.state = 'approaching'
+                        self.state = "approaching"
                         self.__send(client_socket, cmd)
                     case _:
                         pass # stop() function has occurred problems
