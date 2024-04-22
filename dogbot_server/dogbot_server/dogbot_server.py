@@ -126,7 +126,7 @@ class ServerPublisherNode(Node):
                         self.turn_right()
                     case "S":
                         self.stop()
-                    case "V":
+                    case "V": # V,1.0,0.0,0.0\nF
                         linear_x, linear_y, angular_z = map(float, args)
                         self.cmd_vel(linear_x, linear_y, angular_z)
                     case "P":

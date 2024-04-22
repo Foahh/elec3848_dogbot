@@ -29,7 +29,7 @@ import sys
 from os import path
 import serial
 import time
-
+from dogbot_client import ClientSide
 # Command line
 # python3 detectnet_20210723_USB.py --model=$NET/ssd-mobilenet.onnx --labels=$NET/labels.txt --input-blob=input_0 --output-cvg=scores --threshould=0.95 --output-bbox=boxes csi://0
 
@@ -92,6 +92,8 @@ net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
 
+client_sock = ClientSide()
+
 # process frames until the user exits
 while True:
 
@@ -100,6 +102,8 @@ while True:
 
     # detect objects in the image (with overlay)
     detections = net.Detect(img, overlay=opt.overlay)
+
+    client_sock.sending(detection)
 
     # print the detections
     print("detected {:d} objects in image".format(len(detections)))
