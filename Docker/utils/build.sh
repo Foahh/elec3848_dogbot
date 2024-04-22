@@ -21,4 +21,4 @@ sudo make install
 git clone -b humble https://github.com/YDLIDAR/ydlidar_ros2_driver.git /src/ydlidar_ws/src/ydlidar_ros2_driver
 cd /src/ydlidar_ws || exit 1
 colcon build --symlink-install
-echo "source ~/src/ydlidar_ws/install/setup.bash --extend" >>~/.bashrc
+echo "source /src/ydlidar_ws/install/setup.bash --extend" >>~/.bashrc
