@@ -31,16 +31,16 @@ import serial
 import time
 from dogbot_client import ClientSide
 
-#Detect arduino serial path (Cater for different USB-Serial Chips)
-if path.exists("/dev/ttyACM0"):
-	arduino = serial.Serial(port = '/dev/ttyACM0',baudrate = 115200)
-elif path.exists("/dev/ttyUSB0"):
-	arduino = serial.Serial(port = '/dev/ttyUSB0',baudrate = 115200)
-else:
-	print("Please plug in the Arduino")
-	exit()
-if not(arduino.isOpen()):
-    arduino.open()
+# #Detect arduino serial path (Cater for different USB-Serial Chips)
+# if path.exists("/dev/ttyACM0"):
+# 	arduino = serial.Serial(port = '/dev/ttyACM0',baudrate = 115200)
+# elif path.exists("/dev/ttyUSB0"):
+# 	arduino = serial.Serial(port = '/dev/ttyUSB0',baudrate = 115200)
+# else:
+# 	print("Please plug in the Arduino")
+# 	exit()
+# if not(arduino.isOpen()):
+#     arduino.open()
 
 #Variables for command and control
 pan =90
@@ -149,58 +149,55 @@ while True:
     myString = '(' +  str(pan) + ',' + str(tilt) + ',' + str(Area) + ')'  # original: pan, tilt, area --> objX, objY, Area
     print("myString = %s" %myString)
     
-    ###########
+    ##======================##
 
     turnoffset = abs(objX - width/2)
+
     # condition1: no redball detect -> no change
-    # arguments: window_size = Area
-    while (Area == 0): 
-        #no change
-        client_sock.sending("no_change")
+    # doing nothing
     
     # condition2: redball detect, but not in the center
     # arguments: objx, objy, window size
-    while (Area !=0):
+    if (Area != 0): 
         # condition2.1： 偏左 -> turn right
-        while ((objX > 0 and objX < width/2 - error) or (objX > width/2 + error and objX < 1280) ) : 
-            if (objX < width/2 - error and objX >0):
-                # trun right
-                symbol = "turn_right"
-                # return turnoffset
+        if (objX < width/2 - error):
+            # trun right
+            client_sock.sending("turn_right")
+            # return turnoffset
             
         # condition2.2 : 偏右 -> turn left
-            if (objX > width/2 + error and objX < 1280) :
-                # turn left
-                symbol = "turn_left"    
-                # return turnoffset
+        elif (objX > width/2 + error) :
+            # turn left
+            symbol = "turn_left"    
+            # return turnoffset
     
         # condition3: redball detect and in the center, but not close enough -> go advance
-        while (objX > width/2 + error and  objX < width/2 - error):
-        # if window size, objx, objy ture -> compare window size
-            while (Area < boundary_area):
+        elif (objX > width/2 + error and objX < width/2 - error):
+            # if window size, objx, objy ture -> compare window size
+            if (Area < boundary_area):
                 symbol = "advance"
                 # return window size
     
-    # condition4: readball detect, in the center, close engough --> grab
+            # condition4: readball detect, in the center, close engough --> grab
             else:
                 symbol = "grab"
                 # return grab_y -> servo1_close -> servo2_initial
     
-    ###########
+    ##===================##
     
-    #Print strings sent by arduino, if there's any
-    if arduino.inWaiting():
-        print("From Arduino serial: %s" %arduino.readline().decode('utf-8'))
-        arduino.flushInput()
-        arduino.flushOutput()
+    # #Print strings sent by arduino, if there's any
+    # if arduino.inWaiting():
+    #     print("From Arduino serial: %s" %arduino.readline().decode('utf-8'))
+    #     arduino.flushInput()
+    #     arduino.flushOutput()
     
-    #Determine if sending signals is necessary (trival adjustsments wastes time)
-    if (abs(pan - pan_prev) > 5 or abs(tilt - tilt_prev)> 5):
-        pan_prev = pan
-        tilt_prev = tilt
-        #Send it if area is reasonable
-        if (Area > 0 and Area < 300000):
-            arduino.write(myString.encode())
+    # #Determine if sending signals is necessary (trival adjustsments wastes time)
+    # if (abs(pan - pan_prev) > 5 or abs(tilt - tilt_prev)> 5):
+    #     pan_prev = pan
+    #     tilt_prev = tilt
+    #     #Send it if area is reasonable
+    #     if (Area > 0 and Area < 300000):
+    #         arduino.write(myString.encode())
 
     # render the image
     smallImg = jetson.utils.cudaAllocMapped(width=img.width*0.5, height=img.height*0.5, format=img.format)
