@@ -31,16 +31,16 @@ import serial
 import time
 from dogbot_client import ClientSide
 
-#Detect arduino serial path (Cater for different USB-Serial Chips)
-if path.exists("/dev/ttyACM0"):
-	arduino = serial.Serial(port = '/dev/ttyACM0',baudrate = 115200)
-elif path.exists("/dev/ttyUSB0"):
-	arduino = serial.Serial(port = '/dev/ttyUSB0',baudrate = 115200)
-else:
-	print("Please plug in the Arduino")
-	exit()
-if not(arduino.isOpen()):
-    arduino.open()
+# #Detect arduino serial path (Cater for different USB-Serial Chips)
+# if path.exists("/dev/ttyACM0"):
+# 	arduino = serial.Serial(port = '/dev/ttyACM0',baudrate = 115200)
+# elif path.exists("/dev/ttyUSB0"):
+# 	arduino = serial.Serial(port = '/dev/ttyUSB0',baudrate = 115200)
+# else:
+# 	print("Please plug in the Arduino")
+# 	exit()
+# if not(arduino.isOpen()):
+#     arduino.open()
 
 #Variables for command and control
 pan =90
@@ -66,6 +66,21 @@ servo1_open = 30  #claw: 30->open  initial state
 servo1_close = 95 #claw: 95->close
 servo2_initial = 90 #肘子: 90->middle      initial state
 grab_y = 210 # control 肘子
+
+'''
+Sample out:
+
+   -- ClassID: 1
+   -- Confidence: 0.973062
+   -- Left:    50
+   -- Top:     75.4102
+   -- Right:   1279
+   -- Bottom:  719
+   -- Width:   1229
+   -- Height:  643.59
+   -- Area:    790972
+   -- Center:  (664.5, 397.205)
+'''
 
 # parse the command line
 parser = argparse.ArgumentParser(description="Locate objects in a live camera stream using an object detection DNN.", \
@@ -96,8 +111,9 @@ net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
 
-client_sock = ClientSide()
-
+# client_sock = ClientSide()
+f = open('area.txt', 'w')
+f.close()
 # process frames until the user exits
 while True:
 
@@ -117,11 +133,15 @@ while True:
     
     #Find largest detected objects (in case of deep learning confusion)
     for detection in detections:
-        print(detection)
+        # print(detection)
         if(int(detection.Area)>Area):
             objX =int(detection.Center[0])
             objY = int(detection.Center[1])
             Area = int(detection.Area)
+            Confidence = detection.Confidence
+
+    # If more than one figures are detected, and those figures overlap, 
+    # then a higher confidence level could be concluded.
     
     #Determine the adjustments needed to make to the cmaera
     
@@ -147,60 +167,63 @@ while True:
     Area = int(Area)
     #Setting up command string
     myString = '(' +  str(pan) + ',' + str(tilt) + ',' + str(Area) + ')'  # original: pan, tilt, area --> objX, objY, Area
-    print("myString = %s" %myString)
+    # print("myString = %s" %myString)
+    if len(detections) == 1 and Area != 0:
+        f = open('area.txt', 'a+')
+        print(Area, ' ', Confidence, file=f)
+        f.close()
     
-    ###########
+    ##======================##
 
     turnoffset = abs(objX - width/2)
+
     # condition1: no redball detect -> no change
-    # arguments: window_size = Area
-    while (Area == 0): 
-        #no change
-        client_sock.sending("no_change")
+    # doing nothing
     
     # condition2: redball detect, but not in the center
     # arguments: objx, objy, window size
-    while (Area !=0):
+    if (Area != 0): 
         # condition2.1： 偏左 -> turn right
-        while ((objX > 0 and objX < width/2 - error) or (objX > width/2 + error and objX < 1280) ) : 
-            if (objX < width/2 - error and objX >0):
-                # trun right
-                symbol = "turn_right"
-                # return turnoffset
+        if (objX < width/2 - error):
+            # trun right
+            # client_sock.sending(">")
+            # return turnoffset
+            pass
             
         # condition2.2 : 偏右 -> turn left
-            if (objX > width/2 + error and objX < 1280) :
-                # turn left
-                symbol = "turn_left"    
-                # return turnoffset
+        elif (objX > width/2 + error) :
+            # turn left
+            # client_sock.sending("<")
+            # return turnoffset
+            pass
     
         # condition3: redball detect and in the center, but not close enough -> go advance
-        while (objX > width/2 + error and  objX < width/2 - error):
-        # if window size, objx, objy ture -> compare window size
-            while (Area < boundary_area):
+        elif (objX > width/2 + error and objX < width/2 - error):
+            # if window size, objx, objy ture -> compare window size
+            if (Area < boundary_area):
                 symbol = "advance"
                 # return window size
     
-    # condition4: readball detect, in the center, close engough --> grab
+            # condition4: readball detect, in the center, close engough --> grab
             else:
                 symbol = "grab"
                 # return grab_y -> servo1_close -> servo2_initial
     
-    ###########
+    ##===================##
     
-    #Print strings sent by arduino, if there's any
-    if arduino.inWaiting():
-        print("From Arduino serial: %s" %arduino.readline().decode('utf-8'))
-        arduino.flushInput()
-        arduino.flushOutput()
+    # #Print strings sent by arduino, if there's any
+    # if arduino.inWaiting():
+    #     print("From Arduino serial: %s" %arduino.readline().decode('utf-8'))
+    #     arduino.flushInput()
+    #     arduino.flushOutput()
     
-    #Determine if sending signals is necessary (trival adjustsments wastes time)
-    if (abs(pan - pan_prev) > 5 or abs(tilt - tilt_prev)> 5):
-        pan_prev = pan
-        tilt_prev = tilt
-        #Send it if area is reasonable
-        if (Area > 0 and Area < 300000):
-            arduino.write(myString.encode())
+    # #Determine if sending signals is necessary (trival adjustsments wastes time)
+    # if (abs(pan - pan_prev) > 5 or abs(tilt - tilt_prev)> 5):
+    #     pan_prev = pan
+    #     tilt_prev = tilt
+    #     #Send it if area is reasonable
+    #     if (Area > 0 and Area < 300000):
+    #         arduino.write(myString.encode())
 
     # render the image
     smallImg = jetson.utils.cudaAllocMapped(width=img.width*0.5, height=img.height*0.5, format=img.format)
