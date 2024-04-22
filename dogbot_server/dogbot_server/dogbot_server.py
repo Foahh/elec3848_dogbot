@@ -76,6 +76,13 @@ class ServerPublisher(Node):
             )[2]
         except TransformException as e:
             self.get_logger().error(e)
+            
+    def send_pose(self, client_socket):
+        self.update_tf()
+        self.get_logger().info(
+                            f"Current pose: ({self.current_x}, {self.current_y}, {self.current_z})"
+                        )
+        self.__send(client_socket,f"pose,{self.current_x},{self.current_y},{self.current_z}")
 
     @twist_add_header
     def forward(self):
@@ -167,14 +174,7 @@ class ServerPublisher(Node):
                 cmd, *args = self.data.strip("\n").split(",")
                 match cmd:
                     case "pose":
-                        self.update_tf()
-                        self.get_logger().info(
-                            f"Current pose: ({self.current_x}, {self.current_y}, {self.current_z})"
-                        )
-                        self.__send(
-                            client_socket,
-                            f"pose,{self.current_x},{self.current_y},{self.current_z}",
-                        )
+                        self.send_pose(client_socket)
                     case "forward":
                         self.forward()
                     case "backward":
