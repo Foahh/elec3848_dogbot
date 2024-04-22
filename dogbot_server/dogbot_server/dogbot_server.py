@@ -132,6 +132,7 @@ class ServerPublisherNode(Node):
                         self.cmd_pos(pan, tilt, shoulder, forearm, gripper)
                     case "crusing":
                         self.state = 'crusing'
+                        self.get_logger().info("crusing got")
                         self.__send(client_socket, 'on cursing')
                         break
                     case "approaching":
@@ -169,9 +170,10 @@ def main(args=None):
     nodes_thread =Thread(target=Nodes, args=(node, ))
     nodes_thread.start()
 
-    clients = []
+    # clients = []
     while True:
         client_socket, _ = server_socket.accept()
         client_thread = Thread(target=node.on_receive, args=(client_socket, ))
-        clients.append((client_socket, client_thread))
-        clients[-1][-1].start()
+        client_thread.start()
+        # clients.append((client_socket, client_thread))
+        # clients[-1][-1].start()
