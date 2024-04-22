@@ -132,6 +132,10 @@ class ServerPublisherNode(Node):
                     case "P":
                         pan, tilt, shoulder, forearm, gripper = map(float, args)
                         self.cmd_pos(pan, tilt, shoulder, forearm, gripper)
+                    case "Crusing":
+                        pass
+                    case "Approaching":
+                        pass
                     case _:
                         self.stop()
                         self.get_logger().error(f"Invalid command: {cmd}")
