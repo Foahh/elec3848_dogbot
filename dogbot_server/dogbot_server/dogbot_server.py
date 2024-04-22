@@ -109,6 +109,7 @@ class ServerPublisherNode(Node):
 
             try:
                 cmd, *args = self.data.split(",")
+                self.get_logger().info(f"Received command: {cmd}")
                 match cmd:
                     case "F":
                         self.forward()
@@ -134,7 +135,6 @@ class ServerPublisherNode(Node):
                         self.state = 'crusing'
                         self.get_logger().info("crusing got")
                         self.__send(client_socket, 'on cursing')
-                        break
                     case "approaching":
                         self.state = 'approaching'
                     case _:
