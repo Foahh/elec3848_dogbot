@@ -145,7 +145,7 @@ class ServerPublisherNode(Node):
 
             self.data = ""
 
-    def __send(client_socket, msg) -> object:
+    def __send(self, client_socket, msg) -> object:
         client_socket.sendall(msg.encode())
         data = client_socket.recv(1024).decode()
         print(data)
