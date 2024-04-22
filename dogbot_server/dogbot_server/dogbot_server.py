@@ -104,6 +104,7 @@ class ServerPublisherNode(Node):
                 continue
 
             self.data += data_buffer.decode("utf-8")
+            # what if use json?
             if self.data[-1] != "\n":
                 continue
 

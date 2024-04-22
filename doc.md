@@ -8,9 +8,11 @@ How to control the car's action?
 
 # What will trigger a control command?
 
-- when obstacles detected
+- when obstacles detected by camera
 
-- when target detected
+- when target detected by camera
+
+- distance measured by sonar
 
 ## LOGIC
 
