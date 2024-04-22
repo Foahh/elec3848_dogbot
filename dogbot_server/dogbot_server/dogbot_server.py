@@ -138,8 +138,9 @@ class ServerPublisherNode(Node):
                     case "approaching":
                         self.state = 'approaching'
                     case _:
-                        self.stop()
-                        self.get_logger().error(f"Invalid command: {cmd}")
+                        pass
+                        # self.stop()
+                        # self.get_logger().error(f"Invalid command: {cmd}")
             except ValueError:
                 self.get_logger().error(f"Invalid parameters: {self.data}")
 
