@@ -67,6 +67,21 @@ servo1_close = 95 #claw: 95->close
 servo2_initial = 90 #肘子: 90->middle      initial state
 grab_y = 210 # control 肘子
 
+'''
+Sample out:
+
+   -- ClassID: 1
+   -- Confidence: 0.973062
+   -- Left:    50
+   -- Top:     75.4102
+   -- Right:   1279
+   -- Bottom:  719
+   -- Width:   1229
+   -- Height:  643.59
+   -- Area:    790972
+   -- Center:  (664.5, 397.205)
+'''
+
 # parse the command line
 parser = argparse.ArgumentParser(description="Locate objects in a live camera stream using an object detection DNN.", \
     formatter_class=argparse.RawTextHelpFormatter, epilog=jetson.inference.detectNet.Usage() +\
@@ -96,10 +111,12 @@ net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
 
-client_sock = ClientSide()
-
+# client_sock = ClientSide()
+f = open('area.txt', 'w')
+f.close()
 # process frames until the user exits
 while True:
+    f = open('area.txt', 'a+')
 
     # capture the next image
     img = input.Capture()
@@ -117,11 +134,15 @@ while True:
     
     #Find largest detected objects (in case of deep learning confusion)
     for detection in detections:
-        print(detection)
+        # print(detection)
         if(int(detection.Area)>Area):
             objX =int(detection.Center[0])
             objY = int(detection.Center[1])
             Area = int(detection.Area)
+            Confidence = detection.Confidence
+
+    # If more than one figures are detected, and those figures overlap, 
+    # then a higher confidence level could be concluded.
     
     #Determine the adjustments needed to make to the cmaera
     
@@ -147,7 +168,10 @@ while True:
     Area = int(Area)
     #Setting up command string
     myString = '(' +  str(pan) + ',' + str(tilt) + ',' + str(Area) + ')'  # original: pan, tilt, area --> objX, objY, Area
-    print("myString = %s" %myString)
+    # print("myString = %s" %myString)
+    if len(detections) == 1 and Area != 0:
+        print(Area, ' ', Confidence, file=f)
+        f.close()
     
     ##======================##
 
@@ -162,8 +186,9 @@ while True:
         # condition2.1： 偏左 -> turn right
         if (objX < width/2 - error):
             # trun right
-            client_sock.sending("turn_right")
+            # client_sock.sending("turn_right")
             # return turnoffset
+            pass
             
         # condition2.2 : 偏右 -> turn left
         elif (objX > width/2 + error) :
