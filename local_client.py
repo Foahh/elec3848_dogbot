@@ -5,11 +5,16 @@ class ClientSide:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.client_socket.settimeout(3)
-        self.client_socket.bind(('0.0.0.0', 8080))
+        # self.hearing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self.hearing_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # self.hearing_socket.settimeout(3)
+        # self.hearing_socket.bind(('0.0.0.0', 8080))
         server_address = ('192.168.50.100', 8080)
+        self.close = False
         while True:
             try:
                 self.client_socket.connect(server_address)
+                self.regular_listen()
                 break
             except socket.timeout:
                 print("Connection failed. Retrying in 3 seconds...")
@@ -31,7 +36,20 @@ class ClientSide:
     
     def shutdown(self) -> None:
         self.client_socket.close()
+        self.close = True
         print("Connection closed.")
+        return
+    
+    def __listen(self) -> None:
+        while self.close == False:
+            self.__send("echoback")
+            time.sleep(0.1)
+        return
+    
+    def regular_listen(self) -> None:
+        listening_thread = threading.Thread(target=self.__listen)
+        listening_thread.start()
+        print("Regular echo back thread start running.")
         return
 
 if __name__ == '__main__' :
