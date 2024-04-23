@@ -16,14 +16,14 @@ DEFAULT_LINEAR_VELOCITY = 0.25
 DEFAULT_ANGULAR_VELOCITY = 0.5
 
 
-def twist_add_header(func):
-    @wraps(func)
-    def _impl(self, func):
-        timestamp = self.get_clock().now().to_msg()
-        self.twist_stamped.header.stamp = timestamp
-        func()
+# def twist_add_header(func):
+#     @wraps(func)
+#     def _impl(self, func):
+#         timestamp = self.get_clock().now().to_msg()
+#         self.twist_stamped.header.stamp = timestamp
+#         func(self)
 
-    return _impl
+    # return _impl
 
 
 class ServerPublisher(Node):
@@ -35,10 +35,10 @@ class ServerPublisher(Node):
         self.servo_position = Float64MultiArray()
 
         self.twist_publisher = self.create_publisher(
-            TwistStamped, "dogbot_base_controller", 10
+            TwistStamped, "/dogbot_base_controller/cmd_vel", 10
         )
         self.servo_publisher = self.create_publisher(
-            Float64MultiArray, "dogbot_servo_controller", 10
+            Float64MultiArray, "/forward_position_controller/commands", 10
         )
 
         self.tf_buffer = Buffer()
@@ -79,58 +79,66 @@ class ServerPublisher(Node):
             client_socket, f"pose,{self.current_x},{self.current_y},{self.current_z}"
         )
 
-    @twist_add_header
     def forward(self):
+        timestamp = self.get_clock().now().to_msg()
+        self.twist_stamped.header.stamp = timestamp
         self.twist_stamped.twist.linear.x = DEFAULT_LINEAR_VELOCITY
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @twist_add_header
     def backward(self):
+        timestamp = self.get_clock().now().to_msg()
+        self.twist_stamped.header.stamp = timestamp
         self.twist_stamped.twist.linear.x = -DEFAULT_LINEAR_VELOCITY
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @twist_add_header
     def left(self):
+        timestamp = self.get_clock().now().to_msg()
+        self.twist_stamped.header.stamp = timestamp
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = DEFAULT_LINEAR_VELOCITY
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @twist_add_header
     def right(self):
+        timestamp = self.get_clock().now().to_msg()
+        self.twist_stamped.header.stamp = timestamp
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = -DEFAULT_LINEAR_VELOCITY
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @twist_add_header
     def spin_cw(self):
+        timestamp = self.get_clock().now().to_msg()
+        self.twist_stamped.header.stamp = timestamp
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = DEFAULT_ANGULAR_VELOCITY
         self.twist_publisher.publish(self.twist_stamped)
 
-    @twist_add_header
     def spin_ccw(self):
+        timestamp = self.get_clock().now().to_msg()
+        self.twist_stamped.header.stamp = timestamp
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = -DEFAULT_ANGULAR_VELOCITY
         self.twist_publisher.publish(self.twist_stamped)
 
-    @twist_add_header
     def stop(self):
+        timestamp = self.get_clock().now().to_msg()
+        self.twist_stamped.header.stamp = timestamp
         self.state = "stop"
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
         self.twist_publisher.publish(self.twist_stamped)
 
-    @twist_add_header
     def ser_wheel_velocity(self, linear_x, linear_y, angular_z):
+        timestamp = self.get_clock().now().to_msg()
+        self.twist_stamped.header.stamp = timestamp
         self.twist_stamped.twist.linear.x = linear_x
         self.twist_stamped.twist.linear.y = linear_y
         self.twist_stamped.twist.angular.z = angular_z
