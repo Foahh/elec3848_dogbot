@@ -262,6 +262,8 @@ class ServerPublisher(Node):
                         # need to stuck here
                     case _:
                         self.stop()
+                        if cmd == "echoback":
+                            break
                         self.get_logger().error(f"Invalid command: {cmd}")
             except ValueError:
                 self.get_logger().error(f"Invalid parameters: {self.data}")
