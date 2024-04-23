@@ -152,9 +152,7 @@ class ServerPublisher(Node):
         self.servo_publisher.publish(self.servo_position)
 
     def on_receive(self, client_socket):
-        while True:
-            self.set_servo_position(self.forearm, self.gripper)
-            
+        while True:            
             data_buffer = client_socket.recv(1024)
             
             if not data_buffer:
@@ -193,6 +191,7 @@ class ServerPublisher(Node):
                 else:
                     self.state = "stop"
                     continue
+            self.set_servo_position(self.forearm, self.gripper)
             
             recv_data = data_buffer.decode("utf-8")
             if "echoback" in recv_data:
