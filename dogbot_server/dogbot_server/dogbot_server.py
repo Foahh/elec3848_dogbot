@@ -35,10 +35,10 @@ class ServerPublisher(Node):
         self.servo_position = Float64MultiArray()
 
         self.twist_publisher = self.create_publisher(
-            TwistStamped, "dogbot_base_controller", 10
+            TwistStamped, "/dogbot_base_controller/cmd_vel", 10
         )
         self.servo_publisher = self.create_publisher(
-            Float64MultiArray, "dogbot_servo_controller", 10
+            Float64MultiArray, "/forward_position_controller/commands", 10
         )
 
         self.tf_buffer = Buffer()
