@@ -167,10 +167,6 @@ class ServerPublisher(Node):
                 client_socket, _ = self.server_socket.accept()
                 continue
             recv_data = data_buffer.decode("utf-8")
-            if "echoback" in recv_data:
-                self.__send(client_socket, f"State: {self.state}")
-                # self.get_logger().info(f"sent back")
-                continue
 
             if self.state in ["r_cw", "r_ccw", "heading_target"]:
                 # discard all the coming-in commands before finishing
@@ -202,8 +198,10 @@ class ServerPublisher(Node):
                     self.state = "stop"
                     continue
             self.set_servo_position(self.forearm, self.gripper)
-            
-            
+            if "echoback" in recv_data:
+                self.__send(client_socket, f"State: {self.state}")
+                # self.get_logger().info(f"sent back")
+                continue
 
             self.data += recv_data
             if self.data[-1] != "\n":
