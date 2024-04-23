@@ -255,13 +255,15 @@ class ServerPublisher(Node):
                         self.detected = False
                     case "r_cw":
                         if len(args) >= 2:
-                            self.rotate_angle, self.rotate_period, *others = args
+                            self.rotate_angle = float(args[0])
+                            self.rotate_period = float(args[1])
                         self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
                         self.state = cmd
                         self.tstamp = time.time()
                     case "r_ccw":
                         if len(args) >= 2:
-                            self.rotate_angle, self.rotate_period, *others = args
+                            self.rotate_angle = float(args[0])
+                            self.rotate_period = float(args[1])
                         self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
                         self.state = cmd
                         self.tstamp = time.time()

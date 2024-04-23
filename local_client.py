@@ -9,11 +9,11 @@ class ClientSide:
         # self.hearing_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # self.hearing_socket.settimeout(3)
         # self.hearing_socket.bind(('0.0.0.0', 8080))
-        server_address = ('192.168.50.100', 8080)
+        self.server_address = ('192.168.50.100', 8080)
         self.close = False
         while True:
             try:
-                self.client_socket.connect(server_address)
+                self.client_socket.connect(self.server_address)
                 print("Connection established at client side.")
                 time.sleep(1)
                 # self.regular_listen()
@@ -48,9 +48,13 @@ class ClientSide:
     def regular_sending(self) -> None:
         msg = "echoback\n"
         while True:
-            self.client_socket.sendall(msg.encode())
-            # print("regular msg sent.")
-            time.sleep(0.2)
+            try:
+                self.client_socket.sendall(msg.encode())
+                # print("regular msg sent.")
+                time.sleep(0.2)
+            except:
+                self.client_socket.close()
+                self.client_socket.connect(self.server_address)
 
     def regular_receiving(self) -> None:
         while True:
@@ -63,18 +67,21 @@ class ClientSide:
 
 
 def main_thread() -> None:
+    lastcmd = []
     while True:
         try:
             userIn = input(">> ", )
             if userIn == 'q':
                 client.shutdown()
                 exit(0)
+            
             elif userIn == "":
-                client.send("crusing")
+                client.send(lastcmd[-1])
             elif userIn == "approaching":
                 client.send(userIn)
             else:
                 client.send(userIn)
+            lastcmd.append(userIn)
         except KeyboardInterrupt:
             print(flush=True)
         except Exception as e:
@@ -86,6 +93,8 @@ def stateMonitoring() -> None:
     try:
         sending.start()
         receiving.start()
+        while True:
+            pass
     except KeyboardInterrupt:
         sending.join()
         receiving.join()
