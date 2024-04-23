@@ -81,6 +81,12 @@ def generate_launch_description():
             )
         ],
     )
+    
+    stamp_adder_node = Node(
+        package="stamp_adder",
+        executable="stamp_adder",
+        output="screen",
+    )
 
     navigation2_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -102,7 +108,8 @@ def generate_launch_description():
         imu_launch,
         slam_launch,
         ekf_localization_node,
-        navigation2_launch
+        navigation2_launch,
+        stamp_adder_node
     ]
 
     return LaunchDescription(nodes)
