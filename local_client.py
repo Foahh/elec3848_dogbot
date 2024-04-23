@@ -4,7 +4,7 @@ class ClientSide:
     def __init__(self) -> None:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.client_socket.settimeout(0.5)
+        self.client_socket.settimeout(3)
         # self.hearing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.hearing_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # self.hearing_socket.settimeout(3)
@@ -23,11 +23,9 @@ class ClientSide:
                 time.sleep(3)
         return
     
-    def __send(self, msg) -> object:
-            # data = self.client_socket.recv(64).decode()
-            # print(data, flush=True)
+    def __recv(self, msg) -> None:
         try:
-            self.client_socket.send(msg.encode())
+            
             if "echoback" in msg:
                 data = self.client_socket.recv(128).decode()
                 print(data, flush=True)
@@ -35,7 +33,7 @@ class ClientSide:
             print(e)
         return
     
-    def sending(self, msg) -> None:
+    def listening(self, msg) -> None:
         sending_thread = threading.Thread(target=self.__send, args=(msg + '\n', ))
         sending_thread.start()
         # print("Msg sent.", end='')
@@ -53,12 +51,23 @@ class ClientSide:
             print("regular msg sent.")
             time.sleep(1)
         return
-    
-    def regular_listen(self) -> None:
-        listening_thread = threading.Thread(target=self.__listen)
-        listening_thread.start()
-        print("Regular echo back thread start running.")
+        
+    def regular_sending(self) -> None:
+        msg = "echoback\n"
+        while True:
+            self.client_socket.send(msg.encode())
+            # print("regular msg sent.")
+            time.sleep(0.2)
+
+    def regular_receiving(self) -> None:
+        while True:
+            try:
+                data = self.client_socket.recv(128).decode()
+                print(data, flush=True)
+            except TimeoutError as e:
+                print(e)
         return
+
 
 def main_thread() -> None:
     while True:
@@ -68,21 +77,26 @@ def main_thread() -> None:
                 client.shutdown()
                 exit(0)
             elif userIn == "crusing":
-                client.sending(userIn)
+                client.client_socket.send(userIn.encode())
             elif userIn == "approaching":
-                client.sending(userIn)
+                client.client_socket.send(userIn.encode())
             else:
-                client.sending(userIn)
+                client.client_socket.send(userIn.encode())
         except KeyboardInterrupt:
             print(flush=True)
         except Exception as e:
             print(e)
 
 def stateMonitoring() -> None:
-    while True:
-        client.sending("echoback")
-        # print("regular msg sent.")
-        time.sleep(1)
+    sending = threading.Thread(target=client.regular_sending)
+    receiving = threading.Thread(target=client.regular_receiving)
+    try:
+        sending.start()
+        receiving.start()
+    except KeyboardInterrupt:
+        sending.join()
+        receiving.join()
+        return
 
 if __name__ == '__main__' :
     client = ClientSide()
