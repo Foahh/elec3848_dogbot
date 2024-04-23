@@ -53,8 +53,8 @@ class ServerPublisher(Node):
 
         self.forearm_down = 60.0  # 53
         self.forearm_up = 90.0  # ??
-        self.gripper_close = 95.0
-        self.gripper_open = 30.0
+        self.gripper_open = 95.0
+        self.gripper_close = 30.0
 
         self.data = ""
         self.state = "stop"
