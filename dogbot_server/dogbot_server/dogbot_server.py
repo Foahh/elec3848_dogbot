@@ -154,6 +154,7 @@ class ServerPublisher(Node):
     def on_receive(self, client_socket):
         while True:
             self.set_servo_position(self.forearm, self.gripper)
+            
             data_buffer = client_socket.recv(1024)
             
             if not data_buffer:
