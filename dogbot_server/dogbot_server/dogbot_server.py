@@ -237,23 +237,23 @@ class ServerPublisher(Node):
                         self.__send(client_socket, cmd)
                     case "r_cw":
                         # (angle) = map(float, args)
-                        self.ser_wheel_velocity(0, 0, -1)
+                        self.ser_wheel_velocity(0.0, 0.0, -1.0)
                         self.state = "r_cw"
                         self.tstamp = time.time()
                     case "r_ccw":
                         # (angle) = map(float, args)
-                        self.ser_wheel_velocity(0, 0, 1)
+                        self.ser_wheel_velocity(0.0, 0.0, 1.0)
                         self.state = "r_ccw"
                         self.tstamp = time.time()
                     case "heading_target":
-                        self.ser_wheel_velocity(1, 0, 0)
+                        self.ser_wheel_velocity(1.0, 0.0, 0.0)
                         self.state = "heading_target"
                         self.tstamp = time.time()
                     case "grab":
-                        forearm_down = 210  # 53
-                        forearm_up = 90  # ??
-                        gripper_close = 95
-                        gripper_open = 30
+                        forearm_down = 60.0  # 53
+                        forearm_up = 90.0  # ??
+                        gripper_close = 95.0
+                        gripper_open = 30.0
                         self.set_servo_position(forearm_down, gripper_open)
                         self.state = "grab_2"
                         self.tstamp = time.time()
