@@ -59,6 +59,7 @@ class ServerPublisher(Node):
         self.data = ""
         self.state = "stop"
         self.cmds = []
+        self.detected = False
 
     def update_tf(self):
         try:
@@ -245,6 +246,10 @@ class ServerPublisher(Node):
                     case "approaching":
                         self.state = "approaching"
                         # self.__send(client_socket, cmd)
+                    case "detected":
+                        self.detected = True
+                    case "undetected":
+                        self.detected = False
                     case "r_cw":
                         # (angle) = map(float, args)
                         self.ser_wheel_velocity(0.0, 0.0, 1.7)
@@ -294,7 +299,10 @@ class ServerPublisher(Node):
                 continue
             recv_data = data_buffer.decode("utf-8")
             if "echoback" in recv_data:
-                self.__send(client_socket, f"State: {self.state} ")
+                s = f"State: {self.state} "
+                if self.detected == True:
+                    s += f" Detected!"
+                self.__send(client_socket, s)
                 continue
             elif recv_data != '' and recv_data != None:
                 self.get_logger().info(f"Received: {self.data}")
