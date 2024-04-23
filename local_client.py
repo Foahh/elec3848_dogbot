@@ -79,7 +79,7 @@ def stateMonitoring() -> None:
     while True:
         client.sending("echoback")
         # print("regular msg sent.")
-        time.sleep(1)
+        time.sleep(0.1)
 
 if __name__ == '__main__' :
     client = ClientSide()
