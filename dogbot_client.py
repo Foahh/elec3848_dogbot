@@ -5,7 +5,7 @@ class ClientSide:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.client_socket.settimeout(3)
-        server_address = ('0.0.0.0', 8080)
+        server_address = ('192.168.50.100', 8080)
         while True:
             try:
                 self.client_socket.connect(server_address)
@@ -17,7 +17,7 @@ class ClientSide:
         return
     
     def __send(self, msg) -> object:
-        self.client_socket.sendall(msg.encode())
+        self.client_socket.send(msg.encode())
         data = self.client_socket.recv(1024).decode()
         return data
     
