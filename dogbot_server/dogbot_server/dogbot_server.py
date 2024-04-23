@@ -48,8 +48,8 @@ class ServerPublisher(Node):
         self.current_y = 0.0  # meters
         self.current_z = 0.0  # radians
 
-        self.forearm = 90
-        self.gripper = 30
+        self.forearm = 90.0
+        self.gripper = 30.0
 
         self.data = ""
         self.state = "stop"
