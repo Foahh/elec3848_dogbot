@@ -151,7 +151,7 @@ class ServerPublisher(Node):
     def on_receive(self, client_socket):
         while True:
             data_buffer = client_socket.recv(1024)
-
+            
             if not data_buffer:
                 self.get_logger().error("Connection is broken!")
                 self.get_logger().info("Waiting for connection...")
@@ -188,8 +188,14 @@ class ServerPublisher(Node):
                 else:
                     self.state = "stop"
                     continue
+            
+            recv_data = data_buffer.decode("utf-8")
+            if "echoback" in recv_data:
+                self.__send(client_socket, f"State: {self.state}")
+                # self.get_logger().info(f"sent back")
+                continue
 
-            self.data += data_buffer.decode("utf-8")
+            self.data += recv_data
             if self.data[-1] != "\n":
                 continue
 
