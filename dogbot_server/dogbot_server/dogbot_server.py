@@ -56,6 +56,8 @@ class ServerPublisher(Node):
         self.gripper_close = 95.0
         self.gripper_open = 30.0
 
+        self.rotate_period = 0.5
+
         self.data = ""
         self.state = "stop"
         self.cmds = []
@@ -175,7 +177,7 @@ class ServerPublisher(Node):
 
             if self.state in ["r_cw", "r_ccw", "heading_target"]:
                 # discard all the coming-in commands before finishing
-                if time.time() - self.tstamp < 0.5:
+                if time.time() - self.tstamp < self.rotate_period:
                     pass
                     # continue
                 else:
@@ -251,14 +253,16 @@ class ServerPublisher(Node):
                     case "undetected":
                         self.detected = False
                     case "r_cw":
-                        # (angle) = map(float, args)
-                        self.ser_wheel_velocity(0.0, 0.0, 1.7)
-                        self.state = "r_cw"
+                        if len(args) >= 2:
+                            angle, self.rotate_period, *others = args
+                        self.ser_wheel_velocity(0.0, 0.0, angle)
+                        self.state = cmd
                         self.tstamp = time.time()
                     case "r_ccw":
-                        # (angle) = map(float, args)
-                        self.ser_wheel_velocity(0.0, 0.0, -1.7)
-                        self.state = "r_ccw"
+                        if len(args) >= 2:
+                            angle, self.rotate_period, *others = args
+                        self.ser_wheel_velocity(0.0, 0.0, angle)
+                        self.state = cmd
                         self.tstamp = time.time()
                     case "heading_target":
                         self.ser_wheel_velocity(0.5, 0.0, 0.0)

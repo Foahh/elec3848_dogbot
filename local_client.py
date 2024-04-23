@@ -50,7 +50,7 @@ class ClientSide:
         while True:
             self.client_socket.sendall(msg.encode())
             # print("regular msg sent.")
-            time.sleep(0.5)
+            time.sleep(0.2)
 
     def regular_receiving(self) -> None:
         while True:
