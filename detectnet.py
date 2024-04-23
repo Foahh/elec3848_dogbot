@@ -82,6 +82,8 @@ Sample out:
    -- Center:  (664.5, 397.205)
 '''
 
+client_sock = ClientSide()
+
 # parse the command line
 parser = argparse.ArgumentParser(description="Locate objects in a live camera stream using an object detection DNN.", \
     formatter_class=argparse.RawTextHelpFormatter, epilog=jetson.inference.detectNet.Usage() +\
@@ -111,7 +113,6 @@ net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
 
-client_sock = ClientSide()
 f = open('area.txt', 'w')
 f.close()
 # process frames until the user exits
