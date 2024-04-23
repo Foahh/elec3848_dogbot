@@ -169,7 +169,7 @@ class ServerPublisher(Node):
 
             if self.state in ["r_cw", "r_ccw", "heading_target"]:
                 # discard all the coming-in commands before finishing
-                if time.time() - self.tstamp < 0.5:
+                if time.time() - self.tstamp < 0.2:
                     continue
                 else:
                     self.stop()
