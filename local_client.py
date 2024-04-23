@@ -23,12 +23,12 @@ class ClientSide:
                 time.sleep(3)
         return
     
-    def __recv(self, msg) -> None:
+    def send(self, msg) -> None:
         try:
-            
+            self.client_socket.sendall((msg + '\n').encode())
             if "echoback" in msg:
                 data = self.client_socket.recv(128).decode()
-                print(data, flush=True)
+                print(data, end='', flush=True)
         except TimeoutError as e:
             print(e)
         return
@@ -44,28 +44,21 @@ class ClientSide:
         self.close = True
         print("Connection closed.")
         return
-    
-    def __listen(self) -> None:
-        while self.close == False:
-            self.__send("echoback")
-            print("regular msg sent.")
-            time.sleep(1)
-        return
-        
+            
     def regular_sending(self) -> None:
         msg = "echoback\n"
         while True:
             self.client_socket.sendall(msg.encode())
             # print("regular msg sent.")
-            time.sleep(0.2)
+            time.sleep(0.5)
 
     def regular_receiving(self) -> None:
         while True:
             try:
                 data = self.client_socket.recv(128).decode()
-                print(data, end='', flush=True)
+                print(f"[{time.ctime()}] {data}")
             except TimeoutError as e:
-                print(e, flush=True)
+                print(e)
         return
 
 
@@ -76,12 +69,12 @@ def main_thread() -> None:
             if userIn == 'q':
                 client.shutdown()
                 exit(0)
-            elif userIn == "crusing":
-                client.client_socket.sendall(userIn.encode())
+            elif userIn == "":
+                client.send("crusing")
             elif userIn == "approaching":
-                client.client_socket.sendall(userIn.encode())
+                client.send(userIn)
             else:
-                client.client_socket.sendall(userIn.encode())
+                client.send(userIn)
         except KeyboardInterrupt:
             print(flush=True)
         except Exception as e:
