@@ -57,6 +57,7 @@ class ServerPublisher(Node):
         self.gripper_open = 30.0
 
         self.rotate_period = 0.5
+        self.rotate_angle = 1.5
 
         self.data = ""
         self.state = "stop"
@@ -254,14 +255,14 @@ class ServerPublisher(Node):
                         self.detected = False
                     case "r_cw":
                         if len(args) >= 2:
-                            angle, self.rotate_period, *others = args
-                        self.ser_wheel_velocity(0.0, 0.0, angle)
+                            self.rotate_angle, self.rotate_period, *others = args
+                        self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
                         self.state = cmd
                         self.tstamp = time.time()
                     case "r_ccw":
                         if len(args) >= 2:
-                            angle, self.rotate_period, *others = args
-                        self.ser_wheel_velocity(0.0, 0.0, angle)
+                            self.rotate_angle, self.rotate_period, *others = args
+                        self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
                         self.state = cmd
                         self.tstamp = time.time()
                     case "heading_target":
