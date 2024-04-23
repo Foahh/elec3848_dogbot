@@ -48,8 +48,13 @@ class ServerPublisher(Node):
         self.current_y = 0.0  # meters
         self.current_z = 0.0  # radians
 
-        self.forearm = 90
-        self.gripper = 30
+        self.forearm = 90.0
+        self.gripper = 30.0
+
+        self.forearm_down = 60.0  # 53
+        self.forearm_up = 90.0  # ??
+        self.gripper_close = 95.0
+        self.gripper_open = 30.0
 
         self.data = ""
         self.state = "stop"
@@ -174,7 +179,7 @@ class ServerPublisher(Node):
                     continue
                 else:
                     self.state = "grab_3"
-                    self.set_servo_position(forearm_down, gripper_close)
+                    self.set_servo_position(self.forearm_down, self.gripper_close)
                     self.tstamp = time.time()
                     continue
             elif self.state == "grab_3":
@@ -182,7 +187,7 @@ class ServerPublisher(Node):
                     continue
                 else:
                     self.state = "grab_4"
-                    self.set_servo_position(forearm_up, gripper_close)
+                    self.set_servo_position(self.forearm_up, self.gripper_close)
                     self.tstamp = time.time()
                     continue
             elif self.state == "grab_4":
@@ -237,24 +242,21 @@ class ServerPublisher(Node):
                         self.__send(client_socket, cmd)
                     case "r_cw":
                         # (angle) = map(float, args)
-                        self.ser_wheel_velocity(0, 0, -1)
+                        self.ser_wheel_velocity(0.0, 0.0, -1.0)
                         self.state = "r_cw"
                         self.tstamp = time.time()
                     case "r_ccw":
                         # (angle) = map(float, args)
-                        self.ser_wheel_velocity(0, 0, 1)
+                        self.ser_wheel_velocity(0.0, 0.0, 1.0)
                         self.state = "r_ccw"
                         self.tstamp = time.time()
                     case "heading_target":
-                        self.ser_wheel_velocity(1, 0, 0)
+                        self.ser_wheel_velocity(1.0, 0.0, 0.0)
                         self.state = "heading_target"
                         self.tstamp = time.time()
                     case "grab":
-                        forearm_down = 210  # 53
-                        forearm_up = 90  # ??
-                        gripper_close = 95
-                        gripper_open = 30
-                        self.set_servo_position(forearm_down, gripper_open)
+                        
+                        self.set_servo_position(self.forearm_down, self.gripper_open)
                         self.state = "grab_2"
                         self.tstamp = time.time()
                         # need to stuck here
