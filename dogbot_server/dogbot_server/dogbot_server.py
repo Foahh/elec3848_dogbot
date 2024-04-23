@@ -51,6 +51,11 @@ class ServerPublisher(Node):
         self.forearm = 90.0
         self.gripper = 30.0
 
+        self.forearm_down = 60.0  # 53
+        self.forearm_up = 90.0  # ??
+        self.gripper_close = 95.0
+        self.gripper_open = 30.0
+
         self.data = ""
         self.state = "stop"
 
@@ -174,7 +179,7 @@ class ServerPublisher(Node):
                     continue
                 else:
                     self.state = "grab_3"
-                    self.set_servo_position(forearm_down, gripper_close)
+                    self.set_servo_position(self.forearm_down, self.gripper_close)
                     self.tstamp = time.time()
                     continue
             elif self.state == "grab_3":
@@ -182,7 +187,7 @@ class ServerPublisher(Node):
                     continue
                 else:
                     self.state = "grab_4"
-                    self.set_servo_position(forearm_up, gripper_close)
+                    self.set_servo_position(self.forearm_up, self.gripper_close)
                     self.tstamp = time.time()
                     continue
             elif self.state == "grab_4":
@@ -250,11 +255,8 @@ class ServerPublisher(Node):
                         self.state = "heading_target"
                         self.tstamp = time.time()
                     case "grab":
-                        forearm_down = 60.0  # 53
-                        forearm_up = 90.0  # ??
-                        gripper_close = 95.0
-                        gripper_open = 30.0
-                        self.set_servo_position(forearm_down, gripper_open)
+                        
+                        self.set_servo_position(self.forearm_down, self.gripper_open)
                         self.state = "grab_2"
                         self.tstamp = time.time()
                         # need to stuck here
