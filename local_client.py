@@ -25,12 +25,14 @@ class ClientSide:
     
     def __send(self, msg) -> object:
         self.client_socket.send(msg.encode())
-        try:
-            data = self.client_socket.recv(64).decode()
-            print(data, flush=True)
-        except TimeoutError as e:
-            print(e)
-        return
+        while True:
+            try:
+                data = self.client_socket.recv(64).decode()
+                print(data, flush=True)
+                return
+            except TimeoutError as e:
+                print(e)
+        
     
     def sending(self, msg) -> None:
         sending_thread = threading.Thread(target=self.__send, args=(msg + '\n', ))
