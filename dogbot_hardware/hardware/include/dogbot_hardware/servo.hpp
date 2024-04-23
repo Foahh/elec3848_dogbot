@@ -10,9 +10,10 @@ namespace dogbot_hardware
    public:
       std::string name;
       double cmd = 0;
-      void setup(const std::string &wheel_name)
+      void setup(const std::string &wheel_name, double default_cmd)
       {
          name = wheel_name;
+         cmd = default_cmd;
       }
 
       int get_position() const

@@ -43,8 +43,8 @@ namespace dogbot_hardware
         wheel_lb_.setup(info_.hardware_parameters["lb_wheel_name"], cfg_.enc_counts_per_rev);
         wheel_rb_.setup(info_.hardware_parameters["rb_wheel_name"], cfg_.enc_counts_per_rev);
 
-        servo_forearm_.setup(info_.hardware_parameters["servo_forearm_name"]);
-        servo_gripper_.setup(info_.hardware_parameters["servo_gripper_name"]);
+        servo_forearm_.setup(info_.hardware_parameters["servo_forearm_name"], 90.0);
+        servo_gripper_.setup(info_.hardware_parameters["servo_gripper_name"], 30.0);
 
         for (const hardware_interface::ComponentInfo &joint : info_.joints)
         {

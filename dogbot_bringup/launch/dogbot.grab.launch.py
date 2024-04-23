@@ -39,7 +39,7 @@ def generate_launch_description():
             "gui": "false",
         }.items(),
     )
-    
+
     imu_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
@@ -51,7 +51,7 @@ def generate_launch_description():
             )
         )
     )
-    
+
     ekf_localization_node = Node(
         package="robot_localization",
         executable="ekf_node",
@@ -67,7 +67,6 @@ def generate_launch_description():
         ],
     )
 
-
     server_node = Node(
         package="dogbot_server",
         executable="dogbot_server",
@@ -77,6 +76,7 @@ def generate_launch_description():
     nodes = [
         hardware_launch,
         imu_launch,
+        ekf_localization_node,
         server_node,
     ]
 

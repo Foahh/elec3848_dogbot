@@ -102,7 +102,7 @@ def generate_launch_description():
         imu_launch,
         slam_launch,
         ekf_localization_node,
-        navigation2_launch,
+        navigation2_launch
     ]
 
     return LaunchDescription(nodes)
