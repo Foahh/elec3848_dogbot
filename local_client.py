@@ -24,8 +24,8 @@ class ClientSide:
         return
     
     def __send(self, msg) -> object:
-        self.client_socket.sendall(msg.encode())
-        data = self.client_socket.recv(1024).decode()
+        self.client_socket.send(msg.encode())
+        data = self.client_socket.recv(64).decode()
         print(data)
         return
     
