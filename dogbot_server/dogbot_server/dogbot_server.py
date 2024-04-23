@@ -256,7 +256,6 @@ class ServerPublisher(Node):
                         self.state = "heading_target"
                         self.tstamp = time.time()
                     case "grab":
-                        
                         self.set_servo_position(self.forearm_down, self.gripper_open)
                         self.state = "grab_2"
                         self.tstamp = time.time()
