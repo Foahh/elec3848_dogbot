@@ -29,7 +29,7 @@ class ClientSide:
             # print(data, flush=True)
         try:
             if "echoback" in msg:
-                data = self.client_socket.recv(64).decode()
+                data = self.client_socket.recv(128).decode()
                 print(data, flush=True)
         except TimeoutError as e:
             print(e)

@@ -170,7 +170,7 @@ class ServerPublisher(Node):
             if "echoback" in recv_data:
                 self.__send(client_socket, f"State: {self.state}")
                 # self.get_logger().info(f"sent back")
-                # continue
+                continue
 
             if self.state in ["r_cw", "r_ccw", "heading_target"]:
                 # discard all the coming-in commands before finishing
