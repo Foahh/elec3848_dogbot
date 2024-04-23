@@ -158,6 +158,28 @@ class ServerPublisher(Node):
                 else:
                     self.stop()
                     continue
+            elif self.state == "grab_2":
+                if time.time() - self.tstamp < 2:
+                    continue
+                else:
+                    self.state = "grab_3"
+                    self.set_servo_position(forearm_down, gripper_close)
+                    self.tstamp = time.time()
+                    continue
+            elif self.state == "grab_3":
+                if time.time() - self.tstamp < 2:
+                    continue
+                else:
+                    self.state = "grab_4"
+                    self.set_servo_position(forearm_up, gripper_close)
+                    self.tstamp = time.time()
+                    continue
+            elif self.state == "grab_4":
+                if time.time() - self.tstamp < 2:
+                    continue
+                else:
+                    self.state = "stop"
+                    continue
 
             self.data += data_buffer.decode("utf-8")
             if self.data[-1] != "\n":
@@ -215,7 +237,9 @@ class ServerPublisher(Node):
                         forearm_up = 90  # ??
                         gripper_close = 95
                         gripper_open = 30
-                        self.set_servo_position(0, 0, 0, forearm, gripper_open)
+                        self.set_servo_position(forearm_down, gripper_open)
+                        self.state = "grab_2"
+                        self.tstamp = time.time()
                         # need to stuck here
                     case _:
                         self.stop()
