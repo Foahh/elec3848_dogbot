@@ -108,7 +108,6 @@ def generate_launch_description():
         imu_launch,
         slam_launch,
         ekf_localization_node,
-        navigation2_launch,
         stamp_adder_node
     ]
 
