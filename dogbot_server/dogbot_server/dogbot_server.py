@@ -192,7 +192,7 @@ class ServerPublisher(Node):
             recv_data = data_buffer.decode("utf-8")
             if "echoback" in recv_data:
                 self.__send(client_socket, f"State: {self.state}")
-                self.get_logger().info(f"sent back")
+                # self.get_logger().info(f"sent back")
                 continue
 
             self.data += recv_data

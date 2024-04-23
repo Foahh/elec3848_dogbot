@@ -16,7 +16,7 @@ class ClientSide:
                 self.client_socket.connect(server_address)
                 print("Connection established at client side.")
                 time.sleep(1)
-                self.regular_listen()
+                # self.regular_listen()
                 break
             except socket.timeout:
                 print("Connection failed. Retrying in 3 seconds...")
@@ -26,13 +26,13 @@ class ClientSide:
     def __send(self, msg) -> object:
         self.client_socket.send(msg.encode())
         data = self.client_socket.recv(64).decode()
-        print(data)
+        print(data, flush=True)
         return
     
     def sending(self, msg) -> None:
         sending_thread = threading.Thread(target=self.__send, args=(msg + '\n', ))
         sending_thread.start()
-        print("Msg sent.")
+        # print("Msg sent.", end='')
         return
     
     def shutdown(self) -> None:
@@ -74,4 +74,8 @@ if __name__ == '__main__' :
     client = ClientSide()
     # main = threading.Thread(target=main_thread)
     # main.start()
+    while True:
+        client.sending("echoback")
+        # print("regular msg sent.")
+        time.sleep(1)
     
