@@ -4,7 +4,7 @@ class ClientSide:
     def __init__(self) -> None:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.client_socket.settimeout(3)
+        self.client_socket.settimeout(0.5)
         # self.hearing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.hearing_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # self.hearing_socket.settimeout(3)
@@ -25,13 +25,15 @@ class ClientSide:
     
     def __send(self, msg) -> object:
         self.client_socket.send(msg.encode())
-        # while True:
-        #     try:
-        #         data = self.client_socket.recv(64).decode()
-        #         print(data, flush=True)
-        #         return
-        #     except TimeoutError as e:
-        #         print(e)
+            # data = self.client_socket.recv(64).decode()
+            # print(data, flush=True)
+        try:
+            if "echoback" in msg:
+                data = self.client_socket.recv(64).decode()
+                print(data, flush=True)
+        except TimeoutError as e:
+            print(e)
+        return
         
     
     def sending(self, msg) -> None:
@@ -81,7 +83,7 @@ def stateMonitoring() -> None:
     while True:
         client.sending("echoback")
         # print("regular msg sent.")
-        time.sleep(0.1)
+        time.sleep(1)
 
 if __name__ == '__main__' :
     client = ClientSide()

@@ -183,7 +183,9 @@ while True:
     
     # condition2: redball detect, but not in the center
     # arguments: objx, objy, window size
-    if (Area != 0): 
+    if (Area == 0): 
+        client_sock.sending("stop")
+    else:
         # condition2.1： 偏左 -> turn right
         if (objX < width/2 - error):
             client_sock.sending("r_cw") # return turnoffset
