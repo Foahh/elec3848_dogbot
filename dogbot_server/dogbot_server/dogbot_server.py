@@ -189,9 +189,12 @@ class ServerPublisher(Node):
                     self.state = "stop"
                     continue
             
-            self.__send(client_socket, f"State: {self.state}")
+            recv_data = data_buffer.decode("utf-8")
+            if recv_data[:8] == "echoback":
+                self.__send(client_socket, f"State: {self.state}")
+                continue
 
-            self.data += data_buffer.decode("utf-8")
+            self.data += recv_data
             if self.data[-1] != "\n":
                 continue
 

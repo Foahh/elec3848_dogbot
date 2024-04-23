@@ -14,12 +14,13 @@ class ClientSide:
         while True:
             try:
                 self.client_socket.connect(server_address)
+                print("Connection established at client side.")
+                time.sleep(1)
                 self.regular_listen()
                 break
             except socket.timeout:
                 print("Connection failed. Retrying in 3 seconds...")
                 time.sleep(3)
-        print("Connection established at client side.")
         return
     
     def __send(self, msg) -> object:
@@ -44,7 +45,7 @@ class ClientSide:
         while self.close == False:
             self.__send("echoback")
             print("regular msg sent.")
-            time.sleep(0.1)
+            # time.sleep(0.2)
         return
     
     def regular_listen(self) -> None:
@@ -53,12 +54,12 @@ class ClientSide:
         print("Regular echo back thread start running.")
         return
 
-if __name__ == '__main__' :
-    client = ClientSide()
+def main_thread() -> None:
     while True:
         try:
             userIn = input(">> ", )
             if userIn == 'q':
+                client.shutdown()
                 exit(0)
             elif userIn == "crusing":
                 client.sending(userIn)
@@ -68,3 +69,9 @@ if __name__ == '__main__' :
                 client.sending(userIn)
         except KeyboardInterrupt:
             print(flush=True)
+
+if __name__ == '__main__' :
+    client = ClientSide()
+    # main = threading.Thread(target=main_thread)
+    # main.start()
+    
