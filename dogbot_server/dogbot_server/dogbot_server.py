@@ -243,12 +243,12 @@ class ServerPublisher(Node):
                         self.__send(client_socket, cmd)
                     case "r_cw":
                         # (angle) = map(float, args)
-                        self.ser_wheel_velocity(0.0, 0.0, 2.0)
+                        self.ser_wheel_velocity(0.0, 0.0, 1.7)
                         self.state = "r_cw"
                         self.tstamp = time.time()
                     case "r_ccw":
                         # (angle) = map(float, args)
-                        self.ser_wheel_velocity(0.0, 0.0, -2.0)
+                        self.ser_wheel_velocity(0.0, 0.0, -1.7)
                         self.state = "r_ccw"
                         self.tstamp = time.time()
                     case "heading_target":
