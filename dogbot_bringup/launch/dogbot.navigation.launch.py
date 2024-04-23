@@ -87,6 +87,13 @@ def generate_launch_description():
         executable="stamp_adder",
         output="screen",
     )
+    
+    server_node = Node(
+        package="dogbot_server",
+        executable="dogbot_server",
+        output="screen",
+    )
+
 
     navigation2_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -108,7 +115,8 @@ def generate_launch_description():
         imu_launch,
         slam_launch,
         ekf_localization_node,
-        stamp_adder_node
+        stamp_adder_node,
+        server_node
     ]
 
     return LaunchDescription(nodes)
