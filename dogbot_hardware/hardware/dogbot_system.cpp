@@ -193,7 +193,7 @@ namespace dogbot_hardware
         try
         {
             serial_.set_motor_speed(motor_lf_speed, motor_rf_speed, motor_lb_speed, motor_rb_speed);
-            serial_.set_servo_position(servo_forearm_pos, servo_gripper_pos);
+            // serial_.set_servo_position(servo_forearm_pos, servo_gripper_pos);
         }
         catch (const std::exception &e)
         {
