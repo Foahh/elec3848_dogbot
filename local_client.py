@@ -43,6 +43,7 @@ class ClientSide:
     def __listen(self) -> None:
         while self.close == False:
             self.__send("echoback")
+            print("regular msg sent.")
             time.sleep(0.1)
         return
     
