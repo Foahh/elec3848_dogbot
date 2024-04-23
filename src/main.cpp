@@ -1,14 +1,19 @@
-#include "MotorController.hpp"
-#include "ServoController.hpp"
 #include "Display.hpp"
+#include "MotorController.hpp"
 #include <Arduino.h>
+#include <Servo.h>
+
+#define FOREARM_SERVO_PIN 47
+#define GRIPPER_SERVO_PIN 48
 
 MotorController motor;
-ServoController servo;
+Servo forearm;
+Servo gripper;
+
+int forearm_angle = 90;
+int gripper_angle = 30;
 
 //====================================================================//
-
-
 
 const byte buffer_length = 64;
 
@@ -17,7 +22,8 @@ char temp_char_buffer[buffer_length];
 char *token;
 char rc;
 
-float args[8] = {0.0};
+float motor_args[4] = {0.0};
+int servo_args[2] = {0};
 
 const char start_marker = '<';
 const char end_marker = '>';
@@ -71,9 +77,9 @@ inline void serialHandler()
         for (int i = 0; i < 4; i++)
         {
             token = strtok(nullptr, ",");
-            args[i] = atof(token);
+            motor_args[i] = atof(token);
         }
-        motor.setTargetSpeed(args[0], args[1], args[2], args[3]);
+        motor.setTargetSpeed(motor_args[0], motor_args[1], motor_args[2], motor_args[3]);
         Serial.println("<OK>");
         break;
     case 'E':
@@ -83,9 +89,31 @@ inline void serialHandler()
         for (int i = 0; i < 2; i++)
         {
             token = strtok(nullptr, ",");
-            args[i] = atof(token);
+            servo_args[i] = atoi(token);
         }
-        servo.setServoPosition(args[1], args[2]);
+        forearm_angle = servo_args[0];
+        gripper_angle = servo_args[1];
+        Serial.println("<OK>");
+        break;
+
+    case 'w':
+        motor.forward();
+        Serial.println("<OK>");
+        break;
+    case 's':
+        motor.left();
+        Serial.println("<OK>");
+        break;
+    case 'a':
+        motor.backward();
+        Serial.println("<OK>");
+        break;
+    case 'd':
+        motor.right();
+        Serial.println("<OK>");
+        break;
+    case 'x':
+        motor.stop();
         Serial.println("<OK>");
         break;
     default:
@@ -96,12 +124,16 @@ inline void serialHandler()
 
 void setup()
 {
+    forearm.attach(FOREARM_SERVO_PIN);
+    gripper.attach(GRIPPER_SERVO_PIN);
     MotorController::begin();
     Serial.begin(115200);
 }
 
 void loop()
 {
+    forearm.write(forearm_angle);
+    gripper.write(gripper_angle);
     serialReceiver();
     if (data_available)
     {

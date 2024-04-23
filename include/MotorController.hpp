@@ -50,6 +50,12 @@ public:
 
     void setTargetSpeed(float speed_lf, float speed_rf, float speed_lb, float speed_rb); // pulse/ms
 
+    void forward();
+    void backward();
+    void left();
+    void right();
+    void stop();
+
     void sendFeedback();
 
 private:
@@ -77,7 +83,6 @@ private:
     long encoder_value_delta_lb_;
     long encoder_value_delta_rb_;
 
-    // pulse/ms
     float target_speed_lf_;
     float target_speed_rf_;
     float target_speed_lb_;
@@ -171,17 +176,38 @@ void MotorController::begin() {
 }
 
 inline void MotorController::setPWM_(int pwm_lf, int pwm_rf, int pwm_lb, int pwm_rb) {
-    digitalWrite(DIRA1, pwm_lf < 0 ? HIGH : LOW);
-    digitalWrite(DIRA2, pwm_lf > 0 ? HIGH : LOW);
+    if (pwm_lf == 0) {
+        digitalWrite(DIRA1, LOW);
+        digitalWrite(DIRA2, LOW);
+    } else{
+        digitalWrite(DIRA1, pwm_lf < 0 ? HIGH : LOW);
+        digitalWrite(DIRA2, pwm_lf > 0 ? HIGH : LOW);
+    
+    }
 
-    digitalWrite(DIRB1, pwm_rf < 0 ? HIGH : LOW);
-    digitalWrite(DIRB2, pwm_rf > 0 ? HIGH : LOW);
+    if (pwm_rf == 0) {
+        digitalWrite(DIRB1, LOW);
+        digitalWrite(DIRB2, LOW);
+    } else{
+        digitalWrite(DIRB1, pwm_rf < 0 ? HIGH : LOW);
+        digitalWrite(DIRB2, pwm_rf > 0 ? HIGH : LOW);
+    }
 
-    digitalWrite(DIRC1, pwm_lb < 0 ? HIGH : LOW);
-    digitalWrite(DIRC2, pwm_lb > 0 ? HIGH : LOW);
+    if (pwm_lb == 0) {
+        digitalWrite(DIRC1, LOW);
+        digitalWrite(DIRC2, LOW);
+    } else{
+        digitalWrite(DIRC1, pwm_lb < 0 ? HIGH : LOW);
+        digitalWrite(DIRC2, pwm_lb > 0 ? HIGH : LOW);
+    }
 
-    digitalWrite(DIRD1, pwm_rb < 0 ? HIGH : LOW);
-    digitalWrite(DIRD2, pwm_rb > 0 ? HIGH : LOW);
+    if (pwm_rb == 0) {
+        digitalWrite(DIRD1, LOW);
+        digitalWrite(DIRD2, LOW);
+    } else{
+        digitalWrite(DIRD1, pwm_rb < 0 ? HIGH : LOW);
+        digitalWrite(DIRD2, pwm_rb > 0 ? HIGH : LOW);
+    }
 
     analogWrite(PWMA, abs(pwm_lf));
     analogWrite(PWMB, abs(pwm_rf));
@@ -189,7 +215,27 @@ inline void MotorController::setPWM_(int pwm_lf, int pwm_rf, int pwm_lb, int pwm
     analogWrite(PWMD, abs(pwm_rb));
 }
 
-// pulse/ms
+void MotorController::forward(){
+    setTargetSpeed(1.0, 1.0, 1.0, 1.0);
+}
+
+void MotorController::backward(){
+    setTargetSpeed(-1.0, -1.0, -1.0, -1.0);
+}
+
+void MotorController::left(){
+    setTargetSpeed(-1.0, 1.0, 1.0, -1.0);
+}
+
+void MotorController::right(){
+    setTargetSpeed(1.0, -1.0, -1.0, 1.0);
+}
+
+void MotorController::stop(){
+    setTargetSpeed(0.0, 0.0, 0.0, 0.0);
+}
+
+
 void MotorController::setTargetSpeed(float speed_lf, float speed_rf, float speed_lb, float speed_rb) {
     target_speed_lf_ = speed_lf;
     target_speed_rf_ = speed_rf;
