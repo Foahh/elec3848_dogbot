@@ -25,8 +25,11 @@ class ClientSide:
     
     def __send(self, msg) -> object:
         self.client_socket.send(msg.encode())
-        data = self.client_socket.recv(64).decode()
-        print(data, flush=True)
+        try:
+            data = self.client_socket.recv(64).decode()
+            print(data, flush=True)
+        except TimeoutError as e:
+            print(e)
         return
     
     def sending(self, msg) -> None:
@@ -69,13 +72,23 @@ def main_thread() -> None:
                 client.sending(userIn)
         except KeyboardInterrupt:
             print(flush=True)
+        except Exception as e:
+            print(e)
+
+def stateMonitoring() -> None:
+    while True:
+        client.sending("echoback")
+        # print("regular msg sent.")
+        time.sleep(1)
 
 if __name__ == '__main__' :
     client = ClientSide()
     # main = threading.Thread(target=main_thread)
     # main.start()
-    while True:
-        client.sending("echoback")
-        # print("regular msg sent.")
-        time.sleep(1)
+    userIn = int(input())
+    if userIn == 1:
+        stateMonitoring()
+    elif userIn == 2:
+        main_thread()
+    
     
