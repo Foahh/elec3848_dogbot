@@ -43,8 +43,8 @@ namespace dogbot_hardware
         wheel_lb_.setup(info_.hardware_parameters["lb_wheel_name"], cfg_.enc_counts_per_rev);
         wheel_rb_.setup(info_.hardware_parameters["rb_wheel_name"], cfg_.enc_counts_per_rev);
 
-        servo_forearm_.setup(info_.hardware_parameters["servo_forearm_name"]);
-        servo_gripper_.setup(info_.hardware_parameters["servo_gripper_name"]);
+        servo_forearm_.setup(info_.hardware_parameters["servo_forearm_name"], 90.0);
+        servo_gripper_.setup(info_.hardware_parameters["servo_gripper_name"], 30.0);
 
         for (const hardware_interface::ComponentInfo &joint : info_.joints)
         {
@@ -193,7 +193,7 @@ namespace dogbot_hardware
         try
         {
             serial_.set_motor_speed(motor_lf_speed, motor_rf_speed, motor_lb_speed, motor_rb_speed);
-            // serial_.set_servo_position(servo_forearm_pos, servo_gripper_pos);
+            serial_.set_servo_position(servo_forearm_pos, servo_gripper_pos);
         }
         catch (const std::exception &e)
         {
