@@ -55,7 +55,7 @@ class ClientSide:
     def regular_sending(self) -> None:
         msg = "echoback\n"
         while True:
-            self.client_socket.send(msg.encode())
+            self.client_socket.sendall(msg.encode())
             # print("regular msg sent.")
             time.sleep(0.2)
 
@@ -63,9 +63,9 @@ class ClientSide:
         while True:
             try:
                 data = self.client_socket.recv(128).decode()
-                print(data, flush=True)
+                print(data, end='', flush=True)
             except TimeoutError as e:
-                print(e)
+                print(e, flush=True)
         return
 
 
@@ -77,11 +77,11 @@ def main_thread() -> None:
                 client.shutdown()
                 exit(0)
             elif userIn == "crusing":
-                client.client_socket.send(userIn.encode())
+                client.client_socket.sendall(userIn.encode())
             elif userIn == "approaching":
-                client.client_socket.send(userIn.encode())
+                client.client_socket.sendall(userIn.encode())
             else:
-                client.client_socket.send(userIn.encode())
+                client.client_socket.sendall(userIn.encode())
         except KeyboardInterrupt:
             print(flush=True)
         except Exception as e:
