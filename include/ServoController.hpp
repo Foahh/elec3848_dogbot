@@ -1,42 +1,29 @@
 
 #include <Servo.h>
 
-// #define PAN_SERVO_PIN 2
-// #define TILT_SERVO_PIN 3
-// #define SHOULDER_SERVO_PIN 4
-// #define FOREARM_SERVO_PIN 5
-// #define GRIPPER_SERVO_PIN 6
+#define FOREARM_SERVO_PIN 48
+#define GRIPPER_SERVO_PIN 47
 
 class ServoController
 {
 public:
     ServoController();
 
-    void setServoPosition(int pan, int tilt, int shoulder, int forearm, int gripper);
+    void setServoPosition(int forearm, int gripper);
 
 private:
-    Servo pan_;
-    Servo tilt_;
-    Servo shoulder_;
     Servo forearm_;
-    Servo gripper;
+    Servo gripper_;
 };
 
-ServoController::ServoController() : pan_(), tilt_(), shoulder_(), forearm_(), gripper()
+ServoController::ServoController() : forearm_(), gripper_()
 {
-    // pan_.attach(PAN_SERVO_PIN);
-    // tilt_.attach(TILT_SERVO_PIN);
-    // shoulder_.attach(SHOULDER_SERVO_PIN);
-    // forearm_.attach(FOREARM_SERVO_PIN);
-    // gripper.attach(GRIPPER_SERVO_PIN);
+    forearm_.attach(FOREARM_SERVO_PIN);
+    gripper_.attach(GRIPPER_SERVO_PIN);
 }
 
-void ServoController::setServoPosition(int pan, int tilt, int shoulder, int forearm, int gripper)
+void ServoController::setServoPosition(int forearm, int gripper)
 {
-    // Set the servo position
-    // panServo.write(pan);
-    // tiltServo.write(tilt);
-    // shoulderServo.write(shoulder);
-    // forearmServo.write(forearm);
-    // gripperServo.write(gripper);
+    forearm_.write(forearm);
+    gripper_.write(gripper);
 }

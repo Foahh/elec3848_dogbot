@@ -80,12 +80,12 @@ inline void serialHandler()
         motor.sendFeedback();
         break;
     case 'P':
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 2; i++)
         {
             token = strtok(nullptr, ",");
             args[i] = atof(token);
         }
-        servo.setServoPosition(args[0], args[1], args[2], args[3], args[4]);
+        servo.setServoPosition(args[1], args[2]);
         Serial.println("<OK>");
         break;
     default:
