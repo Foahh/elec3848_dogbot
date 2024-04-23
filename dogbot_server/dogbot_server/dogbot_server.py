@@ -168,41 +168,43 @@ class ServerPublisher(Node):
                 continue
             recv_data = data_buffer.decode("utf-8")
 
-            if self.state in ["r_cw", "r_ccw", "heading_target"]:
-                # discard all the coming-in commands before finishing
-                if time.time() - self.tstamp < 0.5:
-                    continue
-                else:
-                    self.stop()
-                    continue
-            elif self.state == "grab_2":
-                if time.time() - self.tstamp < 2:
-                    continue
-                else:
-                    self.state = "grab_3"
-                    self.set_servo_position(self.forearm_down, self.gripper_close)
-                    self.tstamp = time.time()
-                    continue
-            elif self.state == "grab_3":
-                if time.time() - self.tstamp < 2:
-                    continue
-                else:
-                    self.state = "grab_4"
-                    self.set_servo_position(self.forearm_up, self.gripper_close)
-                    self.tstamp = time.time()
-                    continue
-            elif self.state == "grab_4":
-                if time.time() - self.tstamp < 2:
-                    continue
-                else:
-                    self.state = "stop"
-                    continue
-            self.set_servo_position(self.forearm, self.gripper)
             if "echoback" in recv_data:
                 self.__send(client_socket, f"State: {self.state}")
-                # self.get_logger().info(f"sent back")
+                if self.state in ["r_cw", "r_ccw", "heading_target"]:
+                    # discard all the coming-in commands before finishing
+                    if time.time() - self.tstamp < 0.5:
+                        pass
+                        # continue
+                    else:
+                        self.stop()
+                        # continue
+                elif self.state == "grab_2":
+                    if time.time() - self.tstamp < 2:
+                        pass
+                        # continue
+                    else:
+                        self.state = "grab_3"
+                        self.set_servo_position(self.forearm_down, self.gripper_close)
+                        self.tstamp = time.time()
+                        # continue
+                elif self.state == "grab_3":
+                    if time.time() - self.tstamp < 2:
+                        pass
+                        # continue
+                    else:
+                        self.state = "grab_4"
+                        self.set_servo_position(self.forearm_up, self.gripper_close)
+                        self.tstamp = time.time()
+                        # continue
+                elif self.state == "grab_4":
+                    if time.time() - self.tstamp < 2:
+                        pass
+                        # continue
+                    else:
+                        self.state = "stop"
+                        # continue            
                 continue
-
+            self.set_servo_position(self.forearm, self.gripper)
             self.data += recv_data
             if self.data[-1] != "\n":
                 continue

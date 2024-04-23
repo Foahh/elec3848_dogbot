@@ -24,17 +24,16 @@ class ClientSide:
         return
     
     def __send(self, msg) -> object:
-        self.client_socket.send(msg.encode())
             # data = self.client_socket.recv(64).decode()
             # print(data, flush=True)
         try:
+            self.client_socket.send(msg.encode())
             if "echoback" in msg:
                 data = self.client_socket.recv(128).decode()
                 print(data, flush=True)
         except TimeoutError as e:
             print(e)
         return
-        
     
     def sending(self, msg) -> None:
         sending_thread = threading.Thread(target=self.__send, args=(msg + '\n', ))
