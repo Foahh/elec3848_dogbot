@@ -58,6 +58,7 @@ class ServerPublisher(Node):
 
         self.data = ""
         self.state = "stop"
+        self.cmds = []
 
     def update_tf(self):
         try:
@@ -156,66 +157,69 @@ class ServerPublisher(Node):
         self.servo_position.data = (forearm, gripper)
         self.servo_publisher.publish(self.servo_position)
 
-    def on_receive(self, client_socket):
+    def cmd_handler(self):
         while True:            
-            data_buffer = client_socket.recv(1024)
+            # data_buffer = client_socket.recv(1024)
             
-            if not data_buffer:
-                self.get_logger().error("Connection is broken!")
-                self.get_logger().info("Waiting for connection...")
-                client_socket.close()
-                client_socket, _ = self.server_socket.accept()
-                continue
-            recv_data = data_buffer.decode("utf-8")
+            # if not data_buffer:
+            #     self.get_logger().error("Connection is broken!")
+            #     self.get_logger().info("Waiting for connection...")
+            #     client_socket.close()
+            #     client_socket, _ = self.server_socket.accept()
+            #     continue
+            # recv_data = data_buffer.decode("utf-8")
+            while self.cmds == []:
+                pass
+            cmd, *args = self.cmds
 
-            if "echoback" in recv_data:
-                self.__send(client_socket, f"State: {self.state}")
-                if self.state in ["r_cw", "r_ccw", "heading_target"]:
-                    # discard all the coming-in commands before finishing
-                    if time.time() - self.tstamp < 0.5:
-                        pass
-                        # continue
-                    else:
-                        self.stop()
-                        # continue
-                elif self.state == "grab_2":
-                    if time.time() - self.tstamp < 2:
-                        pass
-                        # continue
-                    else:
-                        self.state = "grab_3"
-                        self.set_servo_position(self.forearm_down, self.gripper_close)
-                        self.tstamp = time.time()
-                        # continue
-                elif self.state == "grab_3":
-                    if time.time() - self.tstamp < 2:
-                        pass
-                        # continue
-                    else:
-                        self.state = "grab_4"
-                        self.set_servo_position(self.forearm_up, self.gripper_close)
-                        self.tstamp = time.time()
-                        # continue
-                elif self.state == "grab_4":
-                    if time.time() - self.tstamp < 2:
-                        pass
-                        # continue
-                    else:
-                        self.state = "stop"
-                        # continue            
+            if self.state in ["r_cw", "r_ccw", "heading_target"]:
+                # discard all the coming-in commands before finishing
+                if time.time() - self.tstamp < 0.5:
+                    pass
+                    # continue
+                else:
+                    self.stop()
+                    # continue
                 continue
+            elif self.state == "grab_2":
+                if time.time() - self.tstamp < 2:
+                    pass
+                    # continue
+                else:
+                    self.state = "grab_3"
+                    self.set_servo_position(self.forearm_down, self.gripper_close)
+                    self.tstamp = time.time()
+                    # continue
+                continue
+            elif self.state == "grab_3":
+                if time.time() - self.tstamp < 2:
+                    pass
+                    # continue
+                else:
+                    self.state = "grab_4"
+                    self.set_servo_position(self.forearm_up, self.gripper_close)
+                    self.tstamp = time.time()
+                    # continue
+                continue
+            elif self.state == "grab_4":
+                if time.time() - self.tstamp < 2:
+                    pass
+                    # continue
+                else:
+                    self.state = "stop"
+                    # continue
+                continue            
             self.set_servo_position(self.forearm, self.gripper)
-            self.data += recv_data
-            if self.data[-1] != "\n":
-                continue
-
-            self.get_logger().info(f"Received: {self.data}")
+            # self.data += recv_data
+            # if self.data[-1] != "\n":
+            #     continue
 
             try:
-                cmd, *args = self.data.strip("\n").split(",")
+                # cmd, *args = self.data.strip("\n").split(",")
                 match cmd:
                     case "pose":
-                        self.send_pose(client_socket)
+                        # self.send_pose(client_socket)
+                        pass
                     case "forward":
                         self.forward()
                     case "backward":
@@ -236,11 +240,11 @@ class ServerPublisher(Node):
                     case "position":
                         self.forearm, self.gripper = map(float, args)
                     case "crusing":
-                        self.__send(client_socket, cmd)
+                        # self.__send(client_socket, cmd)
                         self.state = "crusing"
                     case "approaching":
                         self.state = "approaching"
-                        self.__send(client_socket, cmd)
+                        # self.__send(client_socket, cmd)
                     case "r_cw":
                         # (angle) = map(float, args)
                         self.ser_wheel_velocity(0.0, 0.0, 1.7)
@@ -266,19 +270,35 @@ class ServerPublisher(Node):
                             break
                         self.get_logger().error(f"Invalid command: {cmd}")
             except ValueError:
-                self.get_logger().error(f"Invalid parameters: {self.data}")
+                self.get_logger().error(f"Invalid parameters: {args}")
             except TypeError as e:
                 self.get_logger().error(e)
                 # This exception error could not be solved. It's weird.
 
-            self.data = ""
+            # self.data = ""
 
     def __send(self, client_socket, msg) -> object:
         client_socket.sendall(msg.encode())
         data = client_socket.recv(1024).decode()
         print(data)
         return
-
+    
+    def recv_handler(self, client_socket) -> None:
+        while True:
+            data_buffer = client_socket.recv(1024)
+            if not data_buffer:
+                self.get_logger().error("Connection is broken!")
+                self.get_logger().info("Waiting for connection...")
+                client_socket.close()
+                client_socket, _ = self.server_socket.accept()
+                continue
+            recv_data = data_buffer.decode("utf-8")
+            if "echoback" in recv_data:
+                self.__send(client_socket, f"State: {self.state} ")
+                continue
+            elif recv_data != '' and recv_data != None:
+                self.get_logger().info(f"Received: {self.data}")
+                self.cmds = recv_data.strip("\n").split(",")
 
 def Nodes(node) -> None:
     rclpy.spin(node)
@@ -300,7 +320,10 @@ def main(args=None):
     nodes_thread = Thread(target=Nodes, args=(node,))
     nodes_thread.start()
 
+    handler_thread = Thread(target=node.cmd_handler)
+    handler_thread.start()
+
     while True:
         client_socket, _ = server_socket.accept()
-        client_thread = Thread(target=node.on_receive, args=(client_socket,))
+        client_thread = Thread(target=node.recv_handler, args=(client_socket,))
         client_thread.start()
