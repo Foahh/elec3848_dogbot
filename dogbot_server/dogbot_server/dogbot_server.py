@@ -168,7 +168,6 @@ class ServerPublisher(Node):
 
     def cmd_handler(self):
         while True:
-            self.get_logger().info(self.state)
             try:
                 match self.state:
                     case "r_cw":
@@ -306,6 +305,7 @@ class ServerPublisher(Node):
             except TypeError as e:
                 self.get_logger().error(e)
                 # This exception error could not be solved. It's weird.
+            self.get_logger().info(self.state)
 
     def __send(self, client_socket, msg) -> None:
         client_socket.sendall(msg.encode())
