@@ -228,17 +228,15 @@ while True:
             # client_sock.sending("r_ccw") # return turnoffset
     
         # condition3: redball detect and in the center, but not close enough -> go advance
-        else:  # elif (objX > width/2 + error and objX < width/2 - error):
-            # if window size, objx, objy ture -> compare window size
-            if (Area < boundary_area):
-                current_cmd = "heading_target"
-                # client_sock.sending("heading_target") # return turnoffset
+        else: 
+            pass
+            # # if window size, objx, objy ture -> compare window size
+            # if (Area < boundary_area):
+            #     current_cmd = "heading_target"
     
-            # condition4: readball detect, in the center, close engough --> grab
-            else:
-                # current_cmd = "grab"   
-                pass             
-                # client_sock.sending("grab")
+            # # condition4: readball detect, in the center, close engough --> grab
+            # else:
+            #     pass
 
         if current_cmd != prev_cmd:
             prev_cmd = copy.deepcopy(current_cmd)

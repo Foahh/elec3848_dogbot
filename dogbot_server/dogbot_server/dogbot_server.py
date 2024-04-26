@@ -62,6 +62,7 @@ class ServerPublisher(Node):
         self.cmds = []
         self.detected = False
         self.tstamp = time.time()
+        self.prev_dist = []
     
     def sonar_callback(self, msg):
         self.sonar_data = msg.range
@@ -176,16 +177,6 @@ class ServerPublisher(Node):
                 self.get_logger().info(f"Received: {cmd}")
             prev_cmd.append(cmd)
 
-            # if self.state in ["r_cw", "r_ccw", "heading_target"]:
-            #     # discard all the coming-in commands before finishing
-            #     if time.time() - self.tstamp < self.rotate_period:
-            #         pass
-            #         # continue
-            #     else:
-            #         self.stop()
-            #         # continue
-            #     continue
-            #     pass
             if time.time() - self.tstamp > self.rotate_period and self.state in [
                 "r_cw",
                 "r_ccw",
@@ -197,12 +188,18 @@ class ServerPublisher(Node):
             ]:
                 self.stop()
                 continue
+            elif self.state == "grab":
+                self.set_servo_position(self.forearm_down, self.gripper_open)
+                self.state = "grab_2"
+                self.tstamp = time.time()
+                continue
             elif self.state == "grab_2":
                 if time.time() - self.tstamp < 2:
                     pass
                     # continue
                 else:
                     self.state = "grab_3"
+                    self.set_servo_position(self.forearm_down, self.gripper_close)
                     self.set_servo_position(self.forearm_down, self.gripper_close)
                     self.tstamp = time.time()
                     # continue
@@ -225,8 +222,15 @@ class ServerPublisher(Node):
                     self.state = "stop"
                     # continue
                 continue
-            elif self.sonar_data < 3.0:
-                self.state = "grab"
+            elif self.detected == True:
+                if self.sonar_data > 3.0:
+                    self.prev_dist = []
+                elif len(self.prev_dist) == 20:
+                    self.state = "grab"
+                    self.prev_dist = []
+                else:
+                    self.prev_dist.append(self.sonar_data)
+
             self.set_servo_position(self.forearm, self.gripper)
 
             try:
@@ -268,6 +272,7 @@ class ServerPublisher(Node):
                             self.confidence = float(args[2])
                     case "undetected":
                         self.detected = False
+                        self.prev_dist = []
                         self.stop()
                     case "r_cw":
                         if len(args) >= 2:
@@ -292,10 +297,7 @@ class ServerPublisher(Node):
                         self.state = "heading_target"
                         self.tstamp = time.time()
                     case "grab":
-                        self.set_servo_position(self.forearm_down, self.gripper_open)
                         self.state = "grab_2"
-                        self.tstamp = time.time()
-                        # need to stuck here
                     case _:
                         self.stop()
                         if cmd == "echoback":
