@@ -362,17 +362,17 @@ class ServerPublisher(Node):
                 # This exception error could not be solved. It's weird.
 
     def __send(self, client_socket, msg) -> None:
-        client_socket.sendall(msg.encode())
-        try:
-            data = client_socket.recv(1024).decode()
-            print(data)
-        except:
-            pass
+        client_socket.sendto(msg.encode())
+        # try:
+        #     data = client_socket.recv(1024).decode()
+        #     print(data)
+        # except:
+        #     pass
         return
 
-    def recv_handler(self, client_socket) -> None:
+    def recv_handler(self) -> None:
         while True:
-            data_buffer = client_socket.recv(512)
+            data_buffer, client_socket = client_socket.recvfrom(512)
             if not data_buffer:
                 self.get_logger().error("Connection is broken!")
                 self.get_logger().info("Waiting for connection...")
@@ -417,10 +417,10 @@ def Nodes(node) -> None:
 def main(args=None):
     rclpy.init(args=args)
 
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind(("0.0.0.0", 8080))
-    server_socket.listen(5)
+    # server_socket.listen(5)
     node = ServerPublisher(server_socket)
     node.get_logger().info("Waiting for connection...")
 
@@ -432,7 +432,7 @@ def main(args=None):
 
     try:
         while True:
-            client_socket, _ = server_socket.accept()
+            # client_socket, _ = server_socket.accept()
             client_thread = Thread(target=node.recv_handler, args=(client_socket,))
             client_thread.start()
     except KeyboardInterrupt:

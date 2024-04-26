@@ -2,30 +2,30 @@ import socket, threading, time, copy
 
 class ClientSide:
     def __init__(self) -> None:
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.client_socket.settimeout(3)
+        # self.client_socket.settimeout(3)
         # self.hearing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.hearing_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # self.hearing_socket.settimeout(3)
         # self.hearing_socket.bind(('0.0.0.0', 8080))
         self.server_address = ('192.168.50.100', 8080)
         self.close = False
-        while True:
-            try:
-                self.client_socket.connect(self.server_address)
-                print("Connection established at client side.")
-                time.sleep(1)
-                # self.regular_listen()
-                break
-            except socket.timeout:
-                print("Connection failed. Retrying in 3 seconds...")
-                time.sleep(3)
+        # while True:
+        #     try:
+        #         self.client_socket.connect(self.server_address)
+        #         print("Connection established at client side.")
+        #         time.sleep(1)
+        #         # self.regular_listen()
+        #         break
+        #     except socket.timeout:
+        #         print("Connection failed. Retrying in 3 seconds...")
+        #         time.sleep(3)
         return
     
     def send(self, msg) -> None:
         try:
-            self.client_socket.sendall((msg + '\n').encode())
+            self.client_socket.sendto((msg + '\n').encode())
             if "echoback" in msg:
                 data = self.client_socket.recv(128).decode()
                 print(data, end='', flush=True)
@@ -49,7 +49,7 @@ class ClientSide:
         msg = "echoback\n"
         while True:
             try:
-                self.client_socket.sendall(msg.encode())
+                self.client_socket.sendto(msg.encode(), self.server_address)
                 # print("regular msg sent.")
                 time.sleep(0.2)
             except:
@@ -59,7 +59,7 @@ class ClientSide:
     def regular_receiving(self) -> None:
         while True:
             try:
-                data = self.client_socket.recv(128).decode()
+                data = self.client_socket.recvfrom(128).decode()
                 print(f"[{time.ctime()}] {data}")
             except TimeoutError as e:
                 print(e)
