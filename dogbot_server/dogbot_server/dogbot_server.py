@@ -5,7 +5,7 @@ from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import Range
 from threading import Thread
 import socket
-import time
+import time, copy
 from tf_transformations import euler_from_quaternion
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
@@ -354,7 +354,10 @@ class ServerPublisher(Node):
             if "forcestop" in recv_data:
                 self.state = "stop"
             else:
-                self.cmds = recv_data.strip("\n").split(",")
+                cmds = []
+                for cmd in recv_data.strip("\n").split(","):
+                    cmds.append(cmd)
+                self.cmds = copy.deepcopy(cmds)
 
 def Nodes(node) -> None:
     rclpy.spin(node)
