@@ -223,7 +223,7 @@ class ServerPublisher(Node):
                 self.get_logger().error(e)
 
             if self.cmds == []:
-                cmd = ''
+                continue
             else:
                 cmd, *args = self.cmds
 
