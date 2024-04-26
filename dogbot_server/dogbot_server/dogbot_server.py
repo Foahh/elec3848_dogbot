@@ -163,6 +163,7 @@ class ServerPublisher(Node):
         self.servo_publisher.publish(self.servo_position)
 
     def cmd_handler(self):
+        prev_cmd = ['']
         while True:            
             # data_buffer = client_socket.recv(1024)
             
@@ -176,7 +177,11 @@ class ServerPublisher(Node):
             while self.cmds == []:
                 pass
             cmd, *args = self.cmds
-            self.get_logger().info(f"Received: {cmd}")
+            if prev_cmd.pop(0) == cmd and cmd == "undetected":
+                pass
+            else:
+                self.get_logger().info(f"Received: {cmd}")
+            prev_cmd.append(cmd)
 
             # if self.state in ["r_cw", "r_ccw", "heading_target"]:
             #     # discard all the coming-in commands before finishing
