@@ -229,7 +229,7 @@ while True:
     
         # condition3: redball detect and in the center, but not close enough -> go advance
         else: 
-            continue
+            current_cmd = "heading_target"
             # # if window size, objx, objy ture -> compare window size
             # if (Area < boundary_area):
             #     current_cmd = "heading_target"
@@ -243,7 +243,7 @@ while True:
             tstamp = time.time()
             continue
         else:
-            if time.time() - tstamp > 0.5:
+            if time.time() - tstamp > 0.2:
                 client_sock.sending(current_cmd)
                 tstamp = time.time()
             else:

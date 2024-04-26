@@ -193,6 +193,12 @@ class ServerPublisher(Node):
                         #     self.stop()
                         #     self.state = "stop"
                         # continue
+                    case "heading":
+                        if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
+                            self.state = "heading_target"
+                            self.prev_dist = []
+                            self.tstamp = time.time()
+                            self.ser_wheel_velocity(0.15, 0.0, 0.0)
                     case "heading_target":
                         self.prev_dist = []
                         if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
@@ -222,9 +228,13 @@ class ServerPublisher(Node):
                             self.ser_wheel_velocity(-0.7, 0.0, 0.0)
                         continue
                     case "stop":
-                        if (self.sonar_data < 0.5 and self.sonar_data >= self.dist_threshold) or (self.detected == True and self.sonar_data >= self.dist_threshold):
+                        # if self.sonar_data > 8:
+                        #     self.set_servo_position(self.forearm_down, self.gripper_close)
+                        #     time.sleep(1)
+                        if self.sonar_data < 0.25 and self.sonar_data >= self.dist_threshold:
                             self.prev_dist = []
                             self.state = "heading_target"
+                            self.tstamp = time.time()
                             self.ser_wheel_velocity(0.15, 0.0, 0.0)
                         elif len(self.prev_dist) == self.dist_len_threshold:
                             self.state = "grab"
@@ -236,6 +246,11 @@ class ServerPublisher(Node):
                             self.prev_dist.pop(-1)
                         elif self.tstamp - time.time() > 3:
                             self.ser_wheel_velocity(-0.5, 0.0, 0.0)
+                            time.sleep(1)
+                            self.tstamp = time.time()
+                            if self.detected == True:
+                                continue
+                            self.ser_wheel_velocity(0.0, 0.0, 2.0)
                         self.set_servo_position(self.forearm, self.gripper)
             except Exception as e:
                 self.get_logger().info(e)
@@ -310,11 +325,11 @@ class ServerPublisher(Node):
                             self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
                         self.state = "r_ccw"
                     case "heading_target":
-                        if self.state == "heading_target":
+                        if self.state == "heading":
                             pass
                         else:
                             self.ser_wheel_velocity(0.15, 0.0, 0.0)
-                            self.state = "heading_target"
+                            self.state = "heading"
                             self.tstamp = time.time()
                     case "grab":
                         self.state = "grab"
