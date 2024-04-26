@@ -292,7 +292,7 @@ class ServerPublisher(Node):
                             self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
                         self.state = cmd
                     case "heading_target":
-                        self.ser_wheel_velocity(0.5, 0.0, 0.0)
+                        self.ser_wheel_velocity(0.3, 0.0, 0.0)
                         self.state = "heading_target"
                         self.tstamp = time.time()
                     case "grab":
