@@ -391,9 +391,12 @@ class ServerPublisher(Node):
     def msg_handler(self, recv_data, client_socket) -> None:
         if "echoback" in recv_data:
             s = f"State: {self.state}\nDist:{self.sonar_data}\n"
-            if self.detected == True:
-                s += f"Area:{self.area}\nOffset:{self.Xoffset}\nCon:{self.confidence}\n"
-            self.__send(client_socket, s)
+            try:
+                if self.detected == True:
+                    s += f"Area:{self.area}\nOffset:{self.Xoffset}\nCon:{self.confidence}\n"
+            except:
+                pass
+                self.__send(client_socket, s)
         elif recv_data:
             if "detected" not in recv_data:
                 self.get_logger().info(f"Received: {recv_data}")
