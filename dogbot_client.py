@@ -18,8 +18,8 @@ class ClientSide:
     
     def __send(self, msg) -> object:
         self.client_socket.send(msg.encode())
-        data = self.client_socket.recv(1024).decode()
-        return data
+        # data = self.client_socket.recv(1024).decode()
+        # return data
     
     def sending(self, msg) -> None:
         sending_thread = threading.Thread(target=self.__send, args=(msg + '\n', ))
