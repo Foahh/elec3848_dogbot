@@ -234,6 +234,8 @@ class ServerPublisher(Node):
                             self.prev_dist.append(self.sonar_data)
                         elif self.sonar_data > self.dist_threshold and len(self.prev_dist) != 0:
                             self.prev_dist.pop(-1)
+                        elif self.tstamp - time.time() > 3:
+                            self.ser_wheel_velocity(-0.5, 0.0, 0.0)
                         self.set_servo_position(self.forearm, self.gripper)
             except Exception as e:
                 self.get_logger().info(e)
