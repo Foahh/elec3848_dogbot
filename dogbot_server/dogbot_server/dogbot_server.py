@@ -167,67 +167,64 @@ class ServerPublisher(Node):
         self.servo_publisher.publish(self.servo_position)
 
     def cmd_handler(self):
-        prev_cmd = [""]
         while True:
-            match self.state:
-                case "r_cw":
-                    self.prev_dist = []
-                    if time.time() - self.tstamp > self.rotate_period or self.detected == False:
-                        self.stop()
-                        self.state = "stop"
-                case "r_ccw":
-                    self.prev_dist = []
-                    if time.time() - self.tstamp > self.rotate_period or self.detected == False:
-                        self.stop()
-                        self.state = "stop"
-                case "heading_target":
-                    self.prev_dist = []
-                    if time.time() - self.tstamp > self.heading_period or self.detected == False:
-                        self.stop()
-                        self.state = "stop"
-                case "grab":
-                    self.set_servo_position(self.forearm_down, self.gripper_open)
-                    self.state = "grab_2"
-                    self.tstamp = time.time()
-                    continue
-                case "grab_2":
-                    if time.time() - self.tstamp > 2:
-                        self.state = "grab_3"
-                        self.set_servo_position(self.forearm_down, self.gripper_close)
-                        self.tstamp = time.time()
-                    continue
-                case "grab_3":
-                    if time.time() - self.tstamp > 2:
-                        self.state = "grab_4"
-                        self.set_servo_position(self.forearm_up, self.gripper_close)
-                        self.tstamp = time.time()
-                    continue
-                case "grab_4":
-                    if time.time() - self.tstamp > 2:
-                        self.state = "stop"
-                        self.set_servo_position(self.forearm, self.gripper)
-                    continue
-                case "stop":
-                    self.set_servo_position(self.forearm, self.gripper)
-                    if self.detected == True and self.sonar_data > 3.0:
+            try:
+                match self.state:
+                    case "r_cw":
                         self.prev_dist = []
-                        self.state = "heading_target"
-                        self.ser_wheel_velocity(0.15, 0.0, 0.0)
-                    elif len(self.prev_dist) == 20:
-                        self.state = "grab"
+                        if time.time() - self.tstamp > self.rotate_period or self.detected == False:
+                            self.stop()
+                            self.state = "stop"
+                    case "r_ccw":
                         self.prev_dist = []
+                        if time.time() - self.tstamp > self.rotate_period or self.detected == False:
+                            self.stop()
+                            self.state = "stop"
+                    case "heading_target":
+                        self.prev_dist = []
+                        if time.time() - self.tstamp > self.heading_period or self.detected == False:
+                            self.stop()
+                            self.state = "stop"
+                    case "grab":
+                        self.set_servo_position(self.forearm_down, self.gripper_open)
+                        self.state = "grab_2"
+                        self.tstamp = time.time()
                         continue
-                    elif self.sonar_data < 3.0:
-                        self.prev_dist.append(self.sonar_data)
+                    case "grab_2":
+                        if time.time() - self.tstamp > 2:
+                            self.state = "grab_3"
+                            self.set_servo_position(self.forearm_down, self.gripper_close)
+                            self.tstamp = time.time()
+                        continue
+                    case "grab_3":
+                        if time.time() - self.tstamp > 2:
+                            self.state = "grab_4"
+                            self.set_servo_position(self.forearm_up, self.gripper_close)
+                            self.tstamp = time.time()
+                        continue
+                    case "grab_4":
+                        if time.time() - self.tstamp > 2:
+                            self.state = "stop"
+                            self.set_servo_position(self.forearm, self.gripper)
+                        continue
+                    case "stop":
+                        self.set_servo_position(self.forearm, self.gripper)
+                        if self.detected == True and self.sonar_data > 3.0:
+                            self.prev_dist = []
+                            self.state = "heading_target"
+                            self.ser_wheel_velocity(0.15, 0.0, 0.0)
+                        elif len(self.prev_dist) == 20:
+                            self.state = "grab"
+                            self.prev_dist = []
+                            continue
+                        elif self.sonar_data < 3.0:
+                            self.prev_dist.append(self.sonar_data)
+            except Exception as e:
+                self.get_logger().error(e)
 
             if self.cmds == []:
                 cmd = ''
             cmd, *args = self.cmds
-            # if prev_cmd.pop(0) == cmd and cmd in ["undetected", "detected"]:
-            #     pass
-            # else:
-            #     self.get_logger().info(f"Command: {cmd}")
-            # prev_cmd.append(cmd)
 
             try:
                 match cmd:
