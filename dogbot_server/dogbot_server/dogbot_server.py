@@ -173,7 +173,7 @@ class ServerPublisher(Node):
                 match self.state:
                     case "r_cw":
                         self.prev_dist = []
-                        self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY)
+                        self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY + 0.5)
                         time.sleep(self.rotate_period)
                         self.stop()
                         self.state = "stop"
