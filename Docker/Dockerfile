@@ -3,16 +3,13 @@ SHELL ["/bin/bash", "-c"]
 
 
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+    ros-${ROS_DISTRO}-tf-transforms \
     ros-${ROS_DISTRO}-imu-tools \
     ros-${ROS_DISTRO}-slam-toolbox \
     ros-${ROS_DISTRO}-navigation2 \
     ros-${ROS_DISTRO}-nav2-bringup \
+    ros-${ROS_DISTRO}-teleop-twist-keyboard \
     ros-${ROS_DISTRO}-robot-localization && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
-    ros-${ROS_DISTRO}-tf-transforms \
-    ros-${ROS_DISTRO}-teleop-twist-keyboard && \
     rm -rf /var/lib/apt/lists/*
 
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
