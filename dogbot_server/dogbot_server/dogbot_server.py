@@ -58,7 +58,7 @@ class ServerPublisher(Node):
         self.heading_period = 0.3
 
         self.data = ""
-        self.state = "grab"
+        self.state = "stop"
         self.cmds = []
         self.detected = False
         self.tstamp = time.time()
