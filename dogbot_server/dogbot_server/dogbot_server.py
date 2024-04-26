@@ -305,7 +305,7 @@ class ServerPublisher(Node):
             except TypeError as e:
                 self.get_logger().error(e)
                 # This exception error could not be solved. It's weird.
-            self.get_logger().info(self.state)
+            # self.get_logger().info(self.state)
 
     def __send(self, client_socket, msg) -> None:
         client_socket.sendall(msg.encode())
