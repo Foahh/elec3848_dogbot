@@ -58,7 +58,7 @@ class ServerPublisher(Node):
         self.heading_period = 0.3
 
         self.data = ""
-        self.state = "stop"
+        self.state = "grab"
         self.cmds = []
         self.detected = False
         self.tstamp = time.time()
@@ -224,7 +224,8 @@ class ServerPublisher(Node):
 
             if self.cmds == []:
                 cmd = ''
-            cmd, *args = self.cmds
+            else:
+                cmd, *args = self.cmds
 
             try:
                 match cmd:
