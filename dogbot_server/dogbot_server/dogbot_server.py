@@ -168,6 +168,7 @@ class ServerPublisher(Node):
 
     def cmd_handler(self):
         while True:
+            self.get_logger().info(self.state)
             try:
                 match self.state:
                     case "r_cw":
