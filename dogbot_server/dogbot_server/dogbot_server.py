@@ -13,7 +13,7 @@ from tf2_ros.transform_listener import TransformListener
 
 
 DEFAULT_LINEAR_VELOCITY = 0.25
-DEFAULT_ANGULAR_VELOCITY = 0.5
+DEFAULT_ANGULAR_VELOCITY = 2.5
 
 
 # def twist_add_header(func):
@@ -52,11 +52,11 @@ class ServerPublisher(Node):
         self.gripper = 30.0
 
         self.forearm_down = 60.0  # 53
-        self.forearm_up = 90.0  # ??
+        self.forearm_up = 140.0  # ??
         self.gripper_close = 95.0
         self.gripper_open = 30.0
 
-        self.rotate_period = 0.5
+        self.rotate_period = 0.3
         self.rotate_angle = 1.5
 
         self.data = ""
@@ -176,16 +176,18 @@ class ServerPublisher(Node):
                 pass
             cmd, *args = self.cmds
 
-            if self.state in ["r_cw", "r_ccw", "heading_target"]:
-                # # discard all the coming-in commands before finishing
-                # if time.time() - self.tstamp < self.rotate_period:
-                #     pass
-                #     # continue
-                # else:
-                #     self.stop()
-                #     # continue
-                # continue
-                pass
+            # if self.state in ["r_cw", "r_ccw", "heading_target"]:
+            #     # discard all the coming-in commands before finishing
+            #     if time.time() - self.tstamp < self.rotate_period:
+            #         pass
+            #         # continue
+            #     else:
+            #         self.stop()
+            #         # continue
+            #     continue
+            #     pass
+            if time.time() - self.tstamp > self.rotate_period and self.state in ["r_cw", "r_ccw"]:
+                self.stop()
             elif self.state == "grab_2":
                 if time.time() - self.tstamp < 2:
                     pass
@@ -263,16 +265,20 @@ class ServerPublisher(Node):
                         if len(args) >= 2:
                             self.rotate_angle = float(args[0])
                             self.rotate_period = float(args[1])
-                        self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
+                            self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
+                            self.tstamp = time.time()
+                        else:
+                            self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY)
                         self.state = cmd
-                        self.tstamp = time.time()
                     case "r_ccw":
                         if len(args) >= 2:
                             self.rotate_angle = float(args[0])
                             self.rotate_period = float(args[1])
-                        self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
+                            self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
+                            self.tstamp = time.time()
+                        else:
+                            self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
                         self.state = cmd
-                        self.tstamp = time.time()
                     case "heading_target":
                         self.ser_wheel_velocity(0.5, 0.0, 0.0)
                         self.state = "heading_target"

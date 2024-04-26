@@ -59,7 +59,7 @@ objY = height/2
 error_tolerance = 100
 
 ##################  new add
-error = 250
+error = 200
 symbol = ""
 boundary_area = 180000
 servo1_open = 30  #claw: 30->open  initial state
