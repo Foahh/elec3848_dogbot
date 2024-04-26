@@ -184,10 +184,13 @@ class ServerPublisher(Node):
                     case "r_ccw":
                         self.prev_dist = []
                         self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
-                        if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
-                            self.stop()
-                            self.state = "stop"
-                        continue
+                        time.sleep(self.rotate_period)
+                        self.stop()
+                        self.state = "stop"
+                        # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
+                        #     self.stop()
+                        #     self.state = "stop"
+                        # continue
                     case "heading_target":
                         self.prev_dist = []
                         if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
