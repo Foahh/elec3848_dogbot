@@ -220,7 +220,7 @@ class ServerPublisher(Node):
                             continue
                         elif self.sonar_data < self.dist_threshold:
                             self.prev_dist.append(self.sonar_data)
-                        elif self.sonar_data > self.dist_threshold:
+                        elif self.sonar_data > self.dist_threshold and len(self.prev_dist) != 0:
                             self.prev_dist.pop(-1)
             except Exception as e:
                 self.get_logger().info(e)
