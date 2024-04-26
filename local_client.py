@@ -3,7 +3,7 @@ import socket, threading, time, copy
 class ClientSide:
     def __init__(self) -> None:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # self.client_socket.settimeout(3)
         # self.hearing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.hearing_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
