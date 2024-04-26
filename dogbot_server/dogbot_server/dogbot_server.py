@@ -64,7 +64,7 @@ class ServerPublisher(Node):
         self.tstamp = time.time()
         self.prev_dist = []
         self.heading = False
-        self.dist_threshold = 0.15
+        self.dist_threshold = 0.13
         self.dist_len_threshold = 50
     
     def sonar_callback(self, msg):
