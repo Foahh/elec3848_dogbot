@@ -65,7 +65,7 @@ class ServerPublisher(Node):
         self.prev_dist = []
         self.heading = False
         self.dist_threshold = 0.13
-        self.dist_len_threshold = 50
+        self.dist_len_threshold = 100
     
     def sonar_callback(self, msg):
         self.sonar_data = msg.range
