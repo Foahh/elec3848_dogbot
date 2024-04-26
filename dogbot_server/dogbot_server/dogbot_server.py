@@ -65,6 +65,7 @@ class ServerPublisher(Node):
 
     def sonar_callback(self, msg):
         self.sonar_data = msg.range
+        self.logger.info(f"Sonar data: {self.sonar_data}")
 
     def update_tf(self):
         try:
