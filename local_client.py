@@ -90,6 +90,8 @@ def main_thread() -> None:
                 client.send("velocity,0,0.3,1")
                 time.sleep(0.5)
                 client.send("stop")
+            elif userIn == 'j':
+                client.send("heading_target")
             elif userIn == "":
                 client.send(lastcmd)
                 print(f"Sent: {lastcmd}")

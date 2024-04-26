@@ -228,9 +228,9 @@ class ServerPublisher(Node):
                             self.ser_wheel_velocity(-0.7, 0.0, 0.0)
                         continue
                     case "stop":
-                        # if self.sonar_data > 8:
-                        #     self.set_servo_position(self.forearm_down, self.gripper_close)
-                        #     time.sleep(1)
+                        if self.sonar_data > 8:
+                            self.set_servo_position(self.forearm_down, self.gripper_close)
+                            time.sleep(1)
                         if self.sonar_data < 0.25 and self.sonar_data >= self.dist_threshold:
                             self.prev_dist = []
                             self.state = "heading_target"
@@ -244,20 +244,23 @@ class ServerPublisher(Node):
                             self.prev_dist.append(self.sonar_data)
                         elif self.sonar_data > self.dist_threshold and len(self.prev_dist) != 0:
                             self.prev_dist.pop(-1)
-                        elif self.tstamp - time.time() > 3:
+                        elif self.tstamp - time.time() > 4:
                             self.ser_wheel_velocity(-0.5, 0.0, 0.0)
-                            time.sleep(0.5)
+                            time.sleep(1)
                             self.tstamp = time.time()
                             if self.detected == True:
                                 continue
-                            time.sleep(0.5)
+                            time.sleep(1)
                             self.ser_wheel_velocity(0.0, 0.0, 2.0)
                             if self.detected == True:
                                 continue
-                            time.sleep(0.5)
+                            time.sleep(1)
                             self.ser_wheel_velocity(0.0, 0.0, -3.5)
                             if self.detected == True:
                                 continue
+                            self.set_servo_position(self.forearm_down, self.gripper_close)
+                            time.sleep(1)
+                            self.set_servo_position(self.forearm, self.gripper)
                             self.tstamp = time.time()
                         self.set_servo_position(self.forearm, self.gripper)
             except Exception as e:
@@ -363,7 +366,7 @@ class ServerPublisher(Node):
 
     def recv_handler(self, client_socket) -> None:
         while True:
-            data_buffer = client_socket.recv(1024)
+            data_buffer = client_socket.recv(16)
             if not data_buffer:
                 self.get_logger().error("Connection is broken!")
                 self.get_logger().info("Waiting for connection...")
