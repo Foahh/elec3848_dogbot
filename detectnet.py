@@ -118,7 +118,6 @@ f = open('area.txt', 'w')
 f.close()
 
 tstamp = time.time()
-detect_count = 0
 prev_cmd = ''
 # process frames until the user exits
 while True:
@@ -243,13 +242,11 @@ while True:
         if current_cmd != prev_cmd:
             prev_cmd = copy.deepcopy(current_cmd)
             tstamp = time.time()
-            detect_count = 0
             continue
         else:
-            detect_count += 1
-            if detect_count > 5:
+            if time.time() - tstamp > 0.5:
                 client_sock.sending(current_cmd)
-                detect_count = 0
+                tstamp = time.time()
             else:
                 continue
     
