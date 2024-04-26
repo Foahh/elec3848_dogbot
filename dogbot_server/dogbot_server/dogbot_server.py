@@ -12,7 +12,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 DEFAULT_LINEAR_VELOCITY = 0.25
-DEFAULT_ANGULAR_VELOCITY = 0.1
+DEFAULT_ANGULAR_VELOCITY = 0.2
 
 
 class ServerPublisher(Node):
@@ -177,6 +177,7 @@ class ServerPublisher(Node):
                         time.sleep(self.rotate_period)
                         self.stop()
                         self.state = "stop"
+                        time.sleep(0.5)
                         # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                         #     self.stop()
                         #     self.state = "stop"
@@ -187,6 +188,7 @@ class ServerPublisher(Node):
                         time.sleep(self.rotate_period)
                         self.stop()
                         self.state = "stop"
+                        time.sleep(0.5)
                         # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                         #     self.stop()
                         #     self.state = "stop"
