@@ -161,7 +161,7 @@ while True:
     #Determine the adjustments needed to make to the cmaera
     objX += Xoffset
     panOffset = objX - (width/2)
-    # tiltOffset = objY - (height/2)
+    tiltOffset = objY - (height/2)
     
     # #Puting the values in margins
     # if (abs(panOffset)>error_tolerance):
@@ -215,7 +215,7 @@ while True:
         # else:
         #     continue
 
-        client_sock.sending(f"detected,{Area},{panOffset},{Confidence}")
+        client_sock.sending(f"detected,{Area},{panOffset},{tiltOffset},{Confidence}")
 
         # condition2.1： 偏左 -> turn right
         if (objX < width/2 - error):

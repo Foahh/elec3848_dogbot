@@ -175,19 +175,19 @@ class ServerPublisher(Node):
                     case "r_cw":
                         self.prev_dist = []
                         self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY)
-                        if time.time() - self.tstamp > self.rotate_period or self.detected == False:
+                        if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                             self.stop()
                             self.state = "stop"
                         continue
                     case "r_ccw":
                         self.prev_dist = []
-                        if time.time() - self.tstamp > self.rotate_period or self.detected == False:
+                        if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                             self.stop()
                             self.state = "stop"
                         continue
                     case "heading_target":
                         self.prev_dist = []
-                        if time.time() - self.tstamp > self.heading_period or self.detected == False:
+                        if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
                             self.stop()
                             self.state = "stop"
                     case "grab":
@@ -269,10 +269,11 @@ class ServerPublisher(Node):
                             self.dist_len_threshold = float(args[0])
                     case "detected":
                         self.detected = True
-                        if len(args) >= 3:
+                        if len(args) >= 4:
                             self.area = float(args[0])
                             self.Xoffset = float(args[1])
-                            self.confidence = float(args[2])
+                            self.Yoffset = float(args[2])
+                            self.confidence = float(args[3])
                     case "undetected":
                         self.detected = False
                         # self.prev_dist = []

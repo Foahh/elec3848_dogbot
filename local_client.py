@@ -1,4 +1,4 @@
-import socket, threading, time
+import socket, threading, time, copy
 
 class ClientSide:
     def __init__(self) -> None:
@@ -67,7 +67,7 @@ class ClientSide:
 
 
 def main_thread() -> None:
-    lastcmd = []
+    lastcmd = ()
     while True:
         try:
             userIn = input(">> ", )
@@ -91,13 +91,15 @@ def main_thread() -> None:
                 time.sleep(0.5)
                 client.send("stop")
             elif userIn == "":
-                client.send(lastcmd[-1])
+                client.send(lastcmd)
+                print(f"Sent: {lastcmd}")
+                continue
             elif userIn == "approaching":
                 client.send(userIn)
             else:
                 client.send(userIn)
-            lastcmd.pop(0)
-            lastcmd.append(userIn)
+            # lastcmd.pop(0)
+            lastcmd = copy.deepcopy(userIn)
             print(f"Sent: {userIn}")
         except KeyboardInterrupt:
             print(flush=True)
