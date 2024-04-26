@@ -356,7 +356,7 @@ class ServerPublisher(Node):
             else:
                 cmds = []
                 for cmd in recv_data.strip("\n").split(","):
-                    cmds.append(cmd)
+                    cmds.append(cmd.strip(' '))
                 self.cmds = copy.deepcopy(cmds)
 
 def Nodes(node) -> None:
