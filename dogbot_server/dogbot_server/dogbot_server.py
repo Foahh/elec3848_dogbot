@@ -325,7 +325,7 @@ class ServerPublisher(Node):
             if self.detected == True:
                 s += f" Area:{self.area} Offset:{self.Xoffset} Con:{self.confidence}"
             self.__send(client_socket, s)
-        elif recv_data != '' and recv_data != None:
+        elif recv_data:
             self.get_logger().info(f"Received: {self.data}")
             self.cmds = recv_data.strip("\n").split(",")
         return
