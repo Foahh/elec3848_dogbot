@@ -209,7 +209,7 @@ class ServerPublisher(Node):
                         continue
                     case "stop":
                         self.set_servo_position(self.forearm, self.gripper)
-                        if self.detected == True and self.sonar_data > 3.0:
+                        if self.detected == True and self.sonar_data >= 0.03:
                             self.prev_dist = []
                             self.state = "heading_target"
                             self.ser_wheel_velocity(0.15, 0.0, 0.0)
