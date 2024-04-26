@@ -177,14 +177,15 @@ class ServerPublisher(Node):
             cmd, *args = self.cmds
 
             if self.state in ["r_cw", "r_ccw", "heading_target"]:
-                # discard all the coming-in commands before finishing
-                if time.time() - self.tstamp < self.rotate_period:
-                    pass
-                    # continue
-                else:
-                    self.stop()
-                    # continue
-                continue
+                # # discard all the coming-in commands before finishing
+                # if time.time() - self.tstamp < self.rotate_period:
+                #     pass
+                #     # continue
+                # else:
+                #     self.stop()
+                #     # continue
+                # continue
+                pass
             elif self.state == "grab_2":
                 if time.time() - self.tstamp < 2:
                     pass
@@ -256,6 +257,7 @@ class ServerPublisher(Node):
                             self.Xoffset = float(args[1])
                     case "undetected":
                         self.detected = False
+                        self.stop()
                     case "r_cw":
                         if len(args) >= 2:
                             self.rotate_angle = float(args[0])
