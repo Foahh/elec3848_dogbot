@@ -265,8 +265,8 @@ class ServerPublisher(Node):
                         # self.stop()
                     case "r_cw":
                         if self.state == "r_cw":
-                            break
-                        if len(args) >= 2:
+                            pass
+                        elif len(args) >= 2:
                             self.rotate_angle = float(args[0])
                             self.rotate_period = float(args[1])
                             self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
@@ -276,8 +276,8 @@ class ServerPublisher(Node):
                         self.state = cmd
                     case "r_ccw":
                         if self.state == "r_ccw":
-                            break
-                        if len(args) >= 2:
+                            pass
+                        elif len(args) >= 2:
                             self.rotate_angle = float(args[0])
                             self.rotate_period = float(args[1])
                             self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
@@ -287,10 +287,11 @@ class ServerPublisher(Node):
                         self.state = cmd
                     case "heading_target":
                         if self.state == "heading_target":
-                            break
-                        self.ser_wheel_velocity(0.15, 0.0, 0.0)
-                        self.state = "heading_target"
-                        self.tstamp = time.time()
+                            pass
+                        else:
+                            self.ser_wheel_velocity(0.15, 0.0, 0.0)
+                            self.state = "heading_target"
+                            self.tstamp = time.time()
                     case "grab":
                         self.state = "grab"
                     case _:
