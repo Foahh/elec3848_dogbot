@@ -223,11 +223,11 @@ class ServerPublisher(Node):
             if self.cmds == []:
                 cmd = ''
             cmd, *args = self.cmds
-            if prev_cmd.pop(0) == cmd and cmd in ["undetected", "detected"]:
-                pass
-            else:
-                self.get_logger().info(f"Command: {cmd}")
-            prev_cmd.append(cmd)
+            # if prev_cmd.pop(0) == cmd and cmd in ["undetected", "detected"]:
+            #     pass
+            # else:
+            #     self.get_logger().info(f"Command: {cmd}")
+            # prev_cmd.append(cmd)
 
             try:
                 match cmd:
@@ -341,7 +341,8 @@ class ServerPublisher(Node):
                 s += f" Area:{self.area} Offset:{self.Xoffset} Con:{self.confidence}"
             self.__send(client_socket, s)
         elif recv_data:
-            self.get_logger().info(f"Received: {recv_data}")
+            if "detected" not in recv_data:
+                self.get_logger().info(f"Received: {recv_data}")
             self.cmds = recv_data.strip("\n").split(",")
 
 def Nodes(node) -> None:
