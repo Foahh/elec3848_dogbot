@@ -175,6 +175,7 @@ class ServerPublisher(Node):
             while self.cmds == []:
                 pass
             cmd, *args = self.cmds
+            self.get_logger().info(f"Received: {cmd}")
 
             # if self.state in ["r_cw", "r_ccw", "heading_target"]:
             #     # discard all the coming-in commands before finishing
@@ -326,7 +327,7 @@ class ServerPublisher(Node):
                 s += f" Area:{self.area} Offset:{self.Xoffset} Con:{self.confidence}"
             self.__send(client_socket, s)
         elif recv_data:
-            self.get_logger().info(f"Received: {recv_data}")
+            # self.get_logger().info(f"Received: {recv_data}")
             self.cmds = recv_data.strip("\n").split(",")
         return
 
