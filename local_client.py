@@ -74,14 +74,19 @@ def main_thread() -> None:
             if userIn == 'q':
                 client.shutdown()
                 exit(0)
-            
+            elif userIn == 'a':
+                client.send("velocity,0.0,0.0,90.0")
+            elif userIn == 'd':
+                client.send("velocity,0.0,0.0,-90.0")
             elif userIn == "":
                 client.send(lastcmd[-1])
             elif userIn == "approaching":
                 client.send(userIn)
             else:
                 client.send(userIn)
+            lastcmd.pop(0)
             lastcmd.append(userIn)
+            print(f"Sent: {userIn}")
         except KeyboardInterrupt:
             print(flush=True)
         except Exception as e:
