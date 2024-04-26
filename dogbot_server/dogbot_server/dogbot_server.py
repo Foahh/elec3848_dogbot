@@ -58,6 +58,7 @@ class ServerPublisher(Node):
 
         self.rotate_period = 0.3
         self.rotate_angle = 1.5
+        self.heading_period = 0.5
 
         self.data = ""
         self.state = "stop"
@@ -194,6 +195,9 @@ class ServerPublisher(Node):
             #     continue
             #     pass
             if time.time() - self.tstamp > self.rotate_period and self.state in ["r_cw", "r_ccw"]:
+                self.stop()
+                continue
+            elif time.time() - self.tstamp > self.heading_period and self.state in ["heading_target"]:
                 self.stop()
                 continue
             elif self.state == "grab_2":
