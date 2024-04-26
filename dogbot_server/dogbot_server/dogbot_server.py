@@ -361,8 +361,8 @@ class ServerPublisher(Node):
                 self.get_logger().error(e)
                 # This exception error could not be solved. It's weird.
 
-    def __send(self, client_socket, msg) -> None:
-        self.server_socket.sendto(msg.encode(), client_socket)
+    def __send(self, client_addr, msg) -> None:
+        self.server_socket.sendto(msg.encode(), client_addr)
         # try:
         #     data = client_socket.recv(1024).decode()
         #     print(data)
@@ -372,7 +372,7 @@ class ServerPublisher(Node):
 
     def recv_handler(self) -> None:
         while True:
-            data_buffer, client_socket = self.server_socket.recvfrom(1024)
+            data_buffer, client_addr = self.server_socket.recvfrom(1024)
             if not data_buffer:
                 self.get_logger().error("Connection is broken!")
                 self.get_logger().info("Waiting for connection...")
@@ -383,12 +383,12 @@ class ServerPublisher(Node):
                 target=self.msg_handler,
                 args=(
                     recv_data,
-                    client_socket,
+                    client_addr,
                 ),
             )
             new_msg_handler.start()
 
-    def msg_handler(self, recv_data, client_socket) -> None:
+    def msg_handler(self, recv_data, client_addr) -> None:
         if "echoback" in recv_data:
             s = f"State: {self.state}\nDist:{self.sonar_data}\n"
             try:
@@ -396,7 +396,7 @@ class ServerPublisher(Node):
                     s += f"Area:{self.area}\nOffset:{self.Xoffset}\nCon:{self.confidence}\n"
             except:
                 pass
-                self.__send(client_socket, s)
+                self.__send(client_addr, s)
         elif recv_data:
             if "detected" not in recv_data:
                 self.get_logger().info(f"Received: {recv_data}")
@@ -433,7 +433,7 @@ def main(args=None):
     try:
         while True:
             # client_socket, _ = server_socket.accept()
-            client_thread = Thread(target=node.recv_handler, args=(client_socket,))
+            client_thread = Thread(target=node.recv_handler)
             client_thread.start()
     except KeyboardInterrupt:
         exit(0)
