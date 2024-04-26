@@ -3,7 +3,7 @@ SHELL ["/bin/bash", "-c"]
 
 
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
-    ros-${ROS_DISTRO}-tf-transforms \
+    ros-${ROS_DISTRO}-tf-transformations \
     ros-${ROS_DISTRO}-imu-tools \
     ros-${ROS_DISTRO}-slam-toolbox \
     ros-${ROS_DISTRO}-navigation2 \
