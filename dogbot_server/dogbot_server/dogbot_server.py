@@ -251,6 +251,9 @@ class ServerPublisher(Node):
                         # self.__send(client_socket, cmd)
                     case "detected":
                         self.detected = True
+                        if len(args) >= 2:
+                            self.area = float(args[0])
+                            self.Xoffset = float(args[1])
                     case "undetected":
                         self.detected = False
                     case "r_cw":
@@ -308,7 +311,7 @@ class ServerPublisher(Node):
             if "echoback" in recv_data:
                 s = f"State: {self.state} "
                 if self.detected == True:
-                    s += f" Detected!"
+                    s += f" Detected! Area:{self.area} Offset:{self.Xoffset}"
                 self.__send(client_socket, s)
                 continue
             elif recv_data != '' and recv_data != None:
