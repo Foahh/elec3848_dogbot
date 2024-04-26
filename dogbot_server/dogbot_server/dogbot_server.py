@@ -178,7 +178,7 @@ class ServerPublisher(Node):
             while self.cmds == []:
                 pass
             cmd, *args = self.cmds
-            if prev_cmd.pop(0) == cmd and cmd == "undetected":
+            if prev_cmd.pop(0) == cmd and cmd in ["undetected", "detected"]:
                 pass
             else:
                 self.get_logger().info(f"Received: {cmd}")
