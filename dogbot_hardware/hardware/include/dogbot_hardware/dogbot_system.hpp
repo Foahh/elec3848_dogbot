@@ -34,6 +34,7 @@
 #include "dogbot_hardware/serial.hpp"
 #include "dogbot_hardware/wheel.hpp"
 #include "dogbot_hardware/servo.hpp"
+#include "dogbot_hardware/sonar.hpp"
 
 namespace dogbot_hardware {
     class DogBotSystemHardware : public hardware_interface::SystemInterface {
