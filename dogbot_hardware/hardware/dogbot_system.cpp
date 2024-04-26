@@ -151,7 +151,7 @@ namespace dogbot_hardware
         try
         {
             serial_.read_feedback(wheel_lf_.enc, wheel_rf_.enc, wheel_lb_.enc, wheel_rb_.enc);
-            serial.read_sonar(sonar_.range);
+            serial_.read_sonar(sonar_.range);
         }
         catch (const std::exception &e)
         {
