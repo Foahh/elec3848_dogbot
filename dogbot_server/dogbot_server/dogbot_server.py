@@ -277,7 +277,10 @@ class ServerPublisher(Node):
             try:
                 match cmd:
                     case "pose":
-                        pass
+                        if len(args) >= 2:
+                            forearm = args[0]
+                            gripper = args[1]
+                            self.set_servo_position(forearm, gripper)
                     case "forward":
                         self.forward()
                     case "backward":
