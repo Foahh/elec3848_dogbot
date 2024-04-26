@@ -63,6 +63,7 @@ class ServerPublisher(Node):
         self.state = "stop"
         self.cmds = []
         self.detected = False
+        self.tstamp = time.time()
 
     def update_tf(self):
         try:
