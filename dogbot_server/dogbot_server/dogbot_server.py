@@ -176,15 +176,6 @@ class ServerPublisher(Node):
     def cmd_handler(self):
         prev_cmd = [""]
         while True:
-            while self.cmds == []:
-                pass
-            cmd, *args = self.cmds
-            if prev_cmd.pop(0) == cmd and cmd in ["undetected", "detected"]:
-                pass
-            else:
-                self.get_logger().info(f"Received: {cmd}")
-            prev_cmd.append(cmd)
-
             if time.time() - self.tstamp > self.rotate_period and self.state in [
                 "r_cw",
                 "r_ccw",
@@ -244,6 +235,14 @@ class ServerPublisher(Node):
                     self.prev_dist.append(self.sonar_data)
 
             self.set_servo_position(self.forearm, self.gripper)
+            while self.cmds == []:
+                pass
+            cmd, *args = self.cmds
+            if prev_cmd.pop(0) == cmd and cmd in ["undetected", "detected"]:
+                pass
+            else:
+                self.get_logger().info(f"Received: {cmd}")
+            prev_cmd.append(cmd)
 
             try:
                 # cmd, *args = self.data.strip("\n").split(",")
