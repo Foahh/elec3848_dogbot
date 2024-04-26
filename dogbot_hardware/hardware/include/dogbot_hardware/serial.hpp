@@ -23,7 +23,7 @@ namespace dogbot_hardware
                 serial_.setTimeout(serial::Timeout::max(), timeout_ms, 0, serial::Timeout::max(), 0);
                 serial_.open();
                 serial_.flush();
-                send("<S>", true);
+                send("<S>", false);
                 return true;
             }
             catch (std::exception &e)
@@ -75,7 +75,7 @@ namespace dogbot_hardware
 
             if (debug_output)
             {
-                std::cout << "Sent: " << msg_to_send << "   Received: " << std::endl;
+                std::cerr << "Sent: " << msg_to_send << "   Received: " << std::endl;
             }
 
             return "";
