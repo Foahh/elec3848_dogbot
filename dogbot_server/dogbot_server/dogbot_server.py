@@ -252,9 +252,10 @@ class ServerPublisher(Node):
                         # self.__send(client_socket, cmd)
                     case "detected":
                         self.detected = True
-                        if len(args) >= 2:
+                        if len(args) >= 3:
                             self.area = float(args[0])
                             self.Xoffset = float(args[1])
+                            self.confidence = float(args[2])
                     case "undetected":
                         self.detected = False
                         self.stop()
@@ -308,17 +309,20 @@ class ServerPublisher(Node):
                 self.get_logger().info("Waiting for connection...")
                 client_socket.close()
                 client_socket, _ = self.server_socket.accept()
-                continue
             recv_data = data_buffer.decode("utf-8")
-            if "echoback" in recv_data:
-                s = f"State: {self.state} "
-                if self.detected == True:
-                    s += f" Detected! Area:{self.area} Offset:{self.Xoffset}"
-                self.__send(client_socket, s)
-                continue
-            elif recv_data != '' and recv_data != None:
-                self.get_logger().info(f"Received: {self.data}")
-                self.cmds = recv_data.strip("\n").split(",")
+            new_msg_handler = Thread(target=self.msg_handler, args=(recv_data, client_socket, ))
+            new_msg_handler.start()
+            
+    def msg_handler(self, recv_data, client_socket) -> None:
+        if "echoback" in recv_data:
+            s = f"State: {self.state} "
+            if self.detected == True:
+                s += f" Area:{self.area} Offset:{self.Xoffset} Con:{self.confidence}"
+            self.__send(client_socket, s)
+        elif recv_data != '' and recv_data != None:
+            self.get_logger().info(f"Received: {self.data}")
+            self.cmds = recv_data.strip("\n").split(",")
+        return
 
 def Nodes(node) -> None:
     rclpy.spin(node)

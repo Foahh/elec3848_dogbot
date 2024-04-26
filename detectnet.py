@@ -115,6 +115,9 @@ output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
 
 f = open('area.txt', 'w')
 f.close()
+
+tstamp = time.time()
+detect_count = 0
 # process frames until the user exits
 while True:
 
@@ -130,19 +133,26 @@ while True:
     # print the detections
     print("detected {:d} objects in image".format(len(detections)))
     
-    #Initialize the object coordinates and area
+    """ #Initialize the object coordinates and area
     objX = width/2
     objY = height/2
     Area = 0
-    
+    """
     #Find largest detected objects (in case of deep learning confusion)
-    for detection in detections:
-        # print(detection)
-        if(int(detection.Area)>Area):
+    if len(detections) == 1:
+        for detection in detections:
             objX =int(detection.Center[0])
             objY = int(detection.Center[1])
             Area = int(detection.Area)
             Confidence = detection.Confidence
+    else:
+        for detection in detections:
+            # print(detection)
+            if(int(detection.Area)>Area):
+                objX =int(detection.Center[0])
+                objY = int(detection.Center[1])
+                Area = int(detection.Area)
+                Confidence = detection.Confidence
 
     # If more than one figures are detected, and those figures overlap, 
     # then a higher confidence level could be concluded.
@@ -150,36 +160,37 @@ while True:
     #Determine the adjustments needed to make to the cmaera
     
     panOffset = objX - (width/2)
-    tiltOffset = objY - (height/2)
+    # tiltOffset = objY - (height/2)
     
-    #Puting the values in margins
-    if (abs(panOffset)>error_tolerance):
-        pan = pan-panOffset/100
-    if (abs(tiltOffset)>error_tolerance):
-        tilt = tilt+tiltOffset/100
-    if pan>pan_max:
-        pan = pan_max
-    if pan<pan_min:
-        pan=pan_min
-    if tilt>tilt_max:
-        tilt=tilt_max
-    if tilt<tilt_min:
-        tilt=tilt_min
-    #Rounding them off
-    pan = int(pan)
-    tilt = int(tilt) + tilt_offset
-    Area = int(Area)
-    #Setting up command string
-    myString = '(' +  str(pan) + ',' + str(tilt) + ',' + str(Area) + ')'  # original: pan, tilt, area --> objX, objY, Area
-    # print("myString = %s" %myString)
+    # #Puting the values in margins
+    # if (abs(panOffset)>error_tolerance):
+    #     pan = pan-panOffset/100
+    # if (abs(tiltOffset)>error_tolerance):
+    #     tilt = tilt+tiltOffset/100
+    # if pan>pan_max:
+    #     pan = pan_max
+    # if pan<pan_min:
+    #     pan=pan_min
+    # if tilt>tilt_max:
+    #     tilt=tilt_max
+    # if tilt<tilt_min:
+    #     tilt=tilt_min
+    # #Rounding them off
+    # pan = int(pan)
+    # tilt = int(tilt) + tilt_offset
+    # Area = int(Area)
+    # #Setting up command string
+    # myString = '(' +  str(pan) + ',' + str(tilt) + ',' + str(Area) + ')'  # original: pan, tilt, area --> objX, objY, Area
+    # # print("myString = %s" %myString)
+    """ 
     if len(detections) == 1 and Area != 0:
         f = open('area.txt', 'a+')
         print(Area, ' ', Confidence, file=f)
         f.close()
-    
+    """
     ##======================##
 
-    turnoffset = abs(objX - width/2)
+    # turnoffset = abs(objX - width/2)
 
     # condition1: no redball detect -> no change
     # doing nothing
@@ -188,8 +199,21 @@ while True:
     # arguments: objx, objy, window size
     if (Area == 0): 
         client_sock.sending("undetected")
+        tstamp = time.time()
+        detect_count = 0
     else:
-        client_sock.sending(f"detected,{Area},{panOffset}")
+        if time.time() - tstamp < 0.2:
+            detect_count += 1
+        else:
+            tstamp = time.time()
+            detect_count = 0
+            continue
+        if detect_count > 5:
+            pass
+        else:
+            continue
+
+        client_sock.sending(f"detected,{Area},{panOffset},{Confidence}")
         # condition2.1： 偏左 -> turn right
         if (objX < width/2 - error):
             client_sock.sending("r_cw") # return turnoffset
@@ -226,7 +250,7 @@ while True:
     #     if (Area > 0 and Area < 300000):
     #         arduino.write(myString.encode())
 
-    # render the image
+    """ # render the image
     smallImg = jetson.utils.cudaAllocMapped(width=img.width*0.5, height=img.height*0.5, format=img.format)
     jetson.utils.cudaResize(img, smallImg)
     output.Render(smallImg)
@@ -240,6 +264,6 @@ while True:
 
     # exit on input/output EOS
     if not input.IsStreaming() or not output.IsStreaming():
-        break
+        break """
 
 
