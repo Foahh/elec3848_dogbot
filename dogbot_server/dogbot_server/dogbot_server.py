@@ -370,7 +370,7 @@ class ServerPublisher(Node):
 
     def recv_handler(self, client_socket) -> None:
         while True:
-            data_buffer = client_socket.recv(16)
+            data_buffer = client_socket.recv(512)
             if not data_buffer:
                 self.get_logger().error("Connection is broken!")
                 self.get_logger().info("Waiting for connection...")
