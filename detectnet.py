@@ -119,7 +119,10 @@ f.close()
 while True:
 
     # capture the next image
-    img = input.Capture()
+    try:
+        img = input.Capture()
+    except:
+        continue
 
     # detect objects in the image (with overlay)
     detections = net.Detect(img, overlay=opt.overlay)
