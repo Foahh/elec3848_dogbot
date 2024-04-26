@@ -167,7 +167,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=joint_state_broadcaster_spawner,
-                on_exit=[dogbot_servo_controller_spawner],
+                on_exit=[dogbot_sonar_broadcaster_spawner],
             )
         )
     )
