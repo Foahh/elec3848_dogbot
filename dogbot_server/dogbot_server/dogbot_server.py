@@ -53,7 +53,7 @@ class ServerPublisher(Node):
         self.gripper_close = 95.0
         self.gripper_open = 30.0
 
-        self.rotate_period = 0.5
+        self.rotate_period = 1.0
         self.rotate_angle = 1.5
         self.heading_period = 0.3
 
@@ -176,11 +176,13 @@ class ServerPublisher(Node):
                         if time.time() - self.tstamp > self.rotate_period or self.detected == False:
                             self.stop()
                             self.state = "stop"
+                        continue
                     case "r_ccw":
                         self.prev_dist = []
                         if time.time() - self.tstamp > self.rotate_period or self.detected == False:
                             self.stop()
                             self.state = "stop"
+                        continue
                     case "heading_target":
                         self.prev_dist = []
                         if time.time() - self.tstamp > self.heading_period or self.detected == False:
