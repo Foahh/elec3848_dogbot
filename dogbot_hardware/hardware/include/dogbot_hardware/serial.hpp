@@ -52,7 +52,7 @@ namespace dogbot_hardware
             return serial_.isOpen();
         }
 
-        std::string send(const std::string &msg_to_send, bool debug_output = false)
+        std::string send(const std::string &msg_to_send, bool verbose)
         {
             serial_.flush();
             try
@@ -73,9 +73,9 @@ namespace dogbot_hardware
                 std::cerr << "Serial Receiving Exception: " << e.what() << "; Tried: " << msg_to_send << std::endl;
             }
 
-            if (debug_output)
+            if (verbose)
             {
-                std::cerr << "Sent: " << msg_to_send << "   Received: " << std::endl;
+                std::cout << "Sent: " << msg_to_send << "   Received: " << std::endl;
             }
 
             return "";
@@ -126,8 +126,8 @@ namespace dogbot_hardware
 
         void read_sonar(double &range)
         {
-            std::string response = send("<U>", true);
-            range = std::atof(response.c_str());
+            std::string response = send("<U>", false);
+            range = (double)std::atol(response.c_str()) / 58.2;
         }
 
     private:
