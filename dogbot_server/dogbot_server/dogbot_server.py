@@ -58,7 +58,7 @@ class ServerPublisher(Node):
 
         self.rotate_period = 0.3
         self.rotate_angle = 1.5
-        self.heading_period = 0.5
+        self.heading_period = 0.3
 
         self.data = ""
         self.state = "stop"
