@@ -209,7 +209,6 @@ class ServerPublisher(Node):
                             self.set_servo_position(self.forearm, self.gripper)
                         continue
                     case "stop":
-                        self.set_servo_position(self.forearm, self.gripper)
                         if self.detected == True and self.sonar_data >= self.dist_threshold:
                             self.prev_dist = []
                             self.state = "heading_target"
@@ -222,6 +221,7 @@ class ServerPublisher(Node):
                             self.prev_dist.append(self.sonar_data)
                         elif self.sonar_data > self.dist_threshold and len(self.prev_dist) != 0:
                             self.prev_dist.pop(-1)
+                        self.set_servo_position(self.forearm, self.gripper)
             except Exception as e:
                 self.get_logger().info(e)
 
@@ -348,7 +348,10 @@ class ServerPublisher(Node):
         elif recv_data:
             if "detected" not in recv_data:
                 self.get_logger().info(f"Received: {recv_data}")
-            self.cmds = recv_data.strip("\n").split(",")
+            if "forcestop" in recv_data:
+                self.state = "stop"
+            else:
+                self.cmds = recv_data.strip("\n").split(",")
 
 def Nodes(node) -> None:
     rclpy.spin(node)
