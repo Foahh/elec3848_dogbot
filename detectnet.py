@@ -59,7 +59,7 @@ objY = height/2
 error_tolerance = 100
 
 ##################  new add
-error = 100
+error = 150
 Xoffset = -70
 symbol = ""
 boundary_area = 180000

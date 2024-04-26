@@ -177,7 +177,7 @@ class ServerPublisher(Node):
                         time.sleep(self.rotate_period)
                         self.stop()
                         self.state = "stop"
-                        time.sleep(0.5)
+                        time.sleep(0.3)
                         # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                         #     self.stop()
                         #     self.state = "stop"
@@ -188,7 +188,7 @@ class ServerPublisher(Node):
                         time.sleep(self.rotate_period)
                         self.stop()
                         self.state = "stop"
-                        time.sleep(0.5)
+                        time.sleep(0.3)
                         # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                         #     self.stop()
                         #     self.state = "stop"
@@ -246,15 +246,15 @@ class ServerPublisher(Node):
                             self.prev_dist.pop(-1)
                         elif self.tstamp - time.time() > 3:
                             self.ser_wheel_velocity(-0.5, 0.0, 0.0)
-                            time.sleep(1)
+                            time.sleep(0.5)
                             self.tstamp = time.time()
                             if self.detected == True:
                                 continue
-                            time.sleep(1)
+                            time.sleep(0.5)
                             self.ser_wheel_velocity(0.0, 0.0, 2.0)
                             if self.detected == True:
                                 continue
-                            time.sleep(1)
+                            time.sleep(0.5)
                             self.ser_wheel_velocity(0.0, 0.0, -3.5)
                             if self.detected == True:
                                 continue
