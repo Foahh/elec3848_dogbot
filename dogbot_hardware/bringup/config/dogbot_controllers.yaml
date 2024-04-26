@@ -11,6 +11,9 @@ controller_manager:
     forward_position_controller:
       type: position_controllers/JointGroupPositionController
 
+    range_sensor_broadcaster:
+      type: range_sensor_broadcaster/RangeSensorBroadcaster
+
 dogbot_base_controller:
   ros__parameters:
     lf_wheel_name: "lf_wheel_joint"
@@ -40,3 +43,12 @@ forward_position_controller:
       - servo_forearm_joint
       - servo_gripper_joint
     interface_name: position
+
+range_sensor_broadcaster:
+  ros__parameters:
+    field_of_view: 0.25
+    frame_id: 'sonar_joint'
+    max_range: 4.0
+    min_range: 0.025
+    radiation_type: 0
+    sensor_name: 'sonar_joint'

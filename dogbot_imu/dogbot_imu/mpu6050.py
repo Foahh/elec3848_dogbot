@@ -26,7 +26,7 @@ class IMUPublisher(Node):
 
         self.raw_publisher = self.create_publisher(Imu, "imu/data_raw", 10)
 
-        timer_period = 0.005  # seconds
+        timer_period = 0.02  # seconds
         self.timer = self.create_timer(timer_period, self.callback)
 
         self.imu = mpu6050(0x68, 0)
@@ -46,6 +46,7 @@ class IMUPublisher(Node):
         self.raw_msg.angular_velocity.x = gyro_data["x"] * math.pi / 180.0
         self.raw_msg.angular_velocity.y = gyro_data["y"] * math.pi / 180.0
         self.raw_msg.angular_velocity.z = gyro_data["z"] * math.pi / 180.0
+        
         self.raw_publisher.publish(self.raw_msg)
 
 

@@ -91,6 +91,7 @@ namespace dogbot_hardware {
         Wheel wheel_rb_;
         Servo servo_gripper_;
         Servo servo_forearm_;
+        Sonar sonar_;
     };
 
 } // namespace dogbot_hardware

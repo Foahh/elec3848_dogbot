@@ -39,7 +39,7 @@ class IMUPublisher(Node):
         self.raw_publisher = self.create_publisher(Imu, "imu/data_raw", 10)
         self.mag_publisher = self.create_publisher(MagneticField, "imu/mag", 10)
 
-        timer_period = 0.005  # seconds
+        timer_period = 0.02  # seconds
         self.timer = self.create_timer(timer_period, self.callback)
 
         self.bus = SMBus(0)

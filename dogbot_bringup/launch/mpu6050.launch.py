@@ -23,11 +23,8 @@ def generate_launch_description():
         output="screen",
         parameters=[
             {
-                "do_bias_estimation": True,
-                "do_adaptive_gain": True,
-                "gain_acc": 0.01,
-                "gain_mag": 0.01,
-                "publish_tf": False,
+                "gain_acc": 0.0075,
+                "gain_mag": 0.0075
             }
         ],
         

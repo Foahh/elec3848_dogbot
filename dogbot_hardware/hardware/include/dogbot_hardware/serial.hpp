@@ -124,6 +124,12 @@ namespace dogbot_hardware
             send(ss.str(), false);
         }
 
+        void read_sonar(double &range)
+        {
+            std::string response = send("<U>", true);
+            range = std::atof(response.c_str());
+        }
+
     private:
         serial::Serial serial_;
     };

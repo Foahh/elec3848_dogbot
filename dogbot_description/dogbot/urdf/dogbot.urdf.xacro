@@ -218,5 +218,24 @@
             </visual>
         </link>
 
+        <!-- sonar joint -->
+
+        <joint name="sonar_joint" type="fixed">
+            <parent link="servo_gripper" />
+            <child link="sonar" />
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </joint>
+
+        <!-- sonar Link -->
+        <link name="sonar">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.01 0.01 0.01" />
+                </geometry>
+                <material name="red" />
+            </visual>
+        </link>
+
     </xacro:macro>
 </robot>

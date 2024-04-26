@@ -46,17 +46,7 @@ namespace dogbot_hardware
         servo_forearm_.setup(info_.hardware_parameters["servo_forearm_name"], 90.0);
         servo_gripper_.setup(info_.hardware_parameters["servo_gripper_name"], 30.0);
 
-        for (const hardware_interface::ComponentInfo &joint : info_.joints)
-        {
-            if (joint.command_interfaces.size() != 1)
-            {
-                RCLCPP_FATAL(
-                    rclcpp::get_logger("DogBotSystemHardware"),
-                    "Joint '%s' has %zu command interfaces found. 1 expected.", joint.name.c_str(),
-                    joint.command_interfaces.size());
-                return hardware_interface::CallbackReturn::ERROR;
-            }
-        }
+        sonar_.setup(info_.hardware_parameters["sonar_name"]);
 
         return hardware_interface::CallbackReturn::SUCCESS;
     }
@@ -71,6 +61,8 @@ namespace dogbot_hardware
         state_interfaces.emplace_back(wheel_rf_.name, hardware_interface::HW_IF_POSITION, &wheel_rf_.pos);
         state_interfaces.emplace_back(wheel_lb_.name, hardware_interface::HW_IF_POSITION, &wheel_lb_.pos);
         state_interfaces.emplace_back(wheel_rb_.name, hardware_interface::HW_IF_POSITION, &wheel_rb_.pos);
+
+        state_interfaces.emplace_back(sonar_.name, "range", &sonar_.range);
 
         return state_interfaces;
     }
@@ -159,6 +151,7 @@ namespace dogbot_hardware
         try
         {
             serial_.read_feedback(wheel_lf_.enc, wheel_rf_.enc, wheel_lb_.enc, wheel_rb_.enc);
+            serial.read_sonar(sonar_.range);
         }
         catch (const std::exception &e)
         {
