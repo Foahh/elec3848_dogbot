@@ -133,11 +133,11 @@ while True:
     # print the detections
     print("detected {:d} objects in image".format(len(detections)))
     
-    """ #Initialize the object coordinates and area
+    #Initialize the object coordinates and area
     objX = width/2
     objY = height/2
     Area = 0
-    """
+   
     #Find largest detected objects (in case of deep learning confusion)
     if len(detections) == 1:
         for detection in detections:
