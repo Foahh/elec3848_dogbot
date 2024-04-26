@@ -60,6 +60,7 @@ error_tolerance = 100
 
 ##################  new add
 error = 200
+Xoffset = 70
 symbol = ""
 boundary_area = 180000
 servo1_open = 30  #claw: 30->open  initial state
@@ -158,7 +159,7 @@ while True:
     # then a higher confidence level could be concluded.
     
     #Determine the adjustments needed to make to the cmaera
-    
+    objX += Xoffset
     panOffset = objX - (width/2)
     # tiltOffset = objY - (height/2)
     
