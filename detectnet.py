@@ -236,7 +236,8 @@ while True:
     
             # condition4: readball detect, in the center, close engough --> grab
             else:
-                current_cmd = "grab"                
+                # current_cmd = "grab"   
+                pass             
                 # client_sock.sending("grab")
 
         if current_cmd != prev_cmd:

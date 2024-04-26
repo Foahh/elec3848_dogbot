@@ -225,10 +225,9 @@ class ServerPublisher(Node):
                     self.state = "stop"
                     # continue
                 continue
+            elif self.sonar_data < 3.0:
+                self.state = "grab"
             self.set_servo_position(self.forearm, self.gripper)
-            # self.data += recv_data
-            # if self.data[-1] != "\n":
-            #     continue
 
             try:
                 # cmd, *args = self.data.strip("\n").split(",")
@@ -339,7 +338,7 @@ class ServerPublisher(Node):
 
     def msg_handler(self, recv_data, client_socket) -> None:
         if "echoback" in recv_data:
-            s = f"State: {self.state} "
+            s = f"State: {self.state} Dist:{self.sonar_data}"
             if self.detected == True:
                 s += f" Area:{self.area} Offset:{self.Xoffset} Con:{self.confidence}"
             self.__send(client_socket, s)
