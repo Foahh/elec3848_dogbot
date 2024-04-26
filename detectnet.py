@@ -250,7 +250,7 @@ while True:
     #     if (Area > 0 and Area < 300000):
     #         arduino.write(myString.encode())
 
-    """ # render the image
+    # render the image
     smallImg = jetson.utils.cudaAllocMapped(width=img.width*0.5, height=img.height*0.5, format=img.format)
     jetson.utils.cudaResize(img, smallImg)
     output.Render(smallImg)
@@ -264,6 +264,6 @@ while True:
 
     # exit on input/output EOS
     if not input.IsStreaming() or not output.IsStreaming():
-        break """
+        break
 
 
