@@ -53,7 +53,7 @@ class ServerPublisher(Node):
         self.gripper_close = 95.0
         self.gripper_open = 30.0
 
-        self.rotate_period = 0.3
+        self.rotate_period = 0.5
         self.rotate_angle = 1.5
         self.heading_period = 0.3
 

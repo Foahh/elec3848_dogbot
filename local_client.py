@@ -83,9 +83,9 @@ def main_thread() -> None:
             elif userIn == 'w': 
                 client.send("velocity,90,0.0,0.0")
             elif userIn == 's':
-                client.send("velocity,1.0.0,0.0,0.0")
-                time.sleep(1)
-                client.send("velocity,0.0.0,0.0,0.0")
+                # client.send("velocity,1.0.0,0.0,0.0")
+                # time.sleep(1)
+                client.send("r_cw")
             elif userIn == "":
                 client.send(lastcmd[-1])
             elif userIn == "approaching":
