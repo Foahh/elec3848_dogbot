@@ -190,6 +190,7 @@ class ServerPublisher(Node):
             #     pass
             if time.time() - self.tstamp > self.rotate_period and self.state in ["r_cw", "r_ccw"]:
                 self.stop()
+                continue
             elif self.state == "grab_2":
                 if time.time() - self.tstamp < 2:
                     pass

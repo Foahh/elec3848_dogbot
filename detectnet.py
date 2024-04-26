@@ -28,7 +28,7 @@ import argparse
 import sys
 from os import path
 import serial
-import time
+import time, copy
 from dogbot_client import ClientSide
 
 # #Detect arduino serial path (Cater for different USB-Serial Chips)
@@ -119,6 +119,7 @@ f.close()
 
 tstamp = time.time()
 detect_count = 0
+prev_cmd = ''
 # process frames until the user exits
 while True:
 
@@ -202,38 +203,55 @@ while True:
         client_sock.sending("undetected")
         tstamp = time.time()
         detect_count = 0
+        continue
     else:
-        if time.time() - tstamp < 0.5:
-            detect_count += 1
-        else:
-            tstamp = time.time()
-            detect_count = 0
-            continue
-        if detect_count > 5:
-            pass
-        else:
-            continue
+        # if time.time() - tstamp < 0.5:
+        #     detect_count += 1
+        # else:
+        #     tstamp = time.time()
+        #     detect_count = 0
+        #     continue
+        # if detect_count > 5:
+        #     pass
+        # else:
+        #     continue
 
         client_sock.sending(f"detected,{Area},{panOffset},{Confidence}")
+
         # condition2.1： 偏左 -> turn right
         if (objX < width/2 - error):
-            client_sock.sending("r_cw") # return turnoffset
+            current_cmd = "r_cw"
+            # client_sock.sending() # return turnoffset
             
         # condition2.2 : 偏右 -> turn left
         elif (objX > width/2 + error) :
-            client_sock.sending("r_ccw") # return turnoffset
+            current_cmd = "r_ccw"
+            # client_sock.sending("r_ccw") # return turnoffset
     
         # condition3: redball detect and in the center, but not close enough -> go advance
-        elif (objX > width/2 + error and objX < width/2 - error):
+        else:  # elif (objX > width/2 + error and objX < width/2 - error):
             # if window size, objx, objy ture -> compare window size
             if (Area < boundary_area):
-                client_sock.sending("heading_target") # return turnoffset
-                # return window size
+                current_cmd = "heading_target"
+                # client_sock.sending("heading_target") # return turnoffset
     
             # condition4: readball detect, in the center, close engough --> grab
             else:
-                client_sock.sending("grab")
-                # return grab_y -> servo1_close -> servo2_initial
+                current_cmd = "grab"                
+                # client_sock.sending("grab")
+
+        if current_cmd != prev_cmd:
+            prev_cmd = copy.deepcopy(current_cmd)
+            tstamp = time.time()
+            detect_count = 0
+            continue
+        else:
+            detect_count += 1
+            if detect_count > 5:
+                client_sock.sending(current_cmd)
+                detect_count = 0
+            else:
+                continue
     
     ##===================##
     
