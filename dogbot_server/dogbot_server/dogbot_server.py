@@ -232,6 +232,7 @@ class ServerPublisher(Node):
                             self.ser_wheel_velocity(-0.7, 0.0, 0.0)
                         continue
                     case "stop":
+                        self.set_servo_position(self.forearm, self.gripper)
                         if self.sonar_data > 8:
                             self.set_servo_position(self.forearm_down, self.gripper_close)
                             time.sleep(1)
@@ -265,8 +266,6 @@ class ServerPublisher(Node):
                             time.sleep(1)
                             self.set_servo_position(self.forearm, self.gripper)
                             self.tstamp = time.time()
-                        else:
-                            self.set_servo_position(self.forearm, self.gripper)
             except Exception as e:
                 self.get_logger().info(e)
 
