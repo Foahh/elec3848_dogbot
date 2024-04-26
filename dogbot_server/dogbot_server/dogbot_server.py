@@ -223,7 +223,7 @@ class ServerPublisher(Node):
                         elif self.sonar_data > self.dist_threshold:
                             self.prev_dist.pop(-1)
             except Exception as e:
-                self.get_logger().error(e)
+                self.get_logger().info(e)
 
             if self.cmds == []:
                 continue
@@ -311,7 +311,6 @@ class ServerPublisher(Node):
             except TypeError as e:
                 self.get_logger().error(e)
                 # This exception error could not be solved. It's weird.
-            # self.get_logger().info(self.state)
 
     def __send(self, client_socket, msg) -> None:
         client_socket.sendall(msg.encode())
