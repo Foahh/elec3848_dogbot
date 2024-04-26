@@ -12,7 +12,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 DEFAULT_LINEAR_VELOCITY = 0.25
-DEFAULT_ANGULAR_VELOCITY = 10
+DEFAULT_ANGULAR_VELOCITY = 0.1
 
 
 class ServerPublisher(Node):
@@ -53,7 +53,7 @@ class ServerPublisher(Node):
         self.gripper_close = 95.0
         self.gripper_open = 30.0
 
-        self.rotate_period = 5
+        self.rotate_period = 0.2
         self.rotate_angle = 1.5
         self.heading_period = 0.3
 
@@ -287,7 +287,7 @@ class ServerPublisher(Node):
                             self.tstamp = time.time()
                         else:
                             self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY)
-                        self.state = cmd
+                        self.state = "r_cw"
                     case "r_ccw":
                         # if self.state == "r_ccw":
                         #     pass
@@ -298,7 +298,7 @@ class ServerPublisher(Node):
                             self.tstamp = time.time()
                         else:
                             self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
-                        self.state = cmd
+                        self.state = "r_ccw"
                     case "heading_target":
                         if self.state == "heading_target":
                             pass
