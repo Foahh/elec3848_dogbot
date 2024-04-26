@@ -367,7 +367,10 @@ def main(args=None):
     handler_thread = Thread(target=node.cmd_handler)
     handler_thread.start()
 
-    while True:
-        client_socket, _ = server_socket.accept()
-        client_thread = Thread(target=node.recv_handler, args=(client_socket,))
-        client_thread.start()
+    try:
+        while True:
+            client_socket, _ = server_socket.accept()
+            client_thread = Thread(target=node.recv_handler, args=(client_socket,))
+            client_thread.start()
+    except KeyboardInterrupt:
+        exit(0)
