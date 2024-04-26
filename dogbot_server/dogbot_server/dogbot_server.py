@@ -57,6 +57,10 @@ class ServerPublisher(Node):
         self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
         self.heading_period = 0.3
 
+        self.area = 0
+        self.Xoffset = 0
+        self.confidence = 0
+
         self.state = "stop"
         self.cmds = []
         self.detected = False
