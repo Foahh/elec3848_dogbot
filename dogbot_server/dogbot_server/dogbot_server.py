@@ -249,15 +249,15 @@ class ServerPublisher(Node):
                             time.sleep(1)
                             self.tstamp = time.time()
                             if self.detected == True:
-                                continue
+                                break
                             time.sleep(1)
                             self.ser_wheel_velocity(0.0, 0.0, 2.0)
                             if self.detected == True:
-                                continue
+                                break
                             time.sleep(1)
                             self.ser_wheel_velocity(0.0, 0.0, -3.5)
                             if self.detected == True:
-                                continue
+                                break
                             self.set_servo_position(self.forearm_down, self.gripper_close)
                             time.sleep(1)
                             self.set_servo_position(self.forearm, self.gripper)
