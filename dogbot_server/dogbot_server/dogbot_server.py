@@ -308,9 +308,9 @@ class ServerPublisher(Node):
                         self.stop()
                         if cmd == "echoback":
                             break
-                        self.get_logger().error(f"Invalid command: {cmd}")
+                        self.get_logger().error(f"Invalid command: {cmd}.")
             except ValueError:
-                self.get_logger().error(f"Invalid parameters: {args}")
+                self.get_logger().error(f"Invalid parameters: {args}. Caused by command: {cmd}.")
             except TypeError as e:
                 self.get_logger().error(e)
                 # This exception error could not be solved. It's weird.
