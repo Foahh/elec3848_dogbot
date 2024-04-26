@@ -202,7 +202,7 @@ while True:
         tstamp = time.time()
         detect_count = 0
     else:
-        if time.time() - tstamp < 0.2:
+        if time.time() - tstamp < 0.5:
             detect_count += 1
         else:
             tstamp = time.time()
