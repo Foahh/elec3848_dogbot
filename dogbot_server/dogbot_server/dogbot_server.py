@@ -226,7 +226,7 @@ class ServerPublisher(Node):
             if prev_cmd.pop(0) == cmd and cmd in ["undetected", "detected"]:
                 pass
             else:
-                self.get_logger().info(f"Received: {cmd}")
+                self.get_logger().info(f"Command: {cmd}")
             prev_cmd.append(cmd)
 
             try:
