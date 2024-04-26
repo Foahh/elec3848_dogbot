@@ -202,16 +202,16 @@ while True:
         tstamp = time.time()
         detect_count = 0
     else:
-        if time.time() - tstamp < 0.5:
-            detect_count += 1
-        else:
-            tstamp = time.time()
-            detect_count = 0
-            continue
-        if detect_count > 5:
-            pass
-        else:
-            continue
+        # if time.time() - tstamp < 0.5:
+        #     detect_count += 1
+        # else:
+        #     tstamp = time.time()
+        #     detect_count = 0
+        #     continue
+        # if detect_count > 5:
+        #     pass
+        # else:
+        #     continue
 
         client_sock.sending(f"detected,{Area},{panOffset},{Confidence}")
         # condition2.1： 偏左 -> turn right
