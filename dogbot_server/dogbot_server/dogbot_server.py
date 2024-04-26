@@ -64,6 +64,7 @@ class ServerPublisher(Node):
         self.tstamp = time.time()
         self.prev_dist = []
         self.heading = False
+        self.dist_threshold = 0.15
     
     def sonar_callback(self, msg):
         self.sonar_data = msg.range
@@ -209,7 +210,7 @@ class ServerPublisher(Node):
                         continue
                     case "stop":
                         self.set_servo_position(self.forearm, self.gripper)
-                        if self.detected == True and self.sonar_data >= 0.2:
+                        if self.detected == True and self.sonar_data >= self.dist_threshold:
                             self.prev_dist = []
                             self.state = "heading_target"
                             self.ser_wheel_velocity(0.15, 0.0, 0.0)
@@ -217,7 +218,7 @@ class ServerPublisher(Node):
                             self.state = "grab"
                             self.prev_dist = []
                             continue
-                        elif self.sonar_data < 0.15:
+                        elif self.sonar_data < self.dist_threshold:
                             self.prev_dist.append(self.sonar_data)
                         elif self.sonar_data > self.dist_threshold:
                             self.prev_dist.pop(-1)
@@ -256,6 +257,9 @@ class ServerPublisher(Node):
                         self.state = "crusing"
                     case "approaching":
                         self.state = "approaching"
+                    case "dist_thre":
+                        if len(args) >= 1:
+                            self.dist_threshold = float(args[0])
                     case "detected":
                         self.detected = True
                         if len(args) >= 3:
