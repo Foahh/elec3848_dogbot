@@ -30,7 +30,7 @@ class ServerPublisher(Node):
             Float64MultiArray, "/forward_position_controller/commands", 10
         )
 
-        self.sonar_data = 0.0 # meters
+        self.sonar_data = -1.0 # meters
         self.sonar_listener = self.create_subscription(
             Range,
             "/range_sensor_broadcaster/range",
@@ -62,10 +62,9 @@ class ServerPublisher(Node):
         self.cmds = []
         self.detected = False
         self.tstamp = time.time()
-
+    
     def sonar_callback(self, msg):
         self.sonar_data = msg.range
-        self.logger.info(f"Sonar data: {self.sonar_data}")
 
     def update_tf(self):
         try:
@@ -167,15 +166,6 @@ class ServerPublisher(Node):
     def cmd_handler(self):
         prev_cmd = [""]
         while True:
-            # data_buffer = client_socket.recv(1024)
-
-            # if not data_buffer:
-            #     self.get_logger().error("Connection is broken!")
-            #     self.get_logger().info("Waiting for connection...")
-            #     client_socket.close()
-            #     client_socket, _ = self.server_socket.accept()
-            #     continue
-            # recv_data = data_buffer.decode("utf-8")
             while self.cmds == []:
                 pass
             cmd, *args = self.cmds
@@ -355,14 +345,11 @@ class ServerPublisher(Node):
         elif recv_data:
             # self.get_logger().info(f"Received: {recv_data}")
             self.cmds = recv_data.strip("\n").split(",")
-        return
-
 
 def Nodes(node) -> None:
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
-    return
 
 
 def main(args=None):
