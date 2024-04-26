@@ -165,6 +165,14 @@ class ServerPublisher(Node):
         self.servo_position.data = (forearm, gripper)
         self.servo_publisher.publish(self.servo_position)
 
+    def heading_target(self) -> None:
+        self.state = "heading_target"
+        self.ser_wheel_velocity(0.15, 0.0, 0.0)
+        time.sleep(self.heading_period)
+        self.ser_wheel_velocity(0.0, 0.0, 0.0)
+        self.state = "stop"
+        return
+
     def cmd_handler(self):
         prev_cmd = [""]
         while True:
@@ -225,9 +233,13 @@ class ServerPublisher(Node):
             elif self.detected == True:
                 if self.sonar_data > 3.0:
                     self.prev_dist = []
+                    heading_thread = Thread(target=self.heading_target)
+                    heading_thread.start()
+                    continue
                 elif len(self.prev_dist) == 20:
                     self.state = "grab"
                     self.prev_dist = []
+                    continue
                 else:
                     self.prev_dist.append(self.sonar_data)
 
