@@ -43,8 +43,6 @@
             <joint name="${prefix}sonar_joint">
                 <state_interface name="range" />
             </joint>
-            
-
         </ros2_control>
     </xacro:macro>
 </robot>

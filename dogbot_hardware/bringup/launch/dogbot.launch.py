@@ -124,6 +124,17 @@ def generate_launch_description():
             "/controller_manager",
         ],
     )
+    
+    dogbot_sonar_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "range_sensor_broadcaster",
+            "--controller-manager",
+            "/controller_manager",
+        ],
+    )
+    
 
     # Delay rviz start after `joint_state_broadcaster`
     delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
@@ -152,13 +163,25 @@ def generate_launch_description():
         )
     )
     
+    delay_dogbot_sonar_broadcaster_spawner_after_joint_state_broadcaster_spawner = (
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=joint_state_broadcaster_spawner,
+                on_exit=[dogbot_servo_controller_spawner],
+            )
+        )
+    )
+    
+    
+    
     nodes = [
         control_node,
         robot_state_pub_node,
         joint_state_broadcaster_spawner,
         delay_rviz_after_joint_state_broadcaster_spawner,
         delay_robot_drive_controller_spawner_after_joint_state_broadcaster_spawner,
-        delay_dogbot_servo_controller_spawner_after_joint_state_broadcaster_spawner
+        delay_dogbot_servo_controller_spawner_after_joint_state_broadcaster_spawner,
+        delay_dogbot_sonar_broadcaster_spawner_after_joint_state_broadcaster_spawner
     ]
 
     return LaunchDescription(declared_arguments + nodes)
