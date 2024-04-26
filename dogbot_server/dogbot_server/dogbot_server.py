@@ -247,7 +247,6 @@ class ServerPublisher(Node):
                         elif self.tstamp - time.time() > 4:
                             self.ser_wheel_velocity(-0.5, 0.0, 0.0)
                             time.sleep(1)
-                            self.tstamp = time.time()
                             if self.detected == True:
                                 break
                             time.sleep(1)
