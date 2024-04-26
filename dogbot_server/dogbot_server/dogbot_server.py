@@ -362,7 +362,7 @@ class ServerPublisher(Node):
                 # This exception error could not be solved. It's weird.
 
     def __send(self, client_socket, msg) -> None:
-        client_socket.sendto(msg.encode())
+        self.server_socket.sendto(msg.encode(), client_socket)
         # try:
         #     data = client_socket.recv(1024).decode()
         #     print(data)
@@ -372,12 +372,12 @@ class ServerPublisher(Node):
 
     def recv_handler(self) -> None:
         while True:
-            data_buffer, client_socket = client_socket.recvfrom(512)
+            data_buffer, client_socket = self.server_socket.recvfrom(1024)
             if not data_buffer:
                 self.get_logger().error("Connection is broken!")
                 self.get_logger().info("Waiting for connection...")
-                client_socket.close()
-                client_socket, _ = self.server_socket.accept()
+                # client_socket.close()
+                # client_socket, _ = self.server_socket.accept()
             recv_data = data_buffer.decode("utf-8")
             new_msg_handler = Thread(
                 target=self.msg_handler,

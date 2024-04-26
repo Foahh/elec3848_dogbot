@@ -54,13 +54,13 @@ class ClientSide:
                 time.sleep(0.2)
             except:
                 self.client_socket.close()
-                self.client_socket.connect(self.server_address)
+                # self.client_socket.connect(self.server_address)
 
     def regular_receiving(self) -> None:
         while True:
             try:
-                data = self.client_socket.recvfrom(128).decode()
-                print(f"[{time.ctime()}] {data}")
+                data, _ = self.client_socket.recvfrom(1024)
+                print(f"[{time.ctime()}] {data.decode()}")
             except TimeoutError as e:
                 print(e)
         return
