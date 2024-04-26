@@ -12,7 +12,6 @@ RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
 
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-tf-transforms \
-    ros-${ROS_DISTRO}-teleop-twist-joy \
     ros-${ROS_DISTRO}-teleop-twist-keyboard && \
     rm -rf /var/lib/apt/lists/*
 
