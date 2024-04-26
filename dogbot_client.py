@@ -4,7 +4,7 @@ class ClientSide:
     def __init__(self) -> None:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.client_socket.settimeout(3)
+        self.client_socket.settimeout(0.5)
         server_address = ('0.0.0.0', 8080)
         while True:
             try:
