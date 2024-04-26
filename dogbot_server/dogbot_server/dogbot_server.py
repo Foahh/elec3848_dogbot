@@ -2,28 +2,17 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float64MultiArray
+from sensor_msgs.msg import Range
 from threading import Thread
 import socket
 import time
-from functools import wraps
 from tf_transformations import euler_from_quaternion
 from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
-
 DEFAULT_LINEAR_VELOCITY = 0.25
 DEFAULT_ANGULAR_VELOCITY = 2.5
-
-
-# def twist_add_header(func):
-#     @wraps(func)
-#     def _impl(self, func):
-#         timestamp = self.get_clock().now().to_msg()
-#         self.twist_stamped.header.stamp = timestamp
-#         func(self)
-
-    # return _impl
 
 
 class ServerPublisher(Node):
@@ -39,6 +28,14 @@ class ServerPublisher(Node):
         )
         self.servo_publisher = self.create_publisher(
             Float64MultiArray, "/forward_position_controller/commands", 10
+        )
+
+        self.sonar_data = 0.0 # meters
+        self.sonar_listener = self.create_subscription(
+            Range,
+            "/range_sensor_broadcaster/range",
+            self.sonar_callback,
+            10,
         )
 
         self.tf_buffer = Buffer()
@@ -65,6 +62,9 @@ class ServerPublisher(Node):
         self.cmds = []
         self.detected = False
         self.tstamp = time.time()
+
+    def sonar_callback(self, msg):
+        self.sonar_data = msg.range
 
     def update_tf(self):
         try:
@@ -164,10 +164,10 @@ class ServerPublisher(Node):
         self.servo_publisher.publish(self.servo_position)
 
     def cmd_handler(self):
-        prev_cmd = ['']
-        while True:            
+        prev_cmd = [""]
+        while True:
             # data_buffer = client_socket.recv(1024)
-            
+
             # if not data_buffer:
             #     self.get_logger().error("Connection is broken!")
             #     self.get_logger().info("Waiting for connection...")
@@ -194,10 +194,15 @@ class ServerPublisher(Node):
             #         # continue
             #     continue
             #     pass
-            if time.time() - self.tstamp > self.rotate_period and self.state in ["r_cw", "r_ccw"]:
+            if time.time() - self.tstamp > self.rotate_period and self.state in [
+                "r_cw",
+                "r_ccw",
+            ]:
                 self.stop()
                 continue
-            elif time.time() - self.tstamp > self.heading_period and self.state in ["heading_target"]:
+            elif time.time() - self.tstamp > self.heading_period and self.state in [
+                "heading_target"
+            ]:
                 self.stop()
                 continue
             elif self.state == "grab_2":
@@ -227,7 +232,7 @@ class ServerPublisher(Node):
                 else:
                     self.state = "stop"
                     # continue
-                continue            
+                continue
             self.set_servo_position(self.forearm, self.gripper)
             # self.data += recv_data
             # if self.data[-1] != "\n":
@@ -318,7 +323,7 @@ class ServerPublisher(Node):
         data = client_socket.recv(1024).decode()
         print(data)
         return
-    
+
     def recv_handler(self, client_socket) -> None:
         while True:
             data_buffer = client_socket.recv(1024)
@@ -328,9 +333,15 @@ class ServerPublisher(Node):
                 client_socket.close()
                 client_socket, _ = self.server_socket.accept()
             recv_data = data_buffer.decode("utf-8")
-            new_msg_handler = Thread(target=self.msg_handler, args=(recv_data, client_socket, ))
+            new_msg_handler = Thread(
+                target=self.msg_handler,
+                args=(
+                    recv_data,
+                    client_socket,
+                ),
+            )
             new_msg_handler.start()
-            
+
     def msg_handler(self, recv_data, client_socket) -> None:
         if "echoback" in recv_data:
             s = f"State: {self.state} "
@@ -341,6 +352,7 @@ class ServerPublisher(Node):
             # self.get_logger().info(f"Received: {recv_data}")
             self.cmds = recv_data.strip("\n").split(",")
         return
+
 
 def Nodes(node) -> None:
     rclpy.spin(node)

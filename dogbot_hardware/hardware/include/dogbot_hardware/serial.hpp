@@ -127,7 +127,7 @@ namespace dogbot_hardware
         void read_sonar(double &range)
         {
             std::string response = send("<U>", false);
-            range = (double)std::atol(response.c_str()) / 58.2;
+            range = (double)std::atol(response.c_str()) / 58.2 * 0.01;
         }
 
     private:
