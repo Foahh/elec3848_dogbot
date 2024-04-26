@@ -53,8 +53,8 @@ class ServerPublisher(Node):
         self.gripper_close = 95.0
         self.gripper_open = 30.0
 
-        self.rotate_period = 0.4
-        self.rotate_angle = 1.5
+        self.rotate_period = 0.6
+        self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
         self.heading_period = 0.3
 
         self.state = "stop"
@@ -173,7 +173,7 @@ class ServerPublisher(Node):
                 match self.state:
                     case "r_cw":
                         self.prev_dist = []
-                        self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY + 0.5)
+                        self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY - 0.4)
                         time.sleep(self.rotate_period)
                         self.stop()
                         self.state = "stop"
