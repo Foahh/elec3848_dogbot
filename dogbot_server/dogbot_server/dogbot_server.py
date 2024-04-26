@@ -65,6 +65,7 @@ class ServerPublisher(Node):
         self.prev_dist = []
         self.heading = False
         self.dist_threshold = 0.15
+        self.dist_len_threshold = 50
     
     def sonar_callback(self, msg):
         self.sonar_data = msg.range
@@ -216,7 +217,7 @@ class ServerPublisher(Node):
                             self.prev_dist = []
                             self.state = "heading_target"
                             self.ser_wheel_velocity(0.15, 0.0, 0.0)
-                        elif len(self.prev_dist) == 20:
+                        elif len(self.prev_dist) == self.dist_len_threshold:
                             self.state = "grab"
                             self.prev_dist = []
                             continue
@@ -263,6 +264,9 @@ class ServerPublisher(Node):
                     case "dist_thre":
                         if len(args) >= 1:
                             self.dist_threshold = float(args[0])
+                    case "dist_len_thre":
+                        if len(args) >= 1:
+                            self.dist_len_threshold = float(args[0])
                     case "detected":
                         self.detected = True
                         if len(args) >= 3:
