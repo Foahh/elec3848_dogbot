@@ -12,7 +12,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 DEFAULT_LINEAR_VELOCITY = 0.25
-DEFAULT_ANGULAR_VELOCITY = 0.1
+DEFAULT_ANGULAR_VELOCITY = 10
 
 
 class ServerPublisher(Node):
@@ -53,7 +53,7 @@ class ServerPublisher(Node):
         self.gripper_close = 95.0
         self.gripper_open = 30.0
 
-        self.rotate_period = 0.1
+        self.rotate_period = 5
         self.rotate_angle = 1.5
         self.heading_period = 0.3
 
@@ -359,7 +359,7 @@ class ServerPublisher(Node):
                 self.state = "stop"
             else:
                 cmds = []
-                for cmd in recv_data.strip("\n").split(","):
+                for cmd in recv_data.split("\n")[0].split(","):
                     cmds.append(cmd.strip(' '))
                 self.cmds = copy.deepcopy(cmds)
 
