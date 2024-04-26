@@ -12,7 +12,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 DEFAULT_LINEAR_VELOCITY = 0.25
-DEFAULT_ANGULAR_VELOCITY = 0.2
+DEFAULT_ANGULAR_VELOCITY = 0.4
 
 
 class ServerPublisher(Node):
