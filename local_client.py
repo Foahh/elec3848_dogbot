@@ -81,7 +81,7 @@ def main_thread() -> None:
                 time.sleep(1)
                 # client.send("velocity,0.0,0.0,0.0")
             elif userIn == 'w': 
-                client.send("velocity,1.5,0.0,0.0")
+                client.send("velocity,90,0.0,0.0")
             elif userIn == 's':
                 client.send("velocity,1.0.0,0.0,0.0")
                 time.sleep(1)
