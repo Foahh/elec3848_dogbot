@@ -219,12 +219,12 @@ while True:
 
         # condition2.1： 偏左 -> turn right
         if (objX < width/2 - error):
-            current_cmd = "r_cw"
+            current_cmd = "r_ccw"
             # client_sock.sending() # return turnoffset
             
         # condition2.2 : 偏右 -> turn left
         elif (objX > width/2 + error) :
-            current_cmd = "r_ccw"
+            current_cmd = "r_cw"
             # client_sock.sending("r_ccw") # return turnoffset
     
         # condition3: redball detect and in the center, but not close enough -> go advance

@@ -57,7 +57,6 @@ class ServerPublisher(Node):
         self.rotate_angle = 1.5
         self.heading_period = 0.3
 
-        self.data = ""
         self.state = "stop"
         self.cmds = []
         self.detected = False
@@ -175,10 +174,13 @@ class ServerPublisher(Node):
                     case "r_cw":
                         self.prev_dist = []
                         self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY)
-                        if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
-                            self.stop()
-                            self.state = "stop"
-                        continue
+                        time.sleep(self.rotate_period)
+                        self.stop()
+                        self.state = "stop"
+                        # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
+                        #     self.stop()
+                        #     self.state = "stop"
+                        # continue
                     case "r_ccw":
                         self.prev_dist = []
                         self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
