@@ -219,7 +219,7 @@ class ServerPublisher(Node):
                         if time.time() - self.tstamp > 2:
                             self.state = "stop"
                             self.set_servo_position(self.forearm, self.gripper)
-                            self.ser_wheel_velocity(-1.0, 0.0, 0.0)
+                            self.ser_wheel_velocity(-0.7, 0.0, 0.0)
                         continue
                     case "stop":
                         if self.sonar_data < 0.5 and self.sonar_data >= self.dist_threshold:
