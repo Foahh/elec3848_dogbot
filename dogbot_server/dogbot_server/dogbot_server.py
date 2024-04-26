@@ -319,10 +319,13 @@ class ServerPublisher(Node):
 
             # self.data = ""
 
-    def __send(self, client_socket, msg) -> object:
+    def __send(self, client_socket, msg) -> None:
         client_socket.sendall(msg.encode())
-        data = client_socket.recv(1024).decode()
-        print(data)
+        try:
+            data = client_socket.recv(1024).decode()
+            print(data)
+        except:
+            pass
         return
 
     def recv_handler(self, client_socket) -> None:
