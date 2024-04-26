@@ -262,7 +262,8 @@ class ServerPublisher(Node):
                             time.sleep(1)
                             self.set_servo_position(self.forearm, self.gripper)
                             self.tstamp = time.time()
-                        self.set_servo_position(self.forearm, self.gripper)
+                        else:
+                            self.set_servo_position(self.forearm, self.gripper)
             except Exception as e:
                 self.get_logger().info(e)
 
