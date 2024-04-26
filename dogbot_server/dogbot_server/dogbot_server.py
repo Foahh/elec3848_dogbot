@@ -217,7 +217,7 @@ class ServerPublisher(Node):
                             self.state = "grab"
                             self.prev_dist = []
                             continue
-                        elif self.sonar_data < 3.0:
+                        elif self.sonar_data < 0.03:
                             self.prev_dist.append(self.sonar_data)
             except Exception as e:
                 self.get_logger().error(e)
