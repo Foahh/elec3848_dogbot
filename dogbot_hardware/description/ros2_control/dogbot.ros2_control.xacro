@@ -41,7 +41,7 @@
                 <command_interface name="position" />
             </joint>
             <joint name="${prefix}sonar_joint">
-                <state_interface name="position" />
+                <state_interface name="range" />
             </joint>
             
 
