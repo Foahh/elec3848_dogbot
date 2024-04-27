@@ -63,6 +63,7 @@ class ServerPublisher(Node):
         self.confidence = 0
 
         self.state = "stop"
+        self.prev_state = 'idle'
         self.cmds = []
         self.prev_cmd = ''
         self.counter = 0
