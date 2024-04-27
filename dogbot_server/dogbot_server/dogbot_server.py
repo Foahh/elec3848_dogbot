@@ -394,7 +394,7 @@ class ServerPublisher(Node):
 
     def msg_handler(self, recv_data, client_addr) -> None:
         if "echoback" in recv_data:
-            s = f"State: {self.state}\nDist:{self.sonar_data}\n"
+            s = f"State: {self.state}\nDist:{self.sonar_data}\nDetected:{self.detected}\n"
             try:
                 if self.detected == True:
                     s += f"Area:{self.area}\nOffset:{self.Xoffset}\nCon:{self.confidence}\n"
