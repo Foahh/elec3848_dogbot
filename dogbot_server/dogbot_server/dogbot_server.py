@@ -171,6 +171,210 @@ class ServerPublisher(Node):
         self.servo_position.data = (forearm, gripper)
         self.servo_publisher.publish(self.servo_position)
 
+    def state_machine(self) -> None:
+        while True:
+            if self.cmds != '':
+                cmd, *args = self.cmds.pop(-1)
+            else:
+                cmd = ''
+
+            new_state = ''
+            match cmd:
+                case "pose":
+                    if len(args) >= 2:
+                        forearm = args[0]
+                        gripper = args[1]
+                        self.set_servo_position(forearm, gripper)
+                    continue
+                case "stop":
+                    new_state = 'idle'
+                case "velocity":
+                    linear_x, linear_y, angular_z = map(float, args)
+                    self.ser_wheel_velocity(linear_x, linear_y, angular_z)
+                    continue
+                case "position":
+                    self.forearm, self.gripper = map(float, args)
+                    continue
+                case "dist_thre":
+                    if len(args) >= 1:
+                        self.dist_threshold = float(args[0])
+                    continue
+                case "dist_len_thre":
+                    if len(args) >= 1:
+                        self.dist_len_threshold = float(args[0])
+                    continue
+                case "r_cw":
+                    new_state = "r_cw"
+                case "r_ccw":
+                    new_state = "r_ccw"
+                case "heading":
+                    new_state = 'heading'
+                case 'grab':
+                    new_state = 'grab'
+                case '':
+                    pass
+
+            match self.prev_state:
+                case 'r_cw':
+                    match new_state:
+                        case 'r_cw':
+                            pass                 
+                        case 'r_ccw':
+                            pass
+                        case 'heading':
+                            pass
+                        case 'grab':
+                            pass
+                        case 'grab_2':
+                            pass
+                        case 'grab_3':
+                            pass
+                        case 'grab_4':
+                            pass
+                        case 'idle':
+                            pass
+                        case '':
+                            pass
+                case 'r_ccw':
+                    match new_state:
+                        case 'r_cw':
+                            pass                 
+                        case 'r_ccw':
+                            pass
+                        case 'heading':
+                            pass
+                        case 'grab':
+                            pass
+                        case 'grab_2':
+                            pass
+                        case 'grab_3':
+                            pass
+                        case 'grab_4':
+                            pass
+                        case 'idle':
+                            pass
+                        case '':
+                            pass
+                case 'heading':
+                    match new_state:
+                        case 'r_cw':
+                            pass                 
+                        case 'r_ccw':
+                            pass
+                        case 'heading':
+                            pass
+                        case 'grab':
+                            pass
+                        case 'grab_2':
+                            pass
+                        case 'grab_3':
+                            pass
+                        case 'grab_4':
+                            pass
+                        case 'idle':
+                            pass
+                        case '':
+                            pass
+                case 'grab':
+                    match new_state:
+                        case 'r_cw':
+                            pass                 
+                        case 'r_ccw':
+                            pass
+                        case 'heading':
+                            pass
+                        case 'grab':
+                            pass
+                        case 'grab_2':
+                            pass
+                        case 'grab_3':
+                            pass
+                        case 'grab_4':
+                            pass
+                        case 'idle':
+                            pass
+                        case '':
+                            pass
+                case 'grab_2':
+                    match new_state:
+                        case 'r_cw':
+                            pass                 
+                        case 'r_ccw':
+                            pass
+                        case 'heading':
+                            pass
+                        case 'grab':
+                            pass
+                        case 'grab_2':
+                            pass
+                        case 'grab_3':
+                            pass
+                        case 'grab_4':
+                            pass
+                        case 'idle':
+                            pass
+                        case '':
+                            pass
+                case 'grab_3':
+                    match new_state:
+                        case 'r_cw':
+                            pass                 
+                        case 'r_ccw':
+                            pass
+                        case 'heading':
+                            pass
+                        case 'grab':
+                            pass
+                        case 'grab_2':
+                            pass
+                        case 'grab_3':
+                            pass
+                        case 'grab_4':
+                            pass
+                        case 'idle':
+                            pass
+                        case '':
+                            pass
+                case 'grab_4':
+                    match new_state:
+                        case 'r_cw':
+                            pass                 
+                        case 'r_ccw':
+                            pass
+                        case 'heading':
+                            pass
+                        case 'grab':
+                            pass
+                        case 'grab_2':
+                            pass
+                        case 'grab_3':
+                            pass
+                        case 'grab_4':
+                            pass
+                        case 'idle':
+                            pass
+                        case '':
+                            pass
+                case 'idle':
+                    match new_state:
+                        case 'r_cw':
+                            pass                 
+                        case 'r_ccw':
+                            pass
+                        case 'heading':
+                            pass
+                        case 'grab':
+                            pass
+                        case 'grab_2':
+                            pass
+                        case 'grab_3':
+                            pass
+                        case 'grab_4':
+                            pass
+                        case 'idle':
+                            pass
+            self.state = []
+
     def cmd_handler(self):
         while True:
             if self.cmds == []:
