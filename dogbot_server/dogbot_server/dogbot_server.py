@@ -309,6 +309,7 @@ class ServerPublisher(Node):
                 case 'grab':
                     pass
                 case 'idle':
+                    self.stop()
                     match new_state:
                         case 'r_cw':
                             self.interrupting('r_cw')
@@ -622,12 +623,14 @@ class ServerPublisher(Node):
             self.set_servo_position(self.forearm, self.gripper)
             self.counter = 0
             self.prev_state = 'idle'
+            self.stop()
             self.tstamp = time.time()
             return
         self.counter += 1
         if self.counter > threshold:
             self.counter = 0
             self.prev_state = status
+            self.stop()
             self.set_servo_position(self.forearm, self.gripper)
             self.tstamp = time.time()
         return
