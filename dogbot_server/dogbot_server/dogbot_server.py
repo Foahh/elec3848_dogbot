@@ -562,7 +562,7 @@ class ServerPublisher(Node):
         elif "undetected" == cmd:
             self.detected = False
         elif "echoback" in cmd:
-            s = f"State: {self.prev_state}\nCommand:{self.prev_cmd}Dist:{self.sonar_data}\nDetected:{self.detected}\n"
+            s = f"State: {self.prev_state}\nCommand:{self.prev_cmd}\nDist:{self.sonar_data}\nDetected:{self.detected}\n"
             try:
                 if self.detected == True:
                     s += f"Area:{self.area}\nOffset:{self.Xoffset}\nCon:{self.confidence}\n"
@@ -607,7 +607,7 @@ class ServerPublisher(Node):
         self.counter = 0
         return
     
-    def interrupting(self, status, threshold=10) -> None:
+    def interrupting(self, status, threshold=3) -> None:
         if status == True or status == 'idle':
             self.set_servo_position(self.forearm, self.gripper)
             self.counter = 0
