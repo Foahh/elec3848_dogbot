@@ -72,7 +72,7 @@ class ServerPublisher(Node):
         self.tstamp = time.time()
         self.prev_dist = []
         self.dist_threshold = 0.13
-        self.dist_len_threshold = 10
+        self.dist_len_threshold = 5
     
     def sonar_callback(self, msg):
         self.sonar_data = msg.range
@@ -622,12 +622,28 @@ class ServerPublisher(Node):
                 self.prev_state = status
                 self.grabbing()
                 self.tstamp = time.time()
-        else:
+        elif status == 'heading':
             self.counter += 1
             if self.counter > threshold:
+                self.heading()
                 self.counter = 0
                 self.prev_state = status
-                self.stop()
+                self.set_servo_position(self.forearm, self.gripper)
+                self.tstamp = time.time()
+        elif status == 'r_cw':
+            self.counter += 1
+            if self.counter > threshold:
+                self.r_cw()
+                self.counter = 0
+                self.prev_state = status
+                self.set_servo_position(self.forearm, self.gripper)
+                self.tstamp = time.time()
+        elif status == 'r_ccw':
+            self.counter += 1
+            if self.counter > threshold:
+                self.r_ccw()
+                self.counter = 0
+                self.prev_state = status
                 self.set_servo_position(self.forearm, self.gripper)
                 self.tstamp = time.time()
         self.get_logger().info(f"Counter: {self.counter}")
