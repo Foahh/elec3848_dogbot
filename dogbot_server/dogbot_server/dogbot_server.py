@@ -179,7 +179,7 @@ class ServerPublisher(Node):
             else:
                 cmd = ''
             self.prev_cmd = copy.deepcopy(cmd)
-
+            self.get_logger().info(f"{self.prev_state} {self.prev_cmd}")
             new_state = ''
             match cmd:
                 case 'forcestop':
@@ -333,7 +333,7 @@ class ServerPublisher(Node):
                                 self.counter -= 1
                         case '':
                             pass
-            self.get_logger().info(f"{self.prev_state} {self.prev_cmd}")
+            
         return
     
     def cmd_handler(self):
