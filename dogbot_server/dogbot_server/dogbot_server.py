@@ -65,10 +65,10 @@ class ServerPublisher(Node):
         self.state = "stop"
         self.cmds = []
         self.prev_cmd = ''
+        self.counter = 0
         self.detected = False
         self.tstamp = time.time()
         self.prev_dist = []
-        self.heading = False
         self.dist_threshold = 0.13
         self.dist_len_threshold = 50
     
@@ -192,7 +192,7 @@ class ServerPublisher(Node):
                         self.set_servo_position(forearm, gripper)
                     continue
                 case "stop":
-                    new_state = 'idle'
+                    self.interrupting(True)
                 case "velocity":
                     linear_x, linear_y, angular_z = map(float, args)
                     self.ser_wheel_velocity(linear_x, linear_y, angular_z)
@@ -320,6 +320,8 @@ class ServerPublisher(Node):
                         case 'grab':
                             self.grabbing()
                         case 'idle':
+                            if self.prev_cmd not in ['idle', '']:
+                                self.counter = 0
                             if self.sonar_data > 8:  # Recalibrate sonar
                                 self.set_servo_position(self.forearm_down, self.gripper_close)
                                 time.sleep(1)
@@ -328,7 +330,7 @@ class ServerPublisher(Node):
                                 self.heading()
                             elif self.sonar_data < self.dist_threshold:
                                 self.interrupting('grab', self.dist_len_threshold)
-                            elif self.sonar_data > self.dist_threshold and len(self.prev_dist) != 0:
+                            elif self.sonar_data > self.dist_threshold and self.counter != 0:
                                 self.counter -= 1
                         case '':
                             pass
