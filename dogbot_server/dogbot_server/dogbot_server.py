@@ -178,7 +178,7 @@ class ServerPublisher(Node):
                 cmd, *args = self.cmds
             else:
                 cmd = ''
-            self.get_logger().info(f"Cmd: {self.prev_cmd}")
+            # self.get_logger().info(f"Cmd: {self.prev_cmd}")
             self.prev_cmd = copy.deepcopy(cmd)
             new_state = ''
             match cmd:
@@ -322,7 +322,7 @@ class ServerPublisher(Node):
                         case 'grab':
                             self.grabbing()
                         case 'idle':
-                            if self.prev_cmd not in ['idle', '']:
+                            if self.prev_cmd not in ['idle', 'heading', '']:
                                 self.counter = 0
                             if self.sonar_data > 8:  # Recalibrate sonar
                                 self.set_servo_position(self.forearm_down, self.gripper_close)
@@ -334,9 +334,9 @@ class ServerPublisher(Node):
                                 self.interrupting('grab', self.dist_len_threshold)
                             elif self.sonar_data > self.dist_threshold and self.counter != 0:
                                 self.counter -= 1
+                            self.get_logger().info(f"Counter: {self.counter}\n")
                         case '':
                             pass
-            self.get_logger().info(f"State: {self.prev_state}\n")
         return
     
     def cmd_handler(self):
@@ -572,7 +572,7 @@ class ServerPublisher(Node):
         elif "undetected" == cmd:
             self.detected = False
         elif "echoback" in cmd:
-            s = f"State: {self.prev_state}\nDist:{self.sonar_data}\nDetected:{self.detected}\n"
+            s = f"State: {self.prev_state}\nCommand:{self.prev_cmd}Dist:{self.sonar_data}\nDetected:{self.detected}\n"
             try:
                 if self.detected == True:
                     s += f"Area:{self.area}\nOffset:{self.Xoffset}\nCon:{self.confidence}\n"
