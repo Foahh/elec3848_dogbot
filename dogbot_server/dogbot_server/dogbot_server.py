@@ -571,7 +571,7 @@ class ServerPublisher(Node):
             self.__send(client_addr, s)
         else:
             self.cmds = [cmd] + args
-            # self.get_logger().info(f"Received: {cmd} {args}")
+            self.get_logger().info(f"Received: {cmd} {args}")
 
     def grabbing(self) -> None:
         self.set_servo_position(self.forearm_down, self.gripper_open)
