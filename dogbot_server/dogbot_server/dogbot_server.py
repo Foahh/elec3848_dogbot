@@ -246,7 +246,7 @@ class ServerPublisher(Node):
                     case '':
                         pass
             except Exception as e:
-                self.get_logger().info(f"Error in cmd: {e}")
+                self.get_logger().info(f"Error in cmd<{cmd}>: {e}")
 
             try:
                 match self.prev_state:
