@@ -558,7 +558,7 @@ class ServerPublisher(Node):
             # new_msg_handler.start()
 
     def msg_handler(self, recv_data, client_addr) -> None:
-        cmd, *args = recv_data.split("\n")[0].split(",")
+        cmd, *args = recv_data.split("\n")[-1].split(",")
         if "detected" == cmd:
             self.detected = True
             if len(args) >= 4:
