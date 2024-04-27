@@ -265,9 +265,9 @@ class ServerPublisher(Node):
                             self.ser_wheel_velocity(0.0, 0.0, -3.5)
                             if self.detected == True:
                                 break
-                            self.set_servo_position(self.forearm_down, self.gripper_close)
-                            time.sleep(1)
-                            self.set_servo_position(self.forearm, self.gripper)
+                            # self.set_servo_position(self.forearm_down, self.gripper_close)
+                            # time.sleep(1)
+                            # self.set_servo_position(self.forearm, self.gripper)
                             self.tstamp = time.time()
             except Exception as e:
                 self.get_logger().info(e)
@@ -314,13 +314,7 @@ class ServerPublisher(Node):
                     case "dist_len_thre":
                         if len(args) >= 1:
                             self.dist_len_threshold = float(args[0])
-                    case "detected":
-                        self.detected = True
-                        if len(args) >= 4:
-                            self.area = float(args[0])
-                            self.Xoffset = float(args[1])
-                            self.Yoffset = float(args[2])
-                            self.confidence = float(args[3])
+                    # case "detected":
                     case "undetected":
                         self.detected = False
                     case "r_cw":
@@ -396,7 +390,16 @@ class ServerPublisher(Node):
             new_msg_handler.start()
 
     def msg_handler(self, recv_data, client_addr) -> None:
-        if "echoback" in recv_data:
+        cmd, *args = recv_data.split("\n")[0].split(",")
+        if "detected" == cmd:
+            self.detected = True
+            if len(args) >= 4:
+                self.area = float(args[0])
+                self.Xoffset = float(args[1])
+                self.Yoffset = float(args[2])
+                self.confidence = float(args[3])
+        if "echoback" in cmd:
+            
             s = f"State: {self.state}\nDist:{self.sonar_data}\nDetected:{self.detected}\n"
             try:
                 if self.detected == True:
@@ -405,15 +408,12 @@ class ServerPublisher(Node):
                 pass
             self.__send(client_addr, s)
         elif recv_data:
-            if "detected" not in recv_data:
-                self.get_logger().info(f"Received: {recv_data}")
             if "forcestop" in recv_data:
                 self.state = "stop"
+            elif "detected" not in recv_data:
+                self.get_logger().info(f"Received: {recv_data}")
             else:
-                cmds = []
-                for cmd in recv_data.split("\n")[0].split(","):
-                    cmds.append(cmd.strip(' '))
-                self.cmds = copy.deepcopy(cmds)
+                self.cmds = recv_data.split("\n")[0].split(",")
 
 def Nodes(node) -> None:
     rclpy.spin(node)
