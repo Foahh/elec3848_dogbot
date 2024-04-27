@@ -112,7 +112,7 @@ net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 
 # create video sources & outputs
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
-# output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
+output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
 
 f = open('area.txt', 'w')
 f.close()
