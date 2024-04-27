@@ -177,6 +177,7 @@ class ServerPublisher(Node):
                 cmd = ''
             else:
                 cmd, *args = self.cmds
+                self.cmds = []
             self.get_logger().info(f"State: {self.state} Command:{cmd}")
 
             try:
