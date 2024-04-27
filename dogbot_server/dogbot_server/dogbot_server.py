@@ -364,7 +364,8 @@ class ServerPublisher(Node):
                         # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                         # self.tstamp = time.time()
                     case "heading":
-                        self.state = "heading"
+                        if self.state != "heading_target":
+                            self.state = "heading"
                         if len(args) >= 1:
                             self.heading_period = args[0]
                     case "grab":
