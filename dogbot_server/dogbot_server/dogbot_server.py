@@ -558,6 +558,7 @@ class ServerPublisher(Node):
 
     def msg_handler(self, recv_data, client_addr) -> None:
         cmd, *args = recv_data.split("\n")[-1].split(",")
+        self.get_logger().info(f"Received: {cmd} {args}")
         if "detected" == cmd:
             self.detected = True
             if len(args) >= 4:
@@ -580,7 +581,6 @@ class ServerPublisher(Node):
             #     self.state = "stop"
             # else:
             self.cmds = [cmd] + args
-            self.get_logger().info(f"Received: {cmd} {args}")
 
     def grabbing(self) -> None:
         self.set_servo_position(self.forearm_down, self.gripper_open)
