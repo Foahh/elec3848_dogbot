@@ -184,53 +184,53 @@ class ServerPublisher(Node):
                 match self.state:
                     case "r_cw":
                         self.prev_dist = []
-                        self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY - 0.4)
-                        time.sleep(self.rotate_period)
-                        self.stop()
-                        self.state = "stop"
-                        time.sleep(0.3)
-                        self.tstamp = time.time()
-                        # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
-                        #     self.stop()
-                        #     self.state = "stop"
-                        # continue
+                        # self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY)
+                        # time.sleep(self.rotate_period)
+                        # self.stop()
+                        # self.state = "stop"
+                        # time.sleep(0.3)
+                        # self.tstamp = time.time()
+                        if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
+                            self.stop()
+                            self.state = "stop"
+                        continue
                     case "r_ccw":
                         self.prev_dist = []
-                        self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
-                        time.sleep(self.rotate_period)
-                        self.stop()
-                        self.state = "stop"
-                        time.sleep(0.3)
-                        self.tstamp = time.time()
-                        # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
-                        #     self.stop()
-                        #     self.state = "stop"
-                        # continue
-                    # case "heading":
-                    #     if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
-                    #         self.state = "heading_target"
-                    #         self.prev_dist = []
-                    #         self.tstamp = time.time()
-                    #         self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
+                        # self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
+                        # time.sleep(self.rotate_period)
+                        # self.stop()
+                        # self.state = "stop"
+                        # time.sleep(0.3)
+                        # self.tstamp = time.time()
+                        if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
+                            self.stop()
+                            self.state = "stop"
+                        continue
+                    case "heading":
+                        if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
+                            self.state = "heading_target"
+                            self.prev_dist = []
+                            self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
+                            self.tstamp = time.time()
                     #         time.sleep(self.heading_period)
                     #     else:
                     #         self.state = "stop"
                     case "heading_target":
                         self.prev_dist = []
-                        if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
-                            # self.state = "heading_target"
-                            # self.prev_dist = []
-                            # self.tstamp = time.time()
-                            self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
-                            time.sleep(self.heading_period)
-                            self.state = "stop"
-                            self.tstamp = time.time()
-                        # else:
+                        # if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
+                        #     # self.state = "heading_target"
+                        #     # self.prev_dist = []
+                        #     # self.tstamp = time.time()
+                        #     self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
+                        #     time.sleep(self.heading_period)
                         #     self.state = "stop"
                         #     self.tstamp = time.time()
-                        # if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
-                        #     self.stop()
+                        # else:
                         #     self.state = "stop"
+                        if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
+                            self.stop()
+                            self.state = "stop"
+                            self.tstamp = time.time()
                     case "grab":
                         self.set_servo_position(self.forearm_down, self.gripper_open)
                         self.state = "grab_2"
@@ -363,8 +363,10 @@ class ServerPublisher(Node):
                         # else:
                             # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                         self.state = "heading_target"
+                        self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                         self.tstamp = time.time()
                     case "heading":
+                        self.state = "heading"
                         if len(args) >= 1:
                             self.heading_period = args[0]
                     case "grab":
