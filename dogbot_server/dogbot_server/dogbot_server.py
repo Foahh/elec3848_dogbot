@@ -354,8 +354,8 @@ class ServerPublisher(Node):
                                 #     self.set_servo_position(self.forearm, self.gripper)
                                 if self.sonar_data < self.dist_threshold:
                                     self.interrupting('grab', self.dist_len_threshold)
-                                elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
-                                    self.counter -= 1
+                                elif self.sonar_data > self.dist_threshold and self.grabcounter > 0:
+                                    self.grabcounter -= 1
                                 # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
             except Exception as e:
                 self.get_logger().info(f"Error in state<{self.prev_state}>: {e}")
