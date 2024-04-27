@@ -255,6 +255,7 @@ class ServerPublisher(Node):
                         if time.time() - self.tstamp > self.rotate_period:
                             rotating = False
                             self.interrupting(True)
+                            self.get_logger().info("r_cw ended")
                         match new_state:
                             case 'r_cw':
                                 if rotating == False:
@@ -302,6 +303,7 @@ class ServerPublisher(Node):
                         if time.time() - self.tstamp > self.heading_period:
                             heading = False
                             self.interrupting(True)
+                            self.get_logger().info("heading ended")
                         match new_state:
                             case 'r_cw':
                                 if heading == False:
@@ -707,9 +709,9 @@ def main(args=None):
     # sonar_calibration.start()
 
     try:
-        while True:
+        # while True:
             # client_socket, _ = server_socket.accept()
-            client_thread = Thread(target=node.recv_handler)
-            client_thread.start()
+        client_thread = Thread(target=node.recv_handler)
+        client_thread.start()
     except KeyboardInterrupt:
         exit(0)
