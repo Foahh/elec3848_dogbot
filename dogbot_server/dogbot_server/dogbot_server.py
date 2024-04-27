@@ -278,6 +278,7 @@ class ServerPublisher(Node):
                         if time.time() - self.tstamp > self.rotate_period:
                             rotating = True
                             self.interrupting(True)
+                            self.get_logger().info("r_ccw ended")
                         match new_state:
                             case 'r_cw':
                                 if rotating == False:
