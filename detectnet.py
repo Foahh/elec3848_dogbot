@@ -60,7 +60,7 @@ error_tolerance = 100
 
 ##################  new add
 error = 150
-Xoffset = -70
+Xoffset = 0
 symbol = ""
 boundary_area = 180000
 servo1_open = 30  #claw: 30->open  initial state
