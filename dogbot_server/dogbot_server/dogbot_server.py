@@ -577,11 +577,11 @@ class ServerPublisher(Node):
                 pass
             self.__send(client_addr, s)
         elif recv_data:
-            if "forcestop" in recv_data:
-                self.state = "stop"
-            else:
-                self.get_logger().info(f"Received: {recv_data}")
-                self.cmds = [cmd] + args
+            # if "forcestop" in recv_data:
+            #     self.state = "stop"
+            # else:
+            #     self.get_logger().info(f"Received: {recv_data}")
+            self.cmds = [cmd] + args
 
     def grabbing(self) -> None:
         self.set_servo_position(self.forearm_down, self.gripper_open)
