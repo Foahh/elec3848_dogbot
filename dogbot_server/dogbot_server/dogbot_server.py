@@ -214,7 +214,7 @@ class ServerPublisher(Node):
                         continue
                     case 'r_cw':
                         new_state = 'r_cw'
-                        self.r_ccw()
+                        self.r_cw()
                         if new_state != self.prev_cmd:
                             self.counter = 0
                         if len(args) >= 2:
