@@ -346,7 +346,7 @@ class ServerPublisher(Node):
                         if self.state == "heading":
                             pass
                         else:
-                            self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
+                            # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                             self.state = "heading"
                             self.tstamp = time.time()
                     case "heading":
