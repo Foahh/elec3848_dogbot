@@ -326,7 +326,7 @@ class ServerPublisher(Node):
                                 self.set_servo_position(self.forearm_down, self.gripper_close)
                                 time.sleep(1)
                                 self.set_servo_position(self.forearm, self.gripper)
-                            elif self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
+                            elif self.sonar_data >= self.dist_threshold and self.sonar_data < 0.5:
                                 self.heading()
                             elif self.sonar_data < self.dist_threshold:
                                 self.interrupting('grab', self.dist_len_threshold)
