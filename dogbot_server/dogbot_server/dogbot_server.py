@@ -62,7 +62,7 @@ class ServerPublisher(Node):
         self.Xoffset = 0
         self.confidence = 0
 
-        self.state = "stop"
+        self.prev_state = "stop"
         self.prev_state = 'idle'
         self.cmds = []
         self.prev_cmd = ''
@@ -343,56 +343,56 @@ class ServerPublisher(Node):
             else:
                 cmd, *args = self.cmds
                 self.cmds = []
-            self.get_logger().info(f"State: {self.state} Command:{cmd}")
+            self.get_logger().info(f"State: {self.prev_state} Command:{cmd}")
 
             try:
-                match self.state:
+                match self.prev_state:
                     case "r_cw":
                         self.prev_dist = []
                         if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                             self.stop()
-                            self.state = "stop"
+                            self.prev_state = "stop"
                         continue
                     case "r_ccw":
                         self.prev_dist = []
                         if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                             self.stop()
-                            self.state = "stop"
+                            self.prev_state = "stop"
                         continue
                     case "heading_target":
                         self.prev_dist = []
                         if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
                             self.stop()
-                            self.state = "stop"
+                            self.prev_state = "stop"
                             time.sleep(0.5)
                             self.tstamp = time.time()
                     case "heading":
                         if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
-                            self.state = "heading_target"
+                            self.prev_state = "heading_target"
                             self.prev_dist = []
                             self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                             time.sleep(0.3)
                             self.tstamp = time.time()
                     case "grab":
                         self.set_servo_position(self.forearm_down, self.gripper_open)
-                        self.state = "grab_2"
+                        self.prev_state = "grab_2"
                         self.tstamp = time.time()
                         continue
                     case "grab_2":
                         if time.time() - self.tstamp > 2:
-                            self.state = "grab_3"
+                            self.prev_state = "grab_3"
                             self.set_servo_position(self.forearm_down, self.gripper_close)
                             self.tstamp = time.time()
                         continue
                     case "grab_3":
                         if time.time() - self.tstamp > 2:
-                            self.state = "grab_4"
+                            self.prev_state = "grab_4"
                             self.set_servo_position(self.forearm_up, self.gripper_close)
                             self.tstamp = time.time()
                         continue
                     case "grab_4":
                         if time.time() - self.tstamp > 2:
-                            self.state = "stop"
+                            self.prev_state = "stop"
                             self.set_servo_position(self.forearm, self.gripper)
                             self.ser_wheel_velocity(-0.4, 0.0, 0.0)
                             self.tstamp = time.time()
@@ -405,11 +405,11 @@ class ServerPublisher(Node):
                             self.set_servo_position(self.forearm, self.gripper)
                         if self.sonar_data < 0.25 and self.sonar_data >= self.dist_threshold:
                             self.prev_dist = []
-                            self.state = "heading"
+                            self.prev_state = "heading"
                             self.tstamp = time.time()
                             self.ser_wheel_velocity(0.15, 0.0, 0.0)
                         elif len(self.prev_dist) == self.dist_len_threshold:
-                            self.state = "grab"
+                            self.prev_state = "grab"
                             self.prev_dist = []
                             continue
                         elif self.sonar_data < self.dist_threshold:
@@ -466,9 +466,9 @@ class ServerPublisher(Node):
                     case "position":
                         self.forearm, self.gripper = map(float, args)
                     case "crusing":
-                        self.state = "crusing"
+                        self.prev_state = "crusing"
                     case "approaching":
-                        self.state = "approaching"
+                        self.prev_state = "approaching"
                     case "dist_thre":
                         if len(args) >= 1:
                             self.dist_threshold = float(args[0])
@@ -489,7 +489,7 @@ class ServerPublisher(Node):
                         else:
                             self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY)
                         time.sleep(0.3)
-                        self.state = "r_cw"
+                        self.prev_state = "r_cw"
                     case "r_ccw":
                         # if self.state == "r_ccw":
                         #     pass
@@ -501,22 +501,22 @@ class ServerPublisher(Node):
                         else:
                             self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
                         time.sleep(0.3)
-                        self.state = "r_ccw"
+                        self.prev_state = "r_ccw"
                     case "heading_target":
                         # if self.state == "heading_target":
                         #     pass
                         # else:
                             # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
-                        self.state = "heading_target"
+                        self.prev_state = "heading_target"
                         # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                         # self.tstamp = time.time()
                     case "heading":
-                        if self.state != "heading_target":
-                            self.state = "heading_target"
+                        if self.prev_state != "heading_target":
+                            self.prev_state = "heading_target"
                         if len(args) >= 1:
                             self.heading_period = args[0]
                     case "grab":
-                        self.state = "grab"
+                        self.prev_state = "grab"
                     # case _:
                     #     self.stop()
                     #     if cmd == "echoback":
@@ -651,7 +651,7 @@ def main(args=None):
     nodes_thread = Thread(target=Nodes, args=(node,))
     nodes_thread.start()
 
-    handler_thread = Thread(target=node.state_machine)
+    handler_thread = Thread(target=node.cmd_handler)
     handler_thread.start()
 
     try:
