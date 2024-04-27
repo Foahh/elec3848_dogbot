@@ -575,7 +575,7 @@ class ServerPublisher(Node):
             except:
                 pass
             self.__send(client_addr, s)
-        elif recv_data:
+        else:
             # if "forcestop" in recv_data:
             #     self.state = "stop"
             # else:
