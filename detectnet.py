@@ -229,7 +229,7 @@ while True:
     
         # condition3: redball detect and in the center, but not close enough -> go advance
         else: 
-            current_cmd = "heading_target"
+            current_cmd = "heading"
             # # if window size, objx, objy ture -> compare window size
             # if (Area < boundary_area):
             #     current_cmd = "heading_target"

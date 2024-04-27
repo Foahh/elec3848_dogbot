@@ -260,7 +260,7 @@ class ServerPublisher(Node):
                             time.sleep(1)
                         if self.sonar_data < 0.25 and self.sonar_data >= self.dist_threshold:
                             self.prev_dist = []
-                            self.state = "heading_target"
+                            self.state = "heading"
                             self.tstamp = time.time()
                             self.ser_wheel_velocity(0.15, 0.0, 0.0)
                         elif len(self.prev_dist) == self.dist_len_threshold:
@@ -360,7 +360,7 @@ class ServerPublisher(Node):
                         #     pass
                         # else:
                             # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
-                        self.state = "heading"
+                        self.state = "heading_target"
                         # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                         # self.tstamp = time.time()
                     case "heading":
