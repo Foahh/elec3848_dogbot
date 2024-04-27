@@ -333,6 +333,7 @@ class ServerPublisher(Node):
                                 self.counter -= 1
                         case '':
                             pass
+            self.get_logger().info(f"{self.prev_state} {self.prev_cmd}")
         return
     
     def cmd_handler(self):
