@@ -206,15 +206,6 @@ class ServerPublisher(Node):
                             self.stop()
                             self.state = "stop"
                         continue
-                    case "heading":
-                        if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
-                            self.state = "heading_target"
-                            self.prev_dist = []
-                            self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
-                            self.tstamp = time.time()
-                    #         time.sleep(self.heading_period)
-                    #     else:
-                    #         self.state = "stop"
                     case "heading_target":
                         self.prev_dist = []
                         # if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
@@ -231,6 +222,12 @@ class ServerPublisher(Node):
                             self.stop()
                             self.state = "stop"
                             time.sleep(0.5)
+                            self.tstamp = time.time()
+                    case "heading":
+                        if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
+                            self.state = "heading_target"
+                            self.prev_dist = []
+                            self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                             self.tstamp = time.time()
                     case "grab":
                         self.set_servo_position(self.forearm_down, self.gripper_open)
@@ -363,9 +360,9 @@ class ServerPublisher(Node):
                         #     pass
                         # else:
                             # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
-                        self.state = "heading_target"
-                        self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
-                        self.tstamp = time.time()
+                        self.state = "heading"
+                        # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
+                        # self.tstamp = time.time()
                     case "heading":
                         self.state = "heading"
                         if len(args) >= 1:
