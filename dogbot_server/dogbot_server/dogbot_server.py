@@ -351,6 +351,7 @@ class ServerPublisher(Node):
                             elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
                                 self.counter -= 1
                             # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
+            self.get_logger().info(f"Complete.")
         return
     
     def cmd_handler(self):
