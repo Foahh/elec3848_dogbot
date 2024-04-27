@@ -188,6 +188,7 @@ class ServerPublisher(Node):
                         self.stop()
                         self.state = "stop"
                         time.sleep(0.3)
+                        self.tstamp = time.time()
                         # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                         #     self.stop()
                         #     self.state = "stop"
@@ -199,24 +200,34 @@ class ServerPublisher(Node):
                         self.stop()
                         self.state = "stop"
                         time.sleep(0.3)
+                        self.tstamp = time.time()
                         # if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                         #     self.stop()
                         #     self.state = "stop"
                         # continue
-                    case "heading":
+                    # case "heading":
+                    #     if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
+                    #         self.state = "heading_target"
+                    #         self.prev_dist = []
+                    #         self.tstamp = time.time()
+                    #         self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
+                    #         time.sleep(self.heading_period)
+                    #     else:
+                    #         self.state = "stop"
+                    case "heading_target":
+                        self.prev_dist = []
                         if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
-                            self.state = "heading_target"
-                            self.prev_dist = []
-                            self.tstamp = time.time()
+                            # self.state = "heading_target"
+                            # self.prev_dist = []
+                            # self.tstamp = time.time()
                             self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                             time.sleep(self.heading_period)
                         else:
                             self.state = "stop"
-                    case "heading_target":
-                        self.prev_dist = []
-                        if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
-                            self.stop()
-                            self.state = "stop"
+                            self.tstamp = time.time()
+                        # if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
+                        #     self.stop()
+                        #     self.state = "stop"
                     case "grab":
                         self.set_servo_position(self.forearm_down, self.gripper_open)
                         self.state = "grab_2"
@@ -238,7 +249,8 @@ class ServerPublisher(Node):
                         if time.time() - self.tstamp > 2:
                             self.state = "stop"
                             self.set_servo_position(self.forearm, self.gripper)
-                            self.ser_wheel_velocity(-0.7, 0.0, 0.0)
+                            self.ser_wheel_velocity(-0.4, 0.0, 0.0)
+                            self.tstamp = time.time()
                         continue
                     case "stop":
                         self.set_servo_position(self.forearm, self.gripper)
@@ -343,12 +355,12 @@ class ServerPublisher(Node):
                             self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
                         self.state = "r_ccw"
                     case "heading_target":
-                        if self.state == "heading":
-                            pass
-                        else:
+                        # if self.state == "heading_target":
+                        #     pass
+                        # else:
                             # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
-                            self.state = "heading"
-                            self.tstamp = time.time()
+                        self.state = "heading_target"
+                        self.tstamp = time.time()
                     case "heading":
                         if len(args) >= 1:
                             self.heading_period = args[0]
