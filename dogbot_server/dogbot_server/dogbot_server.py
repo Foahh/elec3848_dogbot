@@ -174,7 +174,7 @@ class ServerPublisher(Node):
 
     def state_machine(self) -> None:
         while True:
-            if self.cmds != '':
+            if self.cmds != []:
                 cmd, *args = self.cmds
             else:
                 cmd = ''
