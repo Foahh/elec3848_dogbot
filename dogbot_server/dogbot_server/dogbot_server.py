@@ -12,7 +12,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 DEFAULT_LINEAR_VELOCITY = 1
-DEFAULT_ANGULAR_VELOCITY = -0.7
+DEFAULT_ANGULAR_VELOCITY = -0.2
 
 
 class ServerPublisher(Node):
@@ -358,7 +358,7 @@ class ServerPublisher(Node):
                                 # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
             except Exception as e:
                 self.get_logger().info(f"Error in state: {e}")
-            self.get_logger().info(f"Complete.")
+            # self.get_logger().info(f"Complete.")
         return
     
     def cmd_handler(self):
