@@ -234,7 +234,7 @@ class ServerPublisher(Node):
                             self.tstamp = time.time()
                             continue
                     case 'heading':
-                        if self.sonar_data >= self.dist_threshold and self.sonar_data < 0.5:
+                        if self.sonar_data >= self.dist_threshold and self.sonar_data < 8:
                             new_state = 'heading'
                             self.heading()
                             if new_state != self.prev_cmd:
@@ -336,11 +336,11 @@ class ServerPublisher(Node):
                             case 'grab':
                                 self.grabbing()
                             case 'idle':
-                                if self.cali == True:  # Recalibrate sonar
-                                    self.cali = False
-                                    self.set_servo_position(self.forearm_down, self.gripper_close)
-                                    time.sleep(1)
-                                    self.set_servo_position(self.forearm, self.gripper)
+                                # if self.cali == True:  # Recalibrate sonar
+                                #     self.cali = False
+                                #     self.set_servo_position(self.forearm_down, self.gripper_close)
+                                #     time.sleep(1)
+                                #     self.set_servo_position(self.forearm, self.gripper)
                                 if self.sonar_data < self.dist_threshold:
                                     self.interrupting('grab', self.dist_len_threshold)
                                 elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
@@ -701,8 +701,8 @@ def main(args=None):
     handler_thread = Thread(target=node.state_machine)
     handler_thread.start()
 
-    sonar_calibration = Thread(target=node.sonar_calibrating)
-    sonar_calibration.start()
+    # sonar_calibration = Thread(target=node.sonar_calibrating)
+    # sonar_calibration.start()
 
     try:
         while True:
