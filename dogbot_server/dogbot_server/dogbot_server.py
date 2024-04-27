@@ -614,7 +614,7 @@ class ServerPublisher(Node):
     def heading(self) -> None:
         self.prev_state = 'heading'
         self.tstamp = time.time()
-        self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
+        self.ser_wheel_velocity(self.heading_speed, 0.0, 0.0)
         self.counter = 0
         return
     
