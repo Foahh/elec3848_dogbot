@@ -217,10 +217,9 @@ class ServerPublisher(Node):
                         self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
                         self.tstamp = time.time()
                 case 'r_ccw':
-                    if self.sonar_data >= self.dist_threshold and self.sonar_data < 0.5:
-                        new_state = 'r_ccw'
-                        if new_state != self.prev_cmd:
-                            self.counter = 0
+                    new_state = 'r_ccw'
+                    if new_state != self.prev_cmd:
+                        self.counter = 0
                     if len(args) >= 2:
                         self.rotate_angle = float(args[0])
                         self.rotate_period = float(args[1])
@@ -228,9 +227,10 @@ class ServerPublisher(Node):
                         self.tstamp = time.time()
                         continue
                 case 'heading':
-                    new_state = 'heading'
-                    if new_state != self.prev_cmd:
-                        self.counter = 0
+                    if self.sonar_data >= self.dist_threshold and self.sonar_data < 0.5:
+                        new_state = 'heading'
+                        if new_state != self.prev_cmd:
+                            self.counter = 0
                     if len(args) >= 1:
                         self.heading_period = args[0]
                 case 'grab':
