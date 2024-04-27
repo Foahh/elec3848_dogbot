@@ -68,6 +68,7 @@ class ServerPublisher(Node):
         self.counter = 0
         self.grabcounter = 0
         self.detected = False
+        self.cali = False
         self.tstamp = time.time()
         self.prev_dist = []
         self.dist_threshold = 0.13
@@ -313,7 +314,7 @@ class ServerPublisher(Node):
                 case 'grab':
                     pass
                 case 'idle':
-                    self.stop()
+                    # self.stop()
                     match new_state:
                         case 'r_cw':
                             self.interrupting('r_cw')
@@ -324,21 +325,22 @@ class ServerPublisher(Node):
                         case 'grab':
                             self.grabbing()
                         case 'idle':
-                            if self.sonar_data > 8:  # Recalibrate sonar
+                            if self.cali == True:  # Recalibrate sonar
+                                self.cali = False
                                 self.set_servo_position(self.forearm_down, self.gripper_close)
                                 time.sleep(1)
                                 self.set_servo_position(self.forearm, self.gripper)
-                            elif self.sonar_data < self.dist_threshold:
+                            if self.sonar_data < self.dist_threshold:
                                 self.interrupting('grab', self.dist_len_threshold)
                             elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
                                 self.counter -= 1
                             self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
                         case '':
-                            if self.sonar_data > 8:  # Recalibrate sonar
-                                self.set_servo_position(self.forearm_down, self.gripper_close)
-                                time.sleep(1)
-                                self.set_servo_position(self.forearm, self.gripper)
-                            elif self.sonar_data < self.dist_threshold:
+                            # if self.sonar_data > 8:  # Recalibrate sonar
+                            #     self.set_servo_position(self.forearm_down, self.gripper_close)
+                            #     time.sleep(1)
+                            #     self.set_servo_position(self.forearm, self.gripper)
+                            if self.sonar_data < self.dist_threshold:
                                 self.interrupting('grab', self.dist_len_threshold)
                             elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
                                 self.counter -= 1
@@ -618,7 +620,6 @@ class ServerPublisher(Node):
             if self.grabcounter > threshold:
                 self.grabcounter = 0
                 self.prev_state = status
-                self.grabbing()
                 self.tstamp = time.time()
         else:
             self.counter += 1
@@ -629,6 +630,16 @@ class ServerPublisher(Node):
                 self.set_servo_position(self.forearm, self.gripper)
                 self.tstamp = time.time()
         return
+    
+    def sonar_calibrating(self) -> None:
+        counter = 0
+        while True:
+            if counter >= 30:
+                self.cali = True
+            elif self.sonar_data < 10:
+                counter = 0
+            else:
+                counter += 1
 
 def Nodes(node) -> None:
     rclpy.spin(node)
@@ -651,6 +662,9 @@ def main(args=None):
 
     handler_thread = Thread(target=node.state_machine)
     handler_thread.start()
+
+    sonar_calibration = Thread(target=node.sonar_calibrating)
+    sonar_calibration.start()
 
     try:
         while True:
