@@ -580,7 +580,7 @@ class ServerPublisher(Node):
             #     self.state = "stop"
             # else:
             self.cmds = [cmd] + args
-            self.get_logger().info(f"Received: {cmd} {args}")
+            # self.get_logger().info(f"Received: {cmd} {args}")
 
     def grabbing(self) -> None:
         self.set_servo_position(self.forearm_down, self.gripper_open)
@@ -650,7 +650,7 @@ def main(args=None):
     nodes_thread = Thread(target=Nodes, args=(node,))
     nodes_thread.start()
 
-    handler_thread = Thread(target=node.cmd_handler)
+    handler_thread = Thread(target=node.state_machine)
     handler_thread.start()
 
     try:
