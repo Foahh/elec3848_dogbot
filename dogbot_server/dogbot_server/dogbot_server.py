@@ -357,7 +357,7 @@ class ServerPublisher(Node):
                                     self.counter -= 1
                                 # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
             except Exception as e:
-                self.get_logger().info(f"Error in state: {e}")
+                self.get_logger().info(f"Error in state<{self.prev_state}>: {e}")
             # self.get_logger().info(f"Complete.")
         return
     
