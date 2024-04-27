@@ -415,9 +415,8 @@ class ServerPublisher(Node):
         elif recv_data:
             if "forcestop" in recv_data:
                 self.state = "stop"
-            elif "detected" not in recv_data:
-                self.get_logger().info(f"Received: {recv_data}")
             else:
+                self.get_logger().info(f"Received: {recv_data}")
                 self.cmds = recv_data.split("\n")[0].split(",")
 
 def Nodes(node) -> None:
