@@ -25,9 +25,9 @@ class ClientSide:
     
     def send(self, msg) -> None:
         try:
-            self.client_socket.sendto((msg + '\n').encode())
+            self.client_socket.sendto((msg + '\n').encode(), self.server_address)
             if "echoback" in msg:
-                data, _ = self.client_socket.recv(128)
+                data, _ = self.client_socket.recvfrom(128)
                 print(data.decode(), end='', flush=True)
         except TimeoutError as e:
             print(e)

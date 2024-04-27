@@ -55,7 +55,7 @@ class ServerPublisher(Node):
 
         self.rotate_period = 0.6
         self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
-        self.heading_period = 0.3
+        self.heading_period = 0.5
 
         self.area = 0
         self.Xoffset = 0
@@ -202,7 +202,8 @@ class ServerPublisher(Node):
                             self.state = "heading_target"
                             self.prev_dist = []
                             self.tstamp = time.time()
-                            self.ser_wheel_velocity(0.15, 0.0, 0.0)
+                            self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
+                            time.sleep(self.heading_period)
                     case "heading_target":
                         self.prev_dist = []
                         if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
@@ -345,9 +346,12 @@ class ServerPublisher(Node):
                         if self.state == "heading":
                             pass
                         else:
-                            self.ser_wheel_velocity(0.15, 0.0, 0.0)
+                            self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                             self.state = "heading"
                             self.tstamp = time.time()
+                    case "heading":
+                        if len(args) >= 1:
+                            self.heading_period = args[0]
                     case "grab":
                         self.state = "grab"
                     # case _:
