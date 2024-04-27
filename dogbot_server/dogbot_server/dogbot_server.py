@@ -334,7 +334,7 @@ class ServerPublisher(Node):
                                 self.interrupting('grab', self.dist_len_threshold)
                             elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
                                 self.counter -= 1
-                            self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
+                            # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
                         case '':
                             # if self.sonar_data > 8:  # Recalibrate sonar
                             #     self.set_servo_position(self.forearm_down, self.gripper_close)
@@ -344,7 +344,7 @@ class ServerPublisher(Node):
                                 self.interrupting('grab', self.dist_len_threshold)
                             elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
                                 self.counter -= 1
-                            self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
+                            # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
         return
     
     def cmd_handler(self):
@@ -607,7 +607,7 @@ class ServerPublisher(Node):
         self.counter = 0
         return
     
-    def interrupting(self, status, threshold=3) -> None:
+    def interrupting(self, status, threshold=0) -> None:
         if status == True or status == 'idle':
             self.set_servo_position(self.forearm, self.gripper)
             self.counter = 0
@@ -630,6 +630,7 @@ class ServerPublisher(Node):
                 self.stop()
                 self.set_servo_position(self.forearm, self.gripper)
                 self.tstamp = time.time()
+        self.get_logger().info(f"Counter: {self.counter}")
         return
     
     def sonar_calibrating(self) -> None:
