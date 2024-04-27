@@ -232,6 +232,7 @@ class ServerPublisher(Node):
                 case 'heading':
                     if self.sonar_data >= self.dist_threshold and self.sonar_data < 0.5:
                         new_state = 'heading'
+                        self.heading()
                         if new_state != self.prev_cmd:
                             self.counter = 0
                     if len(args) >= 1:
@@ -317,11 +318,14 @@ class ServerPublisher(Node):
                     # self.stop()
                     match new_state:
                         case 'r_cw':
-                            self.interrupting('r_cw')
+                            # self.interrupting('r_cw')
+                            self.r_cw()
                         case 'r_ccw':
-                            self.interrupting('r_ccw')
+                            # self.interrupting('r_ccw')
+                            self.r_ccw()
                         case 'heading':
-                            self.interrupting('heading')
+                            # self.interrupting('heading')
+                            self.heading()
                         case 'grab':
                             self.grabbing()
                         case 'idle':
@@ -582,7 +586,7 @@ class ServerPublisher(Node):
         time.sleep(2)
         self.prev_state = "idle"
         self.set_servo_position(self.forearm, self.gripper)
-        self.ser_wheel_velocity(-0.4, 0.0, 0.0)
+        self.ser_wheel_velocity(-0.2, 0.0, 0.0)
         self.tstamp = time.time()
         return
 
