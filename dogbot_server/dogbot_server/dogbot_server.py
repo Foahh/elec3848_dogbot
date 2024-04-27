@@ -204,6 +204,8 @@ class ServerPublisher(Node):
                             self.tstamp = time.time()
                             self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                             time.sleep(self.heading_period)
+                        else:
+                            self.state = "stop"
                     case "heading_target":
                         self.prev_dist = []
                         if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
