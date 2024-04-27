@@ -228,6 +228,7 @@ class ServerPublisher(Node):
                             self.state = "heading_target"
                             self.prev_dist = []
                             self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
+                            time.sleep(0.3)
                             self.tstamp = time.time()
                     case "grab":
                         self.set_servo_position(self.forearm_down, self.gripper_open)
@@ -343,6 +344,7 @@ class ServerPublisher(Node):
                             self.tstamp = time.time()
                         else:
                             self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY)
+                        time.sleep(0.3)
                         self.state = "r_cw"
                     case "r_ccw":
                         # if self.state == "r_ccw":
@@ -354,6 +356,7 @@ class ServerPublisher(Node):
                             self.tstamp = time.time()
                         else:
                             self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
+                        time.sleep(0.3)
                         self.state = "r_ccw"
                     case "heading_target":
                         # if self.state == "heading_target":
