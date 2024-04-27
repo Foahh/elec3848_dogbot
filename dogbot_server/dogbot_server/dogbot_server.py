@@ -232,8 +232,7 @@ class ServerPublisher(Node):
                     rotating = True
                     if time.time() - self.tstamp > self.rotate_period:
                         rotating = False
-                        self.prev_state = 'idle'
-                        self.counter = 0
+                        self.interrupting(True)
                     match new_state:
                         case 'r_cw':
                             if rotating == False:
@@ -256,8 +255,7 @@ class ServerPublisher(Node):
                     rotating = False
                     if time.time() - self.tstamp > self.rotate_period:
                         rotating = True
-                        self.prev_state = 'idle'
-                        self.counter = 0
+                        self.interrupting(True)
                     match new_state:
                         case 'r_cw':
                             if rotating == False:
@@ -277,17 +275,26 @@ class ServerPublisher(Node):
                         case '':
                             pass
                 case 'heading':
+                    heading = True
+                    if time.time() - self.tstamp > self.heading_period:
+                        heading = False
+                        self.interrupting(True)
                     match new_state:
                         case 'r_cw':
-                            pass
+                            if heading == False:
+                                self.r_cw()
                         case 'r_ccw':
-                            pass
+                            if heading == False:
+                                self.r_ccw()
                         case 'heading':
-                            pass
+                            if heading == False:
+                                self.heading()
                         case 'grab':
-                            pass
+                            if heading == False:
+                                self.grabbing()
                         case 'idle':
-                            self.interrupting('idle')
+                            if heading == True:
+                                self.interrupting('idle')
                         case '':
                             pass
                 case 'grab':
@@ -323,40 +330,18 @@ class ServerPublisher(Node):
                 match self.state:
                     case "r_cw":
                         self.prev_dist = []
-                        # self.ser_wheel_velocity(0.0, 0.0, DEFAULT_ANGULAR_VELOCITY)
-                        # time.sleep(self.rotate_period)
-                        # self.stop()
-                        # self.state = "stop"
-                        # time.sleep(0.3)
-                        # self.tstamp = time.time()
                         if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                             self.stop()
                             self.state = "stop"
                         continue
                     case "r_ccw":
                         self.prev_dist = []
-                        # self.ser_wheel_velocity(0.0, 0.0, -DEFAULT_ANGULAR_VELOCITY)
-                        # time.sleep(self.rotate_period)
-                        # self.stop()
-                        # self.state = "stop"
-                        # time.sleep(0.3)
-                        # self.tstamp = time.time()
                         if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
                             self.stop()
                             self.state = "stop"
                         continue
                     case "heading_target":
                         self.prev_dist = []
-                        # if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
-                        #     # self.state = "heading_target"
-                        #     # self.prev_dist = []
-                        #     # self.tstamp = time.time()
-                        #     self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
-                        #     time.sleep(self.heading_period)
-                        #     self.state = "stop"
-                        #     self.tstamp = time.time()
-                        # else:
-                        #     self.state = "stop"
                         if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
                             self.stop()
                             self.state = "stop"
@@ -398,6 +383,7 @@ class ServerPublisher(Node):
                         if self.sonar_data > 8:
                             self.set_servo_position(self.forearm_down, self.gripper_close)
                             time.sleep(1)
+                            self.set_servo_position(self.forearm, self.gripper)
                         if self.sonar_data < 0.25 and self.sonar_data >= self.dist_threshold:
                             self.prev_dist = []
                             self.state = "heading"
@@ -612,10 +598,18 @@ class ServerPublisher(Node):
         return
     
     def interrupting(self, status) -> None:
+        if status == True:
+            self.set_servo_position(self.forearm, self.gripper)
+            self.counter = 0
+            self.prev_state = status
+            self.tstamp = time.time()
+            return
         self.counter += 1
         if self.counter > 10:
             self.counter = 0
             self.prev_state = status
+            self.set_servo_position(self.forearm, self.gripper)
+            self.tstamp = time.time()
         return
 
 def Nodes(node) -> None:
