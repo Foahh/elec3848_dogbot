@@ -110,10 +110,12 @@ except:
 # load the object detection network
 net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 
-# create video sources & outputs
-input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
-output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
-
+try:
+    # create video sources & outputs
+    input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
+    output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
+except:
+    pass
 f = open('area.txt', 'w')
 f.close()
 
