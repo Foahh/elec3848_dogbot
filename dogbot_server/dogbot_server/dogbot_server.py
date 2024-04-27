@@ -64,12 +64,13 @@ class ServerPublisher(Node):
 
         self.state = "stop"
         self.cmds = []
+        self.prev_cmd = ''
         self.detected = False
         self.tstamp = time.time()
         self.prev_dist = []
         self.heading = False
         self.dist_threshold = 0.13
-        self.dist_len_threshold = 100
+        self.dist_len_threshold = 50
     
     def sonar_callback(self, msg):
         self.sonar_data = msg.range
@@ -178,9 +179,12 @@ class ServerPublisher(Node):
                 cmd, *args = self.cmds.pop(-1)
             else:
                 cmd = ''
+            self.prev_cmd = copy.deepcopy(cmd)
 
             new_state = ''
             match cmd:
+                case 'forcestop':
+                    exit(0)
                 case "pose":
                     if len(args) >= 2:
                         forearm = args[0]
@@ -206,6 +210,8 @@ class ServerPublisher(Node):
                     continue
                 case 'r_cw':
                     new_state = 'r_cw'
+                    if new_state != self.prev_cmd:
+                        self.counter = 0
                     if len(args) >= 2:
                         self.rotate_angle = float(args[0])
                         self.rotate_period = float(args[1])
@@ -213,6 +219,8 @@ class ServerPublisher(Node):
                         self.tstamp = time.time()
                 case 'r_ccw':
                     new_state = 'r_ccw'
+                    if new_state != self.prev_cmd:
+                        self.counter = 0
                     if len(args) >= 2:
                         self.rotate_angle = float(args[0])
                         self.rotate_period = float(args[1])
@@ -220,6 +228,8 @@ class ServerPublisher(Node):
                         self.tstamp = time.time()
                 case 'heading':
                     new_state = 'heading'
+                    if new_state != self.prev_cmd:
+                        self.counter = 0
                     if len(args) >= 1:
                         self.heading_period = args[0]
                 case 'grab':
@@ -302,21 +312,28 @@ class ServerPublisher(Node):
                 case 'idle':
                     match new_state:
                         case 'r_cw':
-                            self.r_cw()
+                            self.interrupting('r_cw')
                         case 'r_ccw':
-                            self.r_ccw()
+                            self.interrupting('r_ccw')
                         case 'heading':
-                            self.heading()
+                            self.interrupting('heading')
                         case 'grab':
                             self.grabbing()
                         case 'idle':
-                            if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
-                                self.prev_state = 'heading'
-                                self.counter = 0
-                                self.ser_wheel_velocity(self.heading_speed, 0.0, 0.0)
-                                self.tstamp = time.time()
-            self.state = []
-
+                            if self.sonar_data > 8:  # Recalibrate sonar
+                                self.set_servo_position(self.forearm_down, self.gripper_close)
+                                time.sleep(1)
+                                self.set_servo_position(self.forearm, self.gripper)
+                            elif self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
+                                self.heading()
+                            elif self.sonar_data < self.dist_threshold:
+                                self.interrupting('grab', self.dist_len_threshold)
+                            elif self.sonar_data > self.dist_threshold and len(self.prev_dist) != 0:
+                                self.counter -= 1
+                        case '':
+                            pass
+        return
+    
     def cmd_handler(self):
         while True:
             if self.cmds == []:
@@ -597,15 +614,15 @@ class ServerPublisher(Node):
         self.counter = 0
         return
     
-    def interrupting(self, status) -> None:
+    def interrupting(self, status, threshold=10) -> None:
         if status == True:
             self.set_servo_position(self.forearm, self.gripper)
             self.counter = 0
-            self.prev_state = status
+            self.prev_state = 'idle'
             self.tstamp = time.time()
             return
         self.counter += 1
-        if self.counter > 10:
+        if self.counter > threshold:
             self.counter = 0
             self.prev_state = status
             self.set_servo_position(self.forearm, self.gripper)
