@@ -11,8 +11,8 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
-DEFAULT_LINEAR_VELOCITY = 0.15
-DEFAULT_ANGULAR_VELOCITY = -0.2
+DEFAULT_LINEAR_VELOCITY = 0.05
+DEFAULT_ANGULAR_VELOCITY = -0.15
 
 
 class ServerPublisher(Node):
@@ -178,6 +178,7 @@ class ServerPublisher(Node):
                 cmd, *args = self.cmds
             else:
                 cmd = ''
+            self.get_logger().info(f"Cmd: {self.prev_cmd}")
             self.prev_cmd = copy.deepcopy(cmd)
             new_state = ''
             match cmd:
@@ -333,7 +334,7 @@ class ServerPublisher(Node):
                                 self.counter -= 1
                         case '':
                             pass
-            self.get_logger().info(f"{self.prev_state} {self.prev_cmd}")
+            self.get_logger().info(f"State: {self.prev_state}\n")
         return
     
     def cmd_handler(self):
