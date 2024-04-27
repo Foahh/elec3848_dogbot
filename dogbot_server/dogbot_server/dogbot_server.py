@@ -217,14 +217,16 @@ class ServerPublisher(Node):
                         self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
                         self.tstamp = time.time()
                 case 'r_ccw':
-                    new_state = 'r_ccw'
-                    if new_state != self.prev_cmd:
-                        self.counter = 0
+                    if self.sonar_data >= self.dist_threshold and self.sonar_data < 0.5:
+                        new_state = 'r_ccw'
+                        if new_state != self.prev_cmd:
+                            self.counter = 0
                     if len(args) >= 2:
                         self.rotate_angle = float(args[0])
                         self.rotate_period = float(args[1])
                         self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
                         self.tstamp = time.time()
+                        continue
                 case 'heading':
                     new_state = 'heading'
                     if new_state != self.prev_cmd:
@@ -326,8 +328,8 @@ class ServerPublisher(Node):
                                 self.set_servo_position(self.forearm_down, self.gripper_close)
                                 time.sleep(1)
                                 self.set_servo_position(self.forearm, self.gripper)
-                            elif self.sonar_data >= self.dist_threshold and self.sonar_data < 0.5:
-                                self.heading()
+                            # elif self.sonar_data >= self.dist_threshold and self.sonar_data < 0.5:
+                            #     self.heading()
                             elif self.sonar_data < self.dist_threshold:
                                 self.interrupting('grab', self.dist_len_threshold)
                             elif self.sonar_data > self.dist_threshold and self.counter != 0:
