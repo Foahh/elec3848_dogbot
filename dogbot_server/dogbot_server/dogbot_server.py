@@ -11,8 +11,8 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
-DEFAULT_LINEAR_VELOCITY = 0.25
-DEFAULT_ANGULAR_VELOCITY = -0.4
+DEFAULT_LINEAR_VELOCITY = 0.6
+DEFAULT_ANGULAR_VELOCITY = -0.6
 
 
 class ServerPublisher(Node):
@@ -54,8 +54,9 @@ class ServerPublisher(Node):
         self.gripper_open = 30.0
 
         self.rotate_period = 0.6
-        self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
         self.heading_period = 0.5
+        self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
+        self.heading_speed = DEFAULT_LINEAR_VELOCITY
 
         self.area = 0
         self.Xoffset = 0
@@ -203,12 +204,24 @@ class ServerPublisher(Node):
                     if len(args) >= 1:
                         self.dist_len_threshold = float(args[0])
                     continue
-                case "r_cw":
-                    new_state = "r_cw"
-                case "r_ccw":
-                    new_state = "r_ccw"
-                case "heading":
+                case 'r_cw':
+                    new_state = 'r_cw'
+                    if len(args) >= 2:
+                        self.rotate_angle = float(args[0])
+                        self.rotate_period = float(args[1])
+                        self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
+                        self.tstamp = time.time()
+                case 'r_ccw':
+                    new_state = 'r_ccw'
+                    if len(args) >= 2:
+                        self.rotate_angle = float(args[0])
+                        self.rotate_period = float(args[1])
+                        self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
+                        self.tstamp = time.time()
+                case 'heading':
                     new_state = 'heading'
+                    if len(args) >= 1:
+                        self.heading_period = args[0]
                 case 'grab':
                     new_state = 'grab'
                 case '':
@@ -216,163 +229,85 @@ class ServerPublisher(Node):
 
             match self.prev_state:
                 case 'r_cw':
+                    rotating = True
+                    if time.time() - self.tstamp > self.rotate_period:
+                        rotating = False
+                        self.prev_state = 'idle'
+                        self.counter = 0
                     match new_state:
                         case 'r_cw':
-                            pass                 
+                            if rotating == False:
+                                self.r_cw()
                         case 'r_ccw':
-                            pass
+                            if rotating == False:
+                                self.r_ccw()
                         case 'heading':
-                            pass
+                            if rotating == False:
+                                self.heading()
                         case 'grab':
-                            pass
-                        case 'grab_2':
-                            pass
-                        case 'grab_3':
-                            pass
-                        case 'grab_4':
-                            pass
+                            if rotating == False:
+                                self.grabbing()
                         case 'idle':
-                            pass
+                            if rotating == True:
+                                self.interrupting('idle')
                         case '':
                             pass
                 case 'r_ccw':
+                    rotating = False
+                    if time.time() - self.tstamp > self.rotate_period:
+                        rotating = True
+                        self.prev_state = 'idle'
+                        self.counter = 0
                     match new_state:
                         case 'r_cw':
-                            pass                 
+                            if rotating == False:
+                                self.r_cw()
                         case 'r_ccw':
-                            pass
+                            if rotating == False:
+                                self.r_ccw()
                         case 'heading':
-                            pass
+                            if rotating == False:
+                                self.heading()
                         case 'grab':
-                            pass
-                        case 'grab_2':
-                            pass
-                        case 'grab_3':
-                            pass
-                        case 'grab_4':
-                            pass
+                            if rotating == False:
+                                self.grabbing()
                         case 'idle':
-                            pass
+                            if rotating == True:
+                                self.interrupting('idle')
                         case '':
                             pass
                 case 'heading':
                     match new_state:
                         case 'r_cw':
-                            pass                 
+                            pass
                         case 'r_ccw':
                             pass
                         case 'heading':
                             pass
                         case 'grab':
                             pass
-                        case 'grab_2':
-                            pass
-                        case 'grab_3':
-                            pass
-                        case 'grab_4':
-                            pass
                         case 'idle':
-                            pass
+                            self.interrupting('idle')
                         case '':
                             pass
                 case 'grab':
-                    match new_state:
-                        case 'r_cw':
-                            pass                 
-                        case 'r_ccw':
-                            pass
-                        case 'heading':
-                            pass
-                        case 'grab':
-                            pass
-                        case 'grab_2':
-                            pass
-                        case 'grab_3':
-                            pass
-                        case 'grab_4':
-                            pass
-                        case 'idle':
-                            pass
-                        case '':
-                            pass
-                case 'grab_2':
-                    match new_state:
-                        case 'r_cw':
-                            pass                 
-                        case 'r_ccw':
-                            pass
-                        case 'heading':
-                            pass
-                        case 'grab':
-                            pass
-                        case 'grab_2':
-                            pass
-                        case 'grab_3':
-                            pass
-                        case 'grab_4':
-                            pass
-                        case 'idle':
-                            pass
-                        case '':
-                            pass
-                case 'grab_3':
-                    match new_state:
-                        case 'r_cw':
-                            pass                 
-                        case 'r_ccw':
-                            pass
-                        case 'heading':
-                            pass
-                        case 'grab':
-                            pass
-                        case 'grab_2':
-                            pass
-                        case 'grab_3':
-                            pass
-                        case 'grab_4':
-                            pass
-                        case 'idle':
-                            pass
-                        case '':
-                            pass
-                case 'grab_4':
-                    match new_state:
-                        case 'r_cw':
-                            pass                 
-                        case 'r_ccw':
-                            pass
-                        case 'heading':
-                            pass
-                        case 'grab':
-                            pass
-                        case 'grab_2':
-                            pass
-                        case 'grab_3':
-                            pass
-                        case 'grab_4':
-                            pass
-                        case 'idle':
-                            pass
-                        case '':
-                            pass
+                    pass
                 case 'idle':
                     match new_state:
                         case 'r_cw':
-                            pass                 
+                            self.r_cw()
                         case 'r_ccw':
-                            pass
+                            self.r_ccw()
                         case 'heading':
-                            pass
+                            self.heading()
                         case 'grab':
-                            pass
-                        case 'grab_2':
-                            pass
-                        case 'grab_3':
-                            pass
-                        case 'grab_4':
-                            pass
+                            self.grabbing()
                         case 'idle':
-                            pass
+                            if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
+                                self.prev_state = 'heading'
+                                self.counter = 0
+                                self.ser_wheel_velocity(self.heading_speed, 0.0, 0.0)
+                                self.tstamp = time.time()
             self.state = []
 
     def cmd_handler(self):
@@ -641,6 +576,47 @@ class ServerPublisher(Node):
             else:
                 self.get_logger().info(f"Received: {recv_data}")
                 self.cmds = recv_data.split("\n")[0].split(",")
+
+    def grabbing(self) -> None:
+        self.set_servo_position(self.forearm_down, self.gripper_open)
+        time.sleep(2)
+        self.set_servo_position(self.forearm_down, self.gripper_close)
+        time.sleep(2)
+        self.set_servo_position(self.forearm_up, self.gripper_close)
+        time.sleep(2)
+        self.prev_state = "stop"
+        self.set_servo_position(self.forearm, self.gripper)
+        self.ser_wheel_velocity(-0.4, 0.0, 0.0)
+        self.tstamp = time.time()
+        return
+
+    def r_cw(self) -> None:
+        self.prev_state = 'r_cw'
+        self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
+        self.counter = 0
+        self.tstamp = time.time()
+        return
+    
+    def r_ccw(self) -> None:
+        self.prev_state = 'r_ccw'
+        self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
+        self.counter = 0
+        self.tstamp = time.time()
+        return
+
+    def heading(self) -> None:
+        self.prev_state = 'heading'
+        self.tstamp = time.time()
+        self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
+        self.counter = 0
+        return
+    
+    def interrupting(self, status) -> None:
+        self.counter += 1
+        if self.counter > 10:
+            self.counter = 0
+            self.prev_state = status
+        return
 
 def Nodes(node) -> None:
     rclpy.spin(node)
