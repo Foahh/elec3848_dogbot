@@ -613,14 +613,12 @@ class ServerPublisher(Node):
             self.prev_state = 'idle'
             self.stop()
             self.tstamp = time.time()
-            return
-        if status == 'grab':
+        elif status == 'grab':
             self.grabcounter += 1
             if self.grabcounter > threshold:
                 self.grabcounter = 0
                 self.prev_state = status
-                self.stop()
-                self.set_servo_position(self.forearm, self.gripper)
+                self.grabbing()
                 self.tstamp = time.time()
         else:
             self.counter += 1
