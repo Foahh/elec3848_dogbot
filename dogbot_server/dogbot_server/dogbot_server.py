@@ -365,7 +365,7 @@ class ServerPublisher(Node):
                         # self.tstamp = time.time()
                     case "heading":
                         if self.state != "heading_target":
-                            self.state = "heading"
+                            self.state = "heading_target"
                         if len(args) >= 1:
                             self.heading_period = args[0]
                     case "grab":
