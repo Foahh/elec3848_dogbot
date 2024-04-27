@@ -176,7 +176,7 @@ class ServerPublisher(Node):
     def state_machine(self) -> None:
         while True:
             if self.cmds != '':
-                cmd, *args = self.cmds.pop(-1)
+                cmd, *args = self.cmds
             else:
                 cmd = ''
             self.prev_cmd = copy.deepcopy(cmd)
@@ -546,7 +546,8 @@ class ServerPublisher(Node):
                 # client_socket.close()
                 # client_socket, _ = self.server_socket.accept()
             recv_data = data_buffer.decode("utf-8")
-            self.msg_handler(recv_data, client_addr)
+            if recv_data:
+                self.msg_handler(recv_data, client_addr)
             # new_msg_handler = Thread(
             #     target=self.msg_handler,
             #     args=(
@@ -580,7 +581,7 @@ class ServerPublisher(Node):
                 self.state = "stop"
             else:
                 self.get_logger().info(f"Received: {recv_data}")
-                self.cmds = recv_data.split("\n")[0].split(",")
+                self.cmds = [cmd] + args
 
     def grabbing(self) -> None:
         self.set_servo_position(self.forearm_down, self.gripper_open)
