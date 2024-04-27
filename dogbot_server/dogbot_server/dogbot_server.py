@@ -585,7 +585,7 @@ class ServerPublisher(Node):
             self.__send(client_addr, s)
         else:
             self.cmds = [cmd] + args
-            self.get_logger().info(f"Received: {cmd} {args}")
+            # self.get_logger().info(f"Received: {cmd} {args}")
 
     def grabbing(self) -> None:
         self.set_servo_position(self.forearm_down, self.gripper_open)
@@ -604,6 +604,7 @@ class ServerPublisher(Node):
         self.prev_state = 'r_cw'
         self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
         self.counter = 0
+        self.get_logger().info(f"r_cw called.")
         self.tstamp = time.time()
         return
     
@@ -611,6 +612,7 @@ class ServerPublisher(Node):
         self.prev_state = 'r_ccw'
         self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
         self.counter = 0
+        self.get_logger().info(f"r_ccw called.")
         self.tstamp = time.time()
         return
 
@@ -618,6 +620,7 @@ class ServerPublisher(Node):
         self.prev_state = 'heading'
         self.tstamp = time.time()
         self.ser_wheel_velocity(self.heading_speed, 0.0, 0.0)
+        self.get_logger().info(f"heading called.")
         self.counter = 0
         return
     
