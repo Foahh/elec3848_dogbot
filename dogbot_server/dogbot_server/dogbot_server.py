@@ -66,6 +66,7 @@ class ServerPublisher(Node):
         self.cmds = []
         self.prev_cmd = ''
         self.counter = 0
+        self.grabcounter = 0
         self.detected = False
         self.tstamp = time.time()
         self.prev_dist = []
@@ -322,8 +323,6 @@ class ServerPublisher(Node):
                         case 'grab':
                             self.grabbing()
                         case 'idle':
-                            if self.prev_cmd not in ['idle', 'heading', '']:
-                                self.counter = 0
                             if self.sonar_data > 8:  # Recalibrate sonar
                                 self.set_servo_position(self.forearm_down, self.gripper_close)
                                 time.sleep(1)
@@ -332,9 +331,9 @@ class ServerPublisher(Node):
                             #     self.heading()
                             elif self.sonar_data < self.dist_threshold:
                                 self.interrupting('grab', self.dist_len_threshold)
-                            elif self.sonar_data > self.dist_threshold and self.counter != 0:
+                            elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
                                 self.counter -= 1
-                            self.get_logger().info(f"Counter: {self.counter}\n")
+                            self.get_logger().info(f"Counter: {self.grabcounter}\n")
                         case '':
                             pass
         return
@@ -621,20 +620,30 @@ class ServerPublisher(Node):
         return
     
     def interrupting(self, status, threshold=10) -> None:
-        if status == True:
+        if status == True or status == 'idle':
             self.set_servo_position(self.forearm, self.gripper)
             self.counter = 0
+            self.grabcounter = 0
             self.prev_state = 'idle'
             self.stop()
             self.tstamp = time.time()
             return
-        self.counter += 1
-        if self.counter > threshold:
-            self.counter = 0
-            self.prev_state = status
-            self.stop()
-            self.set_servo_position(self.forearm, self.gripper)
-            self.tstamp = time.time()
+        if status == 'grab':
+            self.grabcounter += 1
+            if self.grabcounter > threshold:
+                self.grabcounter = 0
+                self.prev_state = status
+                self.stop()
+                self.set_servo_position(self.forearm, self.gripper)
+                self.tstamp = time.time()
+        else:
+            self.counter += 1
+            if self.counter > threshold:
+                self.counter = 0
+                self.prev_state = status
+                self.stop()
+                self.set_servo_position(self.forearm, self.gripper)
+                self.tstamp = time.time()
         return
 
 def Nodes(node) -> None:
