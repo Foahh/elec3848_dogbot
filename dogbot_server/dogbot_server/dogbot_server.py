@@ -72,7 +72,7 @@ class ServerPublisher(Node):
         self.tstamp = time.time()
         self.prev_dist = []
         self.dist_threshold = 0.13
-        self.dist_len_threshold = 5
+        self.dist_len_threshold = 3
         self.holdtime = 0
     
     def sonar_callback(self, msg):
@@ -352,7 +352,7 @@ class ServerPublisher(Node):
                                 #     self.set_servo_position(self.forearm_down, self.gripper_close)
                                 #     time.sleep(1)
                                 #     self.set_servo_position(self.forearm, self.gripper)
-                                if self.sonar_data < self.dist_threshold:
+                                if self.sonar_data < self.dist_threshold or self.sonar_data > 11.0:
                                     self.interrupting('grab', self.dist_len_threshold)
                                 elif self.sonar_data > self.dist_threshold and self.grabcounter > 0:
                                     self.grabcounter -= 1
