@@ -180,6 +180,7 @@ class ServerPublisher(Node):
             else:
                 cmd = ''
             # self.get_logger().info(f"Cmd: {self.prev_cmd}")
+            self.cmds = []
             self.prev_cmd = copy.deepcopy(cmd)
             new_state = ''
             match cmd:
