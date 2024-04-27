@@ -223,7 +223,7 @@ class ServerPublisher(Node):
                             # self.tstamp = time.time()
                             self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                             time.sleep(self.heading_period)
-                            self.stop()
+                            self.state = "stop"
                             self.tstamp = time.time()
                         # else:
                         #     self.state = "stop"
