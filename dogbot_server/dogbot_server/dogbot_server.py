@@ -619,10 +619,10 @@ class ServerPublisher(Node):
 
     def heading(self) -> None:
         self.prev_state = 'heading'
-        self.tstamp = time.time()
         self.ser_wheel_velocity(self.heading_speed, 0.0, 0.0)
         self.get_logger().info(f"heading called.")
         self.counter = 0
+        self.tstamp = time.time()
         return
     
     def interrupting(self, status, threshold=0) -> None:
