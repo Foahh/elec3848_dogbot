@@ -632,6 +632,7 @@ class ServerPublisher(Node):
             self.grabcounter = 0
             self.prev_state = 'idle'
             self.stop()
+            time.sleep(1)
             self.tstamp = time.time()
         elif status == 'grab':
             self.grabcounter += 1
