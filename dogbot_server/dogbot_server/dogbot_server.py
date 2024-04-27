@@ -155,7 +155,6 @@ class ServerPublisher(Node):
     def stop(self):
         timestamp = self.get_clock().now().to_msg()
         self.twist_stamped.header.stamp = timestamp
-        self.state = "stop"
         self.twist_stamped.twist.linear.x = 0.0
         self.twist_stamped.twist.linear.y = 0.0
         self.twist_stamped.twist.angular.z = 0.0
@@ -569,7 +568,7 @@ class ServerPublisher(Node):
         elif "undetected" == cmd:
             self.detected = False
         elif "echoback" in cmd:
-            s = f"State: {self.state}\nDist:{self.sonar_data}\nDetected:{self.detected}\n"
+            s = f"State: {self.prev_state}\nDist:{self.sonar_data}\nDetected:{self.detected}\n"
             try:
                 if self.detected == True:
                     s += f"Area:{self.area}\nOffset:{self.Xoffset}\nCon:{self.confidence}\n"
