@@ -620,6 +620,7 @@ class ServerPublisher(Node):
             if self.grabcounter > threshold:
                 self.grabcounter = 0
                 self.prev_state = status
+                self.grabbing()
                 self.tstamp = time.time()
         else:
             self.counter += 1
