@@ -54,7 +54,7 @@ class ServerPublisher(Node):
         self.gripper_open = 30.0
 
         self.rotate_period = 0.4
-        self.heading_period = 0.3
+        self.heading_period = 0.2
         self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
         self.heading_speed = DEFAULT_LINEAR_VELOCITY
 
