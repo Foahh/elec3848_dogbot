@@ -396,7 +396,7 @@ class ServerPublisher(Node):
                     s += f"Area:{self.area}\nOffset:{self.Xoffset}\nCon:{self.confidence}\n"
             except:
                 pass
-                self.__send(client_addr, s)
+            self.__send(client_addr, s)
         elif recv_data:
             if "detected" not in recv_data:
                 self.get_logger().info(f"Received: {recv_data}")
