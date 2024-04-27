@@ -230,6 +230,7 @@ class ServerPublisher(Node):
                         if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
                             self.stop()
                             self.state = "stop"
+                            time.sleep(0.5)
                             self.tstamp = time.time()
                     case "grab":
                         self.set_servo_position(self.forearm_down, self.gripper_open)
