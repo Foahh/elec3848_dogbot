@@ -270,6 +270,7 @@ class ServerPublisher(Node):
             except Exception as e:
                 self.get_logger().info(e)
 
+            self.get_logger().info(f"State: {self.state}")
             if self.cmds == []:
                 continue
             else:
