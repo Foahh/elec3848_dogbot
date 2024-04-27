@@ -651,7 +651,7 @@ def main(args=None):
     nodes_thread = Thread(target=Nodes, args=(node,))
     nodes_thread.start()
 
-    handler_thread = Thread(target=node.cmd_handler)
+    handler_thread = Thread(target=node.state_machine)
     handler_thread.start()
 
     try:
