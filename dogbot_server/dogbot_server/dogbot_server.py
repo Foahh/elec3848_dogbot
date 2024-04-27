@@ -481,8 +481,6 @@ class ServerPublisher(Node):
                     case "undetected":
                         self.detected = False
                     case "r_cw":
-                        # if self.state == "r_cw":
-                        #     pass
                         if len(args) >= 2:
                             self.rotate_angle = float(args[0])
                             self.rotate_period = float(args[1])
@@ -493,8 +491,6 @@ class ServerPublisher(Node):
                         time.sleep(0.3)
                         self.prev_state = "r_cw"
                     case "r_ccw":
-                        # if self.state == "r_ccw":
-                        #     pass
                         if len(args) >= 2:
                             self.rotate_angle = float(args[0])
                             self.rotate_period = float(args[1])
@@ -505,13 +501,7 @@ class ServerPublisher(Node):
                         time.sleep(0.3)
                         self.prev_state = "r_ccw"
                     case "heading_target":
-                        # if self.state == "heading_target":
-                        #     pass
-                        # else:
-                            # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
                         self.prev_state = "heading_target"
-                        # self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
-                        # self.tstamp = time.time()
                     case "heading":
                         if self.prev_state != "heading_target":
                             self.prev_state = "heading_target"
@@ -550,14 +540,6 @@ class ServerPublisher(Node):
             recv_data = data_buffer.decode("utf-8")
             if recv_data:
                 self.msg_handler(recv_data, client_addr)
-            # new_msg_handler = Thread(
-            #     target=self.msg_handler,
-            #     args=(
-            #         recv_data,
-            #         client_addr,
-            #     ),
-            # )
-            # new_msg_handler.start()
 
     def msg_handler(self, recv_data, client_addr) -> None:
         cmd, *args = recv_data.strip('\n').split("\n")[-1].split(",")
@@ -579,9 +561,6 @@ class ServerPublisher(Node):
                 pass
             self.__send(client_addr, s)
         else:
-            # if "forcestop" in recv_data:
-            #     self.state = "stop"
-            # else:
             self.cmds = [cmd] + args
             # self.get_logger().info(f"Received: {cmd} {args}")
 
@@ -592,7 +571,7 @@ class ServerPublisher(Node):
         time.sleep(2)
         self.set_servo_position(self.forearm_up, self.gripper_close)
         time.sleep(2)
-        self.prev_state = "stop"
+        self.prev_state = "idle"
         self.set_servo_position(self.forearm, self.gripper)
         self.ser_wheel_velocity(-0.4, 0.0, 0.0)
         self.tstamp = time.time()
