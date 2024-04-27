@@ -173,6 +173,12 @@ class ServerPublisher(Node):
 
     def cmd_handler(self):
         while True:
+            if self.cmds == []:
+                cmd = ''
+            else:
+                cmd, *args = self.cmds
+            self.get_logger().info(f"State: {self.state} Command:{cmd}")
+
             try:
                 match self.state:
                     case "r_cw":
@@ -272,11 +278,8 @@ class ServerPublisher(Node):
             except Exception as e:
                 self.get_logger().info(e)
 
-            if self.cmds == []:
+            if cmd == '':
                 continue
-            else:
-                cmd, *args = self.cmds
-            self.get_logger().info(f"State: {self.state} Command:{cmd}")
 
             try:
                 match cmd:
