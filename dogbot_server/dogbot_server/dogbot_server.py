@@ -647,6 +647,7 @@ class ServerPublisher(Node):
             self.counter += 1
             if self.counter > threshold:
                 self.r_cw()
+                time.sleep(1)
                 self.counter = 0
                 self.prev_state = status
                 self.set_servo_position(self.forearm, self.gripper)
@@ -655,6 +656,7 @@ class ServerPublisher(Node):
             self.counter += 1
             if self.counter > threshold:
                 self.r_ccw()
+                time.sleep(1)
                 self.counter = 0
                 self.prev_state = status
                 self.set_servo_position(self.forearm, self.gripper)
