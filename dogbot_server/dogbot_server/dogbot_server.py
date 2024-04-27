@@ -380,14 +380,15 @@ class ServerPublisher(Node):
                 # client_socket.close()
                 # client_socket, _ = self.server_socket.accept()
             recv_data = data_buffer.decode("utf-8")
-            new_msg_handler = Thread(
-                target=self.msg_handler,
-                args=(
-                    recv_data,
-                    client_addr,
-                ),
-            )
-            new_msg_handler.start()
+            self.msg_handler(recv_data, client_addr)
+            # new_msg_handler = Thread(
+            #     target=self.msg_handler,
+            #     args=(
+            #         recv_data,
+            #         client_addr,
+            #     ),
+            # )
+            # new_msg_handler.start()
 
     def msg_handler(self, recv_data, client_addr) -> None:
         cmd, *args = recv_data.split("\n")[0].split(",")
@@ -398,8 +399,9 @@ class ServerPublisher(Node):
                 self.Xoffset = float(args[1])
                 self.Yoffset = float(args[2])
                 self.confidence = float(args[3])
-        if "echoback" in cmd:
-            
+        elif "undetected" == cmd:
+            self.detected = False
+        elif "echoback" in cmd:
             s = f"State: {self.state}\nDist:{self.sonar_data}\nDetected:{self.detected}\n"
             try:
                 if self.detected == True:
