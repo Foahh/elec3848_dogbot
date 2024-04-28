@@ -214,7 +214,7 @@ class ServerPublisher(Node):
                         continue
                     case 'r_cw':
                         new_state = 'r_cw'
-                        self.r_cw()
+                        # self.r_cw()
                         if new_state != self.prev_cmd:
                             self.counter = 0
                         if len(args) >= 2:
@@ -224,7 +224,7 @@ class ServerPublisher(Node):
                             self.tstamp = time.time()
                     case 'r_ccw':
                         new_state = 'r_ccw'
-                        self.r_ccw()
+                        # self.r_ccw()
                         if new_state != self.prev_cmd:
                             self.counter = 0
                         if len(args) >= 2:
@@ -234,9 +234,9 @@ class ServerPublisher(Node):
                             self.tstamp = time.time()
                             continue
                     case 'heading':
-                        if self.sonar_data >= self.dist_threshold and self.sonar_data < 8:
+                        if self.sonar_data >= self.dist_threshold:
                             new_state = 'heading'
-                            self.heading()
+                            # self.heading()
                             if new_state != self.prev_cmd:
                                 self.counter = 0
                         if len(args) >= 1:
