@@ -12,7 +12,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 DEFAULT_LINEAR_VELOCITY = 0.6
-DEFAULT_ANGULAR_VELOCITY = -1.0
+DEFAULT_ANGULAR_VELOCITY = -0.7
 
 
 class ServerPublisher(Node):
@@ -190,6 +190,9 @@ class ServerPublisher(Node):
                 match cmd:
                     case 'forcestop':
                         exit(0)
+                    case 'holdtime':
+                        if len(args) > 0:
+                            self.holdtime = args[0]
                     case "pose":
                         if len(args) >= 2:
                             forearm = args[0]
@@ -626,7 +629,7 @@ class ServerPublisher(Node):
             self.grabcounter = 0
             self.prev_state = 'idle'
             self.stop()
-            time.sleep(3)
+            time.sleep(self.holdtime)
             self.tstamp = time.time()
         elif status == 'grab':
             self.grabcounter += 1
@@ -639,7 +642,6 @@ class ServerPublisher(Node):
             self.counter += 1
             if self.counter > threshold:
                 self.heading()
-                time.sleep(self.holdtime)
                 self.counter = 0
                 self.prev_state = status
                 self.tstamp = time.time()
@@ -647,7 +649,6 @@ class ServerPublisher(Node):
             self.counter += 1
             if self.counter > threshold:
                 self.r_cw()
-                time.sleep(self.holdtime)
                 self.counter = 0
                 self.prev_state = status
                 self.tstamp = time.time()
@@ -655,7 +656,6 @@ class ServerPublisher(Node):
             self.counter += 1
             if self.counter > threshold:
                 self.r_ccw()
-                time.sleep(self.holdtime)
                 self.counter = 0
                 self.prev_state = status
                 self.tstamp = time.time()
