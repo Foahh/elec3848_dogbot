@@ -11,7 +11,7 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
-DEFAULT_LINEAR_VELOCITY = 0.4
+DEFAULT_LINEAR_VELOCITY = 0.3
 DEFAULT_ANGULAR_VELOCITY = -0.5
 
 
@@ -54,7 +54,7 @@ class ServerPublisher(Node):
         self.gripper_open = 30.0
 
         self.rotate_period = 0.5
-        self.heading_period = 0.4
+        self.heading_period = 0.3
         self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
         self.heading_speed = DEFAULT_LINEAR_VELOCITY
 
