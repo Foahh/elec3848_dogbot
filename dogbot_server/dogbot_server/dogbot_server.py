@@ -233,7 +233,6 @@ class ServerPublisher(Node):
                             self.rotate_period = float(args[1])
                             self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
                             self.tstamp = time.time()
-                            continue
                     case 'heading':
                         if self.sonar_data >= self.dist_threshold:
                             new_state = 'heading'
