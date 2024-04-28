@@ -302,9 +302,9 @@ class ServerPublisher(Node):
                     case 'heading':
                         heading = True
                         if tstamp - self.tstamp > self.heading_period:
+                            self.get_logger().info(f"heading ended: {tstamp - self.tstamp}")
                             heading = False
                             self.interrupting(True)
-                            self.get_logger().info("heading ended")
                         match new_state:
                             case 'r_cw':
                                 if heading == False:
