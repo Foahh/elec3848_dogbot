@@ -345,7 +345,7 @@ class ServerPublisher(Node):
                                     self.counter -= 1
                                 # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
                             case '':
-                                if self.sonar_data < self.dist_threshold or self.sonar_data > 11.0:
+                                if self.sonar_data < self.dist_threshold:
                                     self.interrupting('grab', self.dist_len_threshold)
                                 elif self.sonar_data > self.dist_threshold and self.grabcounter > 0:
                                     self.grabcounter -= 1
