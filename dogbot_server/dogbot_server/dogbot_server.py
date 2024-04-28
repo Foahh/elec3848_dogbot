@@ -11,7 +11,7 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
-DEFAULT_LINEAR_VELOCITY = 0.5
+DEFAULT_LINEAR_VELOCITY = 0.3
 DEFAULT_ANGULAR_VELOCITY = -0.6
 
 
