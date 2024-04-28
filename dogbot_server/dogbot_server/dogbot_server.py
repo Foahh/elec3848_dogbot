@@ -12,7 +12,7 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 DEFAULT_LINEAR_VELOCITY = 0.4
-DEFAULT_ANGULAR_VELOCITY = -0.8
+DEFAULT_ANGULAR_VELOCITY = -0.6
 
 
 class ServerPublisher(Node):
@@ -201,7 +201,7 @@ class ServerPublisher(Node):
                         self.get_logger().info(f"mode set to chasing.")
                         continue
                     case 'modecatching':
-                        self.holdtime = 0.5
+                        self.holdtime = 1.5
                         self.heading_speed = DEFAULT_LINEAR_VELOCITY
                         self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
                         self.get_logger().info(f"mode set to catching.")
