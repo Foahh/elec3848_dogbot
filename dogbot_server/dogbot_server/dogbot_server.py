@@ -249,13 +249,14 @@ class ServerPublisher(Node):
                 self.get_logger().info(f"Error in cmd<{cmd}>: {e}")
 
             try:
+                tstamp = time.time()
                 match self.prev_state:
                     case 'r_cw':
                         rotating = True
-                        if time.time() - self.tstamp > self.rotate_period:
+                        if tstamp - self.tstamp > self.rotate_period:
+                            self.get_logger().info(f"r_cw ended: {tstamp - self.tstamp}")
                             rotating = False
                             self.interrupting(True)
-                            self.get_logger().info("r_cw ended")
                         match new_state:
                             case 'r_cw':
                                 if rotating == False:
@@ -276,10 +277,10 @@ class ServerPublisher(Node):
                                 pass
                     case 'r_ccw':
                         rotating = False
-                        if time.time() - self.tstamp > self.rotate_period:
+                        if tstamp - self.tstamp > self.rotate_period:
+                            self.get_logger().info(f"r_ccw ended: {tstamp - self.tstamp}")
                             rotating = True
                             self.interrupting(True)
-                            self.get_logger().info("r_ccw ended")
                         match new_state:
                             case 'r_cw':
                                 if rotating == False:
@@ -300,7 +301,7 @@ class ServerPublisher(Node):
                                 pass
                     case 'heading':
                         heading = True
-                        if time.time() - self.tstamp > self.heading_period:
+                        if tstamp - self.tstamp > self.heading_period:
                             heading = False
                             self.interrupting(True)
                             self.get_logger().info("heading ended")
@@ -641,7 +642,6 @@ class ServerPublisher(Node):
                 time.sleep(self.holdtime)
                 self.counter = 0
                 self.prev_state = status
-                self.set_servo_position(self.forearm, self.gripper)
                 self.tstamp = time.time()
         elif status == 'r_cw':
             self.counter += 1
@@ -650,7 +650,6 @@ class ServerPublisher(Node):
                 time.sleep(self.holdtime)
                 self.counter = 0
                 self.prev_state = status
-                self.set_servo_position(self.forearm, self.gripper)
                 self.tstamp = time.time()
         elif status == 'r_ccw':
             self.counter += 1
@@ -659,7 +658,6 @@ class ServerPublisher(Node):
                 time.sleep(self.holdtime)
                 self.counter = 0
                 self.prev_state = status
-                self.set_servo_position(self.forearm, self.gripper)
                 self.tstamp = time.time()
         self.get_logger().info(f"Counter: {self.counter}")
         return
