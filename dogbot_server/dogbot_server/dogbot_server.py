@@ -185,6 +185,7 @@ class ServerPublisher(Node):
             self.cmds = []
             self.prev_cmd = copy.deepcopy(cmd)
             new_state = ''
+            self.set_servo_position(self.forearm, self.gripper)
             try:
                 match cmd:
                     case 'forcestop':
