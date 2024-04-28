@@ -586,16 +586,19 @@ class ServerPublisher(Node):
             # self.get_logger().info(f"Received: {cmd} {args}")
 
     def grabbing(self) -> None:
-        self.set_servo_position(self.forearm_down, self.gripper_open)
-        time.sleep(2)
-        self.set_servo_position(self.forearm_down, self.gripper_close)
-        time.sleep(2)
-        self.set_servo_position(self.forearm_up, self.gripper_close)
-        time.sleep(2)
-        self.prev_state = "idle"
-        self.set_servo_position(self.forearm, self.gripper)
-        self.ser_wheel_velocity(-0.2, 0.0, 0.0)
-        self.tstamp = time.time()
+        try:
+            self.set_servo_position(self.forearm_down, self.gripper_open)
+            time.sleep(2)
+            self.set_servo_position(self.forearm_down, self.gripper_close)
+            time.sleep(2)
+            self.set_servo_position(self.forearm_up, self.gripper_close)
+            time.sleep(2)
+            self.prev_state = "idle"
+            self.set_servo_position(self.forearm, self.gripper)
+            self.ser_wheel_velocity(-0.2, 0.0, 0.0)
+            self.tstamp = time.time()
+        except Exception as e:
+            self.get_logger().info(f"Error in grabbing: {e}.")
         return
 
     def r_cw(self) -> None:
