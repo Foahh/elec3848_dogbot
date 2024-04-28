@@ -11,7 +11,7 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
-DEFAULT_LINEAR_VELOCITY = 0.1
+DEFAULT_LINEAR_VELOCITY = 0.2
 DEFAULT_ANGULAR_VELOCITY = -0.2
 
 
@@ -71,7 +71,7 @@ class ServerPublisher(Node):
         self.cali = False
         self.tstamp = time.time()
         self.prev_dist = []
-        self.dist_threshold = 0.13
+        self.dist_threshold = 0.16
         self.dist_len_threshold = 3
         self.holdtime = 0
     
@@ -339,21 +339,12 @@ class ServerPublisher(Node):
                             case 'grab':
                                 self.grabbing()
                             case 'idle':
-                                # if self.cali == True:  # Recalibrate sonar
-                                #     self.cali = False
-                                #     self.set_servo_position(self.forearm_down, self.gripper_close)
-                                #     time.sleep(1)
-                                #     self.set_servo_position(self.forearm, self.gripper)
                                 if self.sonar_data < self.dist_threshold:
                                     self.interrupting('grab', self.dist_len_threshold)
                                 elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
                                     self.counter -= 1
                                 # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
                             case '':
-                                # if self.sonar_data > 8:  # Recalibrate sonar
-                                #     self.set_servo_position(self.forearm_down, self.gripper_close)
-                                #     time.sleep(1)
-                                #     self.set_servo_position(self.forearm, self.gripper)
                                 if self.sonar_data < self.dist_threshold or self.sonar_data > 11.0:
                                     self.interrupting('grab', self.dist_len_threshold)
                                 elif self.sonar_data > self.dist_threshold and self.grabcounter > 0:
