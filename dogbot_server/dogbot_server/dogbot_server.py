@@ -194,6 +194,15 @@ class ServerPublisher(Node):
                         if len(args) > 0:
                             self.holdtime = args[0]
                             self.get_logger().info(f"holdtime set to {self.holdtime}")
+                    case 'modechasing':
+                        self.holdtime = 0
+                        self.heading_speed = 1.0
+                        self.rotate_angle = -1.0
+                        continue
+                    case 'modecatching':
+                        self.holdtime = 0.5
+                        self.heading_speed = DEFAULT_LINEAR_VELOCITY
+                        self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
                     case "pose":
                         if len(args) >= 2:
                             forearm = args[0]

@@ -74,6 +74,8 @@ def main_thread() -> None:
             if userIn == 'q':
                 client.shutdown()
                 exit(0)
+            elif userIn == 'back':
+                client.send("velocity,-1.0,0.0,0.0")
             elif userIn == 'a': 
                 client.send("velocity,0.0,0.0,90.0")
             elif userIn == 'd':
