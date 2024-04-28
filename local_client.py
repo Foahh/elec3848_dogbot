@@ -76,6 +76,10 @@ def main_thread() -> None:
                 exit(0)
             elif userIn == 'back':
                 client.send("velocity,-1.0,0.0,0.0")
+            elif userIn == 'cha':
+                client.send('modechasing')
+            elif userIn == 'cat':
+                client.send('modecatching')
             elif userIn == 'a': 
                 client.send("velocity,0.0,0.0,90.0")
             elif userIn == 'd':
