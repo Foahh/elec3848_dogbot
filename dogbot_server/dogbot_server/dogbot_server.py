@@ -252,10 +252,10 @@ class ServerPublisher(Node):
                 tstamp = time.time()
                 match self.prev_state:
                     case 'r_cw':
-                        rotating = True
+                        rotating = False
                         if tstamp - self.tstamp > self.rotate_period:
                             self.get_logger().info(f"r_cw ended: {tstamp - self.tstamp}")
-                            rotating = False
+                            rotating = True
                             self.interrupting(True)
                         match new_state:
                             case 'r_cw':
