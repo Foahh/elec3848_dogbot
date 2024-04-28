@@ -87,8 +87,8 @@ def main_thread() -> None:
                 # time.sleep(1)
                 client.send("r_cw")
             elif userIn == 'k':
-                client.send("velocity,0,0.3,1")
-                time.sleep(0.5)
+                client.send("velocity,1,0,0")
+                time.sleep(0.3)
                 client.send("stop")
             elif userIn == 'j':
                 client.send("heading_target")
