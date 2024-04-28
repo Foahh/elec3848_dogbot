@@ -193,6 +193,7 @@ class ServerPublisher(Node):
                     case 'holdtime':
                         if len(args) > 0:
                             self.holdtime = args[0]
+                            self.get_logger().info(f"holdtime set to {self.holdtime}")
                     case "pose":
                         if len(args) >= 2:
                             forearm = args[0]
