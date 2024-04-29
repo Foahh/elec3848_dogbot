@@ -30,7 +30,7 @@ class ServerPublisher(Node):
             Float64MultiArray, "/forward_position_controller/commands", 10
         )
 
-        self.sonar_data = -1.0 # meters
+        self.sonar_data = -1.0  # meters
         self.sonar_listener = self.create_subscription(
             Range,
             "/range_sensor_broadcaster/range",
@@ -62,9 +62,9 @@ class ServerPublisher(Node):
         self.Xoffset = 0
         self.confidence = 0
 
-        self.prev_state = 'idle'
+        self.prev_state = "idle"
         self.cmds = []
-        self.prev_cmd = ''
+        self.prev_cmd = ""
         self.counter = 0
         self.grabcounter = 0
         self.detected = False
@@ -180,202 +180,177 @@ class ServerPublisher(Node):
             if self.cmds != []:
                 cmd, *args = self.cmds
             else:
-                cmd = ''
+                cmd = ""
             # self.get_logger().info(f"Cmd: {self.prev_cmd}")
             self.cmds = []
             self.prev_cmd = copy.deepcopy(cmd)
             new_state = ''
-            self.set_servo_position(self.forearm, self.gripper)
-            try:
-                match cmd:
-                    case 'forcestop':
-                        exit(0)
-                    case 'holdtime':
-                        if len(args) > 0:
-                            self.holdtime = args[0]
-                            self.get_logger().info(f"holdtime set to {self.holdtime}")
-                    case 'modechasing':
-                        self.holdtime = 0
-                        self.heading_speed = 1.0
-                        self.rotate_angle = -1.0
-                        self.get_logger().info(f"mode set to chasing.")
+            match cmd:
+                case 'forcestop':
+                    exit(0)
+                case "pose":
+                    if len(args) >= 2:
+                        forearm = args[0]
+                        gripper = args[1]
+                        self.set_servo_position(forearm, gripper)
+                    continue
+                case "stop":
+                    self.interrupting(True)
+                case "velocity":
+                    linear_x, linear_y, angular_z = map(float, args)
+                    self.ser_wheel_velocity(linear_x, linear_y, angular_z)
+                    continue
+                case "position":
+                    self.forearm, self.gripper = map(float, args)
+                    continue
+                case "dist_thre":
+                    if len(args) >= 1:
+                        self.dist_threshold = float(args[0])
+                    continue
+                case "dist_len_thre":
+                    if len(args) >= 1:
+                        self.dist_len_threshold = float(args[0])
+                    continue
+                case 'r_cw':
+                    new_state = 'r_cw'
+                    if new_state != self.prev_cmd:
+                        self.counter = 0
+                    if len(args) >= 2:
+                        self.rotate_angle = float(args[0])
+                        self.rotate_period = float(args[1])
+                        self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
+                        self.tstamp = time.time()
+                case 'r_ccw':
+                    new_state = 'r_ccw'
+                    if new_state != self.prev_cmd:
+                        self.counter = 0
+                    if len(args) >= 2:
+                        self.rotate_angle = float(args[0])
+                        self.rotate_period = float(args[1])
+                        self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
+                        self.tstamp = time.time()
                         continue
-                    case 'modecatching':
-                        self.holdtime = 1.5
-                        self.heading_speed = DEFAULT_LINEAR_VELOCITY
-                        self.rotate_angle = DEFAULT_ANGULAR_VELOCITY
-                        self.get_logger().info(f"mode set to catching.")
-                        continue
-                    case "pose":
-                        if len(args) >= 2:
-                            forearm = args[0]
-                            gripper = args[1]
-                            self.set_servo_position(forearm, gripper)
-                        continue
-                    case "stop":
-                        self.interrupting(True)
-                    case "velocity":
-                        linear_x, linear_y, angular_z = map(float, args)
-                        self.ser_wheel_velocity(linear_x, linear_y, angular_z)
-                        continue
-                    case "position":
-                        self.forearm, self.gripper = map(float, args)
-                        continue
-                    case "dist_thre":
-                        if len(args) >= 1:
-                            self.dist_threshold = float(args[0])
-                        continue
-                    case "dist_len_thre":
-                        if len(args) >= 1:
-                            self.dist_len_threshold = float(args[0])
-                        continue
-                    case 'r_cw':
-                        new_state = 'r_cw'
-                        # self.r_cw()
+                case 'heading':
+                    if self.sonar_data >= self.dist_threshold and self.sonar_data < 0.5:
+                        new_state = 'heading'
                         if new_state != self.prev_cmd:
                             self.counter = 0
-                        if len(args) >= 2:
-                            self.rotate_angle = float(args[0])
-                            self.rotate_period = float(args[1])
-                            self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
-                            self.tstamp = time.time()
-                    case 'r_ccw':
-                        new_state = 'r_ccw'
-                        # self.r_ccw()
-                        if new_state != self.prev_cmd:
-                            self.counter = 0
-                        if len(args) >= 2:
-                            self.rotate_angle = float(args[0])
-                            self.rotate_period = float(args[1])
-                            self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
-                            self.tstamp = time.time()
-                    case 'heading':
-                        if self.sonar_data >= self.dist_threshold:
-                            new_state = 'heading'
-                            # self.heading()
-                            if new_state != self.prev_cmd:
-                                self.counter = 0
-                        if len(args) >= 1:
-                            self.heading_period = args[0]
-                    case 'grab':
-                        new_state = 'grab'
-                    case '':
-                        pass
-            except Exception as e:
-                self.get_logger().info(f"Error in cmd<{cmd}>: {e}")
+                    if len(args) >= 1:
+                        self.heading_period = args[0]
+                case 'grab':
+                    new_state = 'grab'
+                case '':
+                    pass
 
-            try:
-                tstamp = time.time()
-                match self.prev_state:
-                    case 'r_cw':
-                        rotating = True
-                        if tstamp - self.tstamp > self.rotate_period:
-                            self.get_logger().info(f"r_cw ended: {tstamp - self.tstamp}")
-                            rotating = False
-                            self.interrupting(True)
-                        match new_state:
-                            case 'r_cw':
-                                if rotating == False:
-                                    self.r_cw()
-                            case 'r_ccw':
-                                if rotating == False:
-                                    self.r_ccw()
-                            case 'heading':
-                                if rotating == False:
-                                    self.heading()
-                            case 'grab':
-                                if rotating == False:
-                                    self.grabbing()
-                            case 'idle':
-                                if rotating == True:
-                                    self.interrupting('idle')
-                            case '':
-                                pass
-                    case 'r_ccw':
-                        rotating = True
-                        if tstamp - self.tstamp > self.rotate_period:
-                            self.get_logger().info(f"r_ccw ended: {tstamp - self.tstamp}")
-                            rotating = False
-                            self.interrupting(True)
-                        match new_state:
-                            case 'r_cw':
-                                if rotating == False:
-                                    self.r_cw()
-                            case 'r_ccw':
-                                if rotating == False:
-                                    self.r_ccw()
-                            case 'heading':
-                                if rotating == False:
-                                    self.heading()
-                            case 'grab':
-                                if rotating == False:
-                                    self.grabbing()
-                            case 'idle':
-                                if rotating == True:
-                                    self.interrupting('idle')
-                            case '':
-                                pass
-                    case 'heading':
-                        heading = True
-                        if tstamp - self.tstamp > self.heading_period:
-                            self.get_logger().info(f"heading ended: {tstamp - self.tstamp}")
-                            heading = False
-                            self.interrupting(True)
-                        match new_state:
-                            case 'r_cw':
-                                if heading == False:
-                                    self.r_cw()
-                            case 'r_ccw':
-                                if heading == False:
-                                    self.r_ccw()
-                            case 'heading':
-                                if heading == False:
-                                    self.heading()
-                            case 'grab':
-                                if heading == False:
-                                    self.grabbing()
-                            case 'idle':
-                                if heading == True:
-                                    self.interrupting('idle')
-                            case '':
-                                pass
-                    case 'grab':
-                        pass
-                    case 'idle':
-                        # self.stop()
-                        match new_state:
-                            case 'r_cw':
-                                # self.interrupting('r_cw')
+            match self.prev_state:
+                case 'r_cw':
+                    rotating = True
+                    if time.time() - self.tstamp > self.rotate_period:
+                        rotating = False
+                        self.interrupting(True)
+                    match new_state:
+                        case 'r_cw':
+                            if rotating == False:
                                 self.r_cw()
-                            case 'r_ccw':
-                                # self.interrupting('r_ccw')
+                        case 'r_ccw':
+                            if rotating == False:
                                 self.r_ccw()
-                            case 'heading':
-                                # self.interrupting('heading')
+                        case 'heading':
+                            if rotating == False:
                                 self.heading()
-                            case 'grab':
+                        case 'grab':
+                            if rotating == False:
                                 self.grabbing()
-                            case 'idle':
-                                if self.sonar_data < self.dist_threshold:
-                                    self.interrupting('grab', self.dist_len_threshold)
-                                elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
-                                    self.counter -= 1
-                                # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
-                            case '':
-                                if self.sonar_data < self.dist_threshold:
-                                    self.interrupting('grab', self.dist_len_threshold)
-                                elif self.sonar_data > self.dist_threshold and self.grabcounter > 0:
-                                    self.grabcounter -= 1
-                                # self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
-            except Exception as e:
-                self.get_logger().info(f"Error in state<{self.prev_state}>: {e}")
-            # self.get_logger().info(f"Complete.")
+                        case 'idle':
+                            if rotating == True:
+                                self.interrupting('idle')
+                        case '':
+                            pass
+                case 'r_ccw':
+                    rotating = False
+                    if time.time() - self.tstamp > self.rotate_period:
+                        rotating = True
+                        self.interrupting(True)
+                    match new_state:
+                        case 'r_cw':
+                            if rotating == False:
+                                self.r_cw()
+                        case 'r_ccw':
+                            if rotating == False:
+                                self.r_ccw()
+                        case 'heading':
+                            if rotating == False:
+                                self.heading()
+                        case 'grab':
+                            if rotating == False:
+                                self.grabbing()
+                        case 'idle':
+                            if rotating == True:
+                                self.interrupting('idle')
+                        case '':
+                            pass
+                case 'heading':
+                    heading = True
+                    if time.time() - self.tstamp > self.heading_period:
+                        heading = False
+                        self.interrupting(True)
+                    match new_state:
+                        case 'r_cw':
+                            if heading == False:
+                                self.r_cw()
+                        case 'r_ccw':
+                            if heading == False:
+                                self.r_ccw()
+                        case 'heading':
+                            if heading == False:
+                                self.heading()
+                        case 'grab':
+                            if heading == False:
+                                self.grabbing()
+                        case 'idle':
+                            if heading == True:
+                                self.interrupting('idle')
+                        case '':
+                            pass
+                case 'grab':
+                    pass
+                case 'idle':
+                    self.stop()
+                    match new_state:
+                        case 'r_cw':
+                            self.interrupting('r_cw')
+                        case 'r_ccw':
+                            self.interrupting('r_ccw')
+                        case 'heading':
+                            self.interrupting('heading')
+                        case 'grab':
+                            self.grabbing()
+                        case 'idle':
+                            if self.sonar_data > 8:  # Recalibrate sonar
+                                self.set_servo_position(self.forearm_down, self.gripper_close)
+                                time.sleep(1)
+                                self.set_servo_position(self.forearm, self.gripper)
+                            elif self.sonar_data < self.dist_threshold:
+                                self.interrupting('grab', self.dist_len_threshold)
+                            elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
+                                self.counter -= 1
+                            self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
+                        case '':
+                            if self.sonar_data > 8:  # Recalibrate sonar
+                                self.set_servo_position(self.forearm_down, self.gripper_close)
+                                time.sleep(1)
+                                self.set_servo_position(self.forearm, self.gripper)
+                            elif self.sonar_data < self.dist_threshold:
+                                self.interrupting('grab', self.dist_len_threshold)
+                            elif self.sonar_data > self.dist_threshold and self.grabcounter != 0:
+                                self.counter -= 1
+                            self.get_logger().info(f"Grab Counter: {self.grabcounter}\n")
         return
-    
+
     def cmd_handler(self):
         while True:
             if self.cmds == []:
-                cmd = ''
+                cmd = ""
             else:
                 cmd, *args = self.cmds
                 self.cmds = []
@@ -385,25 +360,34 @@ class ServerPublisher(Node):
                 match self.prev_state:
                     case "r_cw":
                         self.prev_dist = []
-                        if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
+                        if (
+                            time.time() - self.tstamp > self.rotate_period
+                        ):  # or self.detected == False:
                             self.stop()
                             self.prev_state = "stop"
                         continue
                     case "r_ccw":
                         self.prev_dist = []
-                        if time.time() - self.tstamp > self.rotate_period: # or self.detected == False:
+                        if (
+                            time.time() - self.tstamp > self.rotate_period
+                        ):  # or self.detected == False:
                             self.stop()
                             self.prev_state = "stop"
                         continue
                     case "heading_target":
                         self.prev_dist = []
-                        if time.time() - self.tstamp > self.heading_period: # or self.detected == False:
+                        if (
+                            time.time() - self.tstamp > self.heading_period
+                        ):  # or self.detected == False:
                             self.stop()
                             self.prev_state = "stop"
                             time.sleep(0.5)
                             self.tstamp = time.time()
                     case "heading":
-                        if self.sonar_data >= self.dist_threshold and self.sonar_data < 1:
+                        if (
+                            self.sonar_data >= self.dist_threshold
+                            and self.sonar_data < 1
+                        ):
                             self.prev_state = "heading_target"
                             self.prev_dist = []
                             self.ser_wheel_velocity(DEFAULT_LINEAR_VELOCITY, 0.0, 0.0)
@@ -417,7 +401,9 @@ class ServerPublisher(Node):
                     case "grab_2":
                         if time.time() - self.tstamp > 2:
                             self.prev_state = "grab_3"
-                            self.set_servo_position(self.forearm_down, self.gripper_close)
+                            self.set_servo_position(
+                                self.forearm_down, self.gripper_close
+                            )
                             self.tstamp = time.time()
                         continue
                     case "grab_3":
@@ -436,10 +422,15 @@ class ServerPublisher(Node):
                     case "stop":
                         self.set_servo_position(self.forearm, self.gripper)
                         if self.sonar_data > 8:
-                            self.set_servo_position(self.forearm_down, self.gripper_close)
+                            self.set_servo_position(
+                                self.forearm_down, self.gripper_close
+                            )
                             time.sleep(1)
                             self.set_servo_position(self.forearm, self.gripper)
-                        if self.sonar_data < 0.25 and self.sonar_data >= self.dist_threshold:
+                        if (
+                            self.sonar_data < 0.25
+                            and self.sonar_data >= self.dist_threshold
+                        ):
                             self.prev_dist = []
                             self.prev_state = "heading"
                             self.tstamp = time.time()
@@ -450,7 +441,10 @@ class ServerPublisher(Node):
                             continue
                         elif self.sonar_data < self.dist_threshold:
                             self.prev_dist.append(self.sonar_data)
-                        elif self.sonar_data > self.dist_threshold and len(self.prev_dist) != 0:
+                        elif (
+                            self.sonar_data > self.dist_threshold
+                            and len(self.prev_dist) != 0
+                        ):
                             self.prev_dist.pop(-1)
                         elif self.tstamp - time.time() > 4:
                             self.ser_wheel_velocity(-0.5, 0.0, 0.0)
@@ -472,7 +466,7 @@ class ServerPublisher(Node):
             except Exception as e:
                 self.get_logger().info(e)
 
-            if cmd == '':
+            if cmd == "":
                 continue
 
             try:
@@ -549,7 +543,9 @@ class ServerPublisher(Node):
                     #         break
                     #     self.get_logger().error(f"Invalid command: {cmd}.")
             except ValueError:
-                self.get_logger().error(f"Invalid parameters: {args}. Caused by command: {cmd}.")
+                self.get_logger().error(
+                    f"Invalid parameters: {args}. Caused by command: {cmd}."
+                )
             except TypeError as e:
                 self.get_logger().error(e)
                 # This exception error could not be solved. It's weird.
@@ -561,7 +557,6 @@ class ServerPublisher(Node):
         #     print(data)
         # except:
         #     pass
-        return
 
     def recv_handler(self) -> None:
         while True:
@@ -576,7 +571,7 @@ class ServerPublisher(Node):
                 self.msg_handler(recv_data, client_addr)
 
     def msg_handler(self, recv_data, client_addr) -> None:
-        cmd, *args = recv_data.strip('\n').split("\n")[-1].split(",")
+        cmd, *args = recv_data.strip("\n").split("\n")[-1].split(",")
         if "detected" == cmd:
             self.detected = True
             if len(args) >= 4:
@@ -615,15 +610,15 @@ class ServerPublisher(Node):
         return
 
     def r_cw(self) -> None:
-        self.prev_state = 'r_cw'
+        self.prev_state = "r_cw"
         self.ser_wheel_velocity(0.0, 0.0, self.rotate_angle)
         self.counter = 0
         self.get_logger().info(f"r_cw called.")
         self.tstamp = time.time()
         return
-    
+
     def r_ccw(self) -> None:
-        self.prev_state = 'r_ccw'
+        self.prev_state = "r_ccw"
         self.ser_wheel_velocity(0.0, 0.0, -self.rotate_angle)
         self.counter = 0
         self.get_logger().info(f"r_ccw called.")
@@ -632,23 +627,25 @@ class ServerPublisher(Node):
 
     def heading(self) -> None:
         self.prev_state = 'heading'
+        self.tstamp = time.time()
         self.ser_wheel_velocity(self.heading_speed, 0.0, 0.0)
         self.get_logger().info(f"heading called.")
         self.counter = 0
         self.tstamp = time.time()
         return
     
-    def interrupting(self, status, threshold=0) -> None:
+    def interrupting(self, status, threshold=10) -> None:
         if status == True or status == 'idle':
             self.set_servo_position(self.forearm, self.gripper)
             self.counter = 0
             self.grabcounter = 0
-            self.prev_state = 'idle'
+            self.prev_state = "idle"
             self.stop()
             time.sleep(self.holdtime)
             self.cmds = []
             self.tstamp = time.time()
-        elif status == 'grab':
+            return
+        if status == 'grab':
             self.grabcounter += 1
             if self.grabcounter > threshold:
                 self.grabcounter = 0
@@ -676,18 +673,7 @@ class ServerPublisher(Node):
                 self.counter = 0
                 self.prev_state = status
                 self.tstamp = time.time()
-        self.get_logger().info(f"Counter: {self.counter}")
         return
-    
-    def sonar_calibrating(self) -> None:
-        counter = 0
-        while True:
-            if counter >= 30:
-                self.cali = True
-            elif self.sonar_data < 10:
-                counter = 0
-            else:
-                counter += 1
 
 def Nodes(node) -> None:
     rclpy.spin(node)
