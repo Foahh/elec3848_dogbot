@@ -44,7 +44,7 @@ class MotorController {
 public:
     MotorController();
 
-    static void begin();
+    static void setup();
 
     void control();
 
@@ -141,7 +141,7 @@ MotorController::MotorController() : encoder_lf_(ECDAA, ECDAB), encoder_rf_(ECDB
     interval_ = 0;
 }
 
-void MotorController::begin() {
+void MotorController::setup() {
     pinMode(DIRA1, OUTPUT);
     pinMode(DIRA2, OUTPUT);
     pinMode(DIRB1, OUTPUT);

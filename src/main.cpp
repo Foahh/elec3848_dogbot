@@ -1,5 +1,7 @@
 #include "Display.hpp"
 #include "MotorController.hpp"
+#include "Sonar.hpp"
+
 #include <Arduino.h>
 #include <Servo.h>
 
@@ -9,6 +11,7 @@
 MotorController motor;
 Servo forearm;
 Servo gripper;
+Sonar sonar;
 
 int forearm_angle = 90;
 int gripper_angle = 30;
@@ -95,7 +98,9 @@ inline void serialHandler()
         gripper_angle = servo_args[1];
         Serial.println("<OK>");
         break;
-
+    case 'U':
+        sonar.send();
+        break;
     case 'w':
         motor.forward();
         Serial.println("<OK>");
@@ -126,7 +131,8 @@ void setup()
 {
     forearm.attach(FOREARM_SERVO_PIN);
     gripper.attach(GRIPPER_SERVO_PIN);
-    MotorController::begin();
+    MotorController::setup();
+    Sonar::setup();
     Serial.begin(115200);
 }
 
@@ -142,4 +148,5 @@ void loop()
         data_available = false;
     }
     motor.control();
+    sonar.update();
 }
